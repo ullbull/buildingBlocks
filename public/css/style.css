@@ -1,0 +1,26 @@
+/* canvas {
+  border: 1px solid black;
+  position: absolute;
+  top: 90px;
+  bottom: 90px;
+  left: 90px;
+  right: 90px;
+} */
+
+body {
+  margin: 0px;
+  background-color: bisque;
+}
+
+h5 {
+  margin: 1px;
+  position: absolute;
+  left: 10px;
+}
+
+input.nameInput{
+  margin: 1px;
+  /* position: absolute;
+  left: 110px; */
+
+}
