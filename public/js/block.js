@@ -1,4 +1,4 @@
-import * as helpers from './_helpers.js';
+import * as helpers from './helpers.js';
 
 function createBlock(x = 0, y = 0, width = 0, height = 0, color = 'gray', anchorPoint = { x: 0, y: 0 }) {
   let key;

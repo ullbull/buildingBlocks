@@ -1,4 +1,4 @@
-import * as helpers from './_helpers.js';
+import * as helpers from './helpers.js';
 
 export class SelectionBox {
   constructor(

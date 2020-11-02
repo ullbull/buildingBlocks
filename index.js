@@ -1,9 +1,9 @@
 'use strict';
 const express = require('express');
 const fileStream = require('fs');
-const add = require('./addData.njs');
-const blockModule = require('./block.njs');
-const cleanup = require("./cleanup.njs");
+const add = require('./addData_njs.js');
+const blockModule = require('./block_njs.js');
+const cleanup = require("./cleanup.js");
 
 const app = express();
 

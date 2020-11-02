@@ -1,7 +1,7 @@
-import * as helpers from './_helpers.js';
-import * as blockModule from './_block.js';
+import * as helpers from './helpers.js';
+import * as blockModule from './block.js';
 import { ViewPort } from './ViewPort.js';
-import * as add from './_addData.js';
+import * as add from './addData.js';
 import Mouse from './Mouse.js';
 import * as api from './api.js';
 import { SelectionBox } from './SelectionBox.js';
