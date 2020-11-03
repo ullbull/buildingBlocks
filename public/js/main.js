@@ -5,6 +5,8 @@ import * as add from './addData.js';
 import Mouse from './Mouse.js';
 import * as api from './api.js';
 import { SelectionBox } from './SelectionBox.js';
+import * as tools from './tools.js';
+
 
 const canvas = document.querySelector('canvas');
 canvas.width = innerWidth - 1;
@@ -25,6 +27,9 @@ let workers = {};
 let hoveredBlock = {};
 let selectedBlocks = {};
 let hoveredBlockOptions = { color: highlightColor };
+let lastGridPosition = mouse.GetGridPosition();
+let tool = tools.builder;
+
 
 const appStatus = {
   moveViewport: false,
@@ -160,13 +165,9 @@ window.addEventListener('mousewheel', mouseWheel);
 window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
 
-let lastGridPosition = mouse.GetGridPosition();
 async function mouseMove(event) {
   appStatus.updateMouseInsideFrame(event, canvas);
   appStatus.updateMouseOverBlock(mouse);
-
-  // Save last mouse position
-  const lastMousePosition = mouse.GetPosition();
 
   // Update mouse position
   mouse.SetPosition(event.x, event.y);
@@ -176,7 +177,6 @@ async function mouseMove(event) {
     event.buttons == 4 ||   // Middle button down
     (event.buttons == 1 && appStatus.spaceKeyDown)
   );
-  if (appStatus.moveViewport) console.log('move');
 
   appStatus.makeSelection = (
     (event.buttons == 1 ||   // Left button down
@@ -185,16 +185,7 @@ async function mouseMove(event) {
   );
 
   if (appStatus.moveViewport) {
-    // Middle button down
-    const mouseTravelDistance = {
-      x: mouse.x - lastMousePosition.x,
-      y: mouse.y - lastMousePosition.y
-    };
-    appStatus.movedDistance += Math.abs(mouseTravelDistance.x) + Math.abs(mouseTravelDistance.y);
-
-    // Move viewport
-    viewport.x -= mouseTravelDistance.x / viewport.pixelSize;
-    viewport.y -= mouseTravelDistance.y / viewport.pixelSize;
+    tool = tools.mover;
   }
 
   // Update mouse position
@@ -216,24 +207,33 @@ async function mouseMove(event) {
 
   ///////////////////////Box selection///////////////////////////////
   if (appStatus.makeSelection) {
-    selectionBox.SetWidth(mouse.GetXWorldPosition() - selectionBox.x);
-    selectionBox.SetHeight(mouse.GetYWorldPosition() - selectionBox.y);
-
-    for (const key in selectionBox.gridPoints) {
-      if (selectionBox.gridPoints.hasOwnProperty(key)) {
-        if (event.buttons == 1) {   // Left button down
-          addToSelectedBlocks(helpers.getBlockByKey(viewport, key));
-        }
-        if (event.buttons == 2) {   // Right button down
-          removeFromSelectedBlocks(helpers.getBlockByKey(viewport, key))
-        }
-      }
-    }
+    tool = tools.boxSelection;
     appStatus.hideSelectionBox = false;
+
+
+
+
+    // selectionBox.SetWidth(mouse.GetXWorldPosition() - selectionBox.x);
+    // selectionBox.SetHeight(mouse.GetYWorldPosition() - selectionBox.y);
+
+    // for (const key in selectionBox.gridPoints) {
+    //   if (selectionBox.gridPoints.hasOwnProperty(key)) {
+    //     if (event.buttons == 1) {   // Left button down
+    //       addToSelectedBlocks(helpers.getBlockByKey(viewport, key));
+    //     }
+    //     if (event.buttons == 2) {   // Right button down
+    //       removeFromSelectedBlocks(helpers.getBlockByKey(viewport, key))
+    //     }
+    //   }
+    // }
+    // appStatus.hideSelectionBox = false;
   }
+
+  tool.mouseMove(event, viewport);
 }
 
 function mouseDown(event) {
+
   // Any mouse button down
   selectionBox.SetPosition(mouse.GetWorldPosition())
   selectionBox.SetSize(0, 0);
@@ -270,9 +270,13 @@ function mouseDown(event) {
   if (event.button == 2) {
     // Right button down
   }
+
+  tool.mouseDown(event);
 }
 
 function mouseUp(event) {
+
+
   appStatus.updateMouseInsideFrame(event, canvas);
   // Any button up
   appStatus.updateMouseOverBlock(mouse);
@@ -296,6 +300,10 @@ function mouseUp(event) {
 
     // Add blocks
     if (appStatus.addBlock) {
+      tool = tools.builder;
+
+
+
       appStatus.movingBlock = false;
 
       // Add cursor
@@ -332,6 +340,9 @@ function mouseUp(event) {
     // Left button up
     appStatus.movedDistance = 0;
   }
+
+
+  tool.mouseUp(event);
 }
 
 function mouseWheel(event) {
