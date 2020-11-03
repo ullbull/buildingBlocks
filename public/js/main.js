@@ -141,11 +141,16 @@ function animate() {
     }
   }
 
-  // Draw selection box
-  if (!appStatus.hideSelectionBox) {
-    selectionBox.Draw(viewport);
-    // viewport.DrawBlock(selectionBox);
-  }
+  // // Draw selection box
+  // if (!appStatus.hideSelectionBox) {
+  //   selectionBox.Draw(viewport);
+  //   // viewport.DrawBlock(selectionBox);
+  // }
+
+
+
+  tool.draw(viewport);
+
 
   if (!appStatus.hideGrid) viewport.DrawGrid();
 
@@ -188,6 +193,7 @@ async function mouseMove(event) {
     tool = tools.mover;
   }
 
+
   // Update mouse position
   mouse.SetPosition(event.x, event.y);
 
@@ -226,13 +232,14 @@ async function mouseMove(event) {
     //     }
     //   }
     // }
-    // appStatus.hideSelectionBox = false;
+
   }
 
   tool.mouseMove(event, viewport);
 }
 
 function mouseDown(event) {
+  tool = tools.boxSelection;
 
   // Any mouse button down
   selectionBox.SetPosition(mouse.GetWorldPosition())
@@ -271,7 +278,7 @@ function mouseDown(event) {
     // Right button down
   }
 
-  tool.mouseDown(event);
+  tool.mouseDown(event, viewport);
 }
 
 function mouseUp(event) {
@@ -343,6 +350,10 @@ function mouseUp(event) {
 
 
   tool.mouseUp(event);
+
+  // // fulhack
+  // tool = tools.builder;
+  
 }
 
 function mouseWheel(event) {

@@ -1,7 +1,3 @@
-// const helpers = require('../../helpers');
-// const blockModule = require('../../block');
-// const api = require('./api');
-
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import * as api from './api.js';

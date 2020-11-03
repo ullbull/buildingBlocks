@@ -82,7 +82,7 @@ function getBlockByPosition(viewport, x, y) {
   return getBlockByKey(viewport, key);
 }
 
-function GetXGrid(x, pixelSize) {
+function getXGrid(x, pixelSize) {
   return Math.floor(x / pixelSize);
 }
 
@@ -103,7 +103,7 @@ export {
   getBlockUnderMouse,
   getBlockByKey,
   getBlockByPosition,
-  GetXGrid,
+  getXGrid,
   getYGrid,
   getGridPosition
 };
