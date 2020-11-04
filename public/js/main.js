@@ -4,8 +4,8 @@ import { ViewPort } from './ViewPort.js';
 import * as add from './addData.js';
 import Mouse from './Mouse.js';
 import * as api from './api.js';
-import { SelectionBox } from './SelectionBox.js';
 import * as tools from './tools.js';
+import * as selector from './selector.js';
 
 
 const canvas = document.querySelector('canvas');
@@ -16,8 +16,6 @@ const c = canvas.getContext('2d');
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
 const viewport = new ViewPort(canvas.width, canvas.height, 20, c);
-const selectionBox = new SelectionBox(viewport);
-// const selectionBox = blockModule.createBlock(0,0,10,10,'lightblue');
 const mouse = new Mouse(viewport);
 const margin = 20;
 const workerID = (Date.now() + Math.random()).toString();
@@ -25,10 +23,11 @@ const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 }
 let cursor = startBlock;
 let workers = {};
 let hoveredBlock = {};
-let selectedBlocks = {};
+// let selectedBlocks = tools.selectedBlocks;
 let hoveredBlockOptions = { color: highlightColor };
 let lastGridPosition = mouse.GetGridPosition();
-let tool = tools.builder;
+let tool = tools.boxSelection;
+tool.viewport = viewport;
 
 
 const appStatus = {
@@ -131,7 +130,7 @@ function animate() {
   if (!appStatus.hideHoveredBlock) viewport.DrawBlock(hoveredBlock, hoveredBlockOptions);
 
   // Draw selected blocks
-  viewport.DrawBlocks(selectedBlocks, { color: highlightColor });
+  viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
 
   // Draw workers
   for (const key in workers) {
@@ -141,22 +140,15 @@ function animate() {
     }
   }
 
-  // // Draw selection box
-  // if (!appStatus.hideSelectionBox) {
-  //   selectionBox.Draw(viewport);
-  //   // viewport.DrawBlock(selectionBox);
-  // }
-
-
-
-  tool.draw(viewport);
-
+  if (!appStatus.hideSelectionBox) {
+  }
+  tool.draw();
 
   if (!appStatus.hideGrid) viewport.DrawGrid();
 
   if (appStatus.debug) {
     viewport.DrawAllGridPoints();
-    viewport.DrawGridPoints(selectionBox.gridPoints, 'red');
+    viewport.DrawGridPoints(tool.gridPoints, 'red');
     console.log('cursor.id', cursor.id);
   }
 }
@@ -190,7 +182,7 @@ async function mouseMove(event) {
   );
 
   if (appStatus.moveViewport) {
-    tool = tools.mover;
+    // tool = tools.mover;
   }
 
 
@@ -213,8 +205,8 @@ async function mouseMove(event) {
 
   ///////////////////////Box selection///////////////////////////////
   if (appStatus.makeSelection) {
-    tool = tools.boxSelection;
-    appStatus.hideSelectionBox = false;
+    // tool = tools.boxSelection;
+    // appStatus.hideSelectionBox = false;
 
 
 
@@ -235,15 +227,14 @@ async function mouseMove(event) {
 
   }
 
-  tool.mouseMove(event, viewport);
+  tool.mouseMove(event);
 }
 
 function mouseDown(event) {
-  tool = tools.boxSelection;
+  // tool = tools.boxSelection;
+  // tool.viewport = viewport;
 
   // Any mouse button down
-  selectionBox.SetPosition(mouse.GetWorldPosition())
-  selectionBox.SetSize(0, 0);
   appStatus.mouseDown = true;
 
   if (event.button == 0) {
@@ -268,20 +259,18 @@ function mouseDown(event) {
       cursor.children = helpers.copyObject(selectedBlocks);
 
     }
-    if (!event.ctrlKey) {
-      // Reset selected blocks
-      selectedBlocks = {};
-    }
+
   }
 
   if (event.button == 2) {
     // Right button down
   }
 
-  tool.mouseDown(event, viewport);
+  tool.mouseDown(event);
 }
 
 function mouseUp(event) {
+
 
 
   appStatus.updateMouseInsideFrame(event, canvas);
@@ -307,7 +296,7 @@ function mouseUp(event) {
 
     // Add blocks
     if (appStatus.addBlock) {
-      tool = tools.builder;
+      // tool = tools.builder;
 
 
 
@@ -411,14 +400,15 @@ function keyDown(event) {
     viewport.x++;
   }
 
+  tool.keyDown(event);
   if (event.key == 'Control' && !appStatus.blockClicked) {
     // Add to selected blocks
-    addToSelectedBlocks(hoveredBlock);
+    // selector.addBlock(hoveredBlock);
   }
   if (event.key == 'Alt') {
-    event.preventDefault();
-    // Remove from selected blocks
-    removeFromSelectedBlocks(hoveredBlock);
+    // event.preventDefault();
+    // // Remove from selected blocks
+    // selector.removeBlock(hoveredBlock);
 
     // Change draw color for hovered block
     hoveredBlockOptions = {};
@@ -447,21 +437,7 @@ function keyUp(event) {
   }
 }
 
-function addToSelectedBlocks(block) {
-  if (typeof block != 'undefined') {
-    if (block.hasOwnProperty('id')) {
-      selectedBlocks[block.id] = block;
-    }
-  }
-}
 
-function removeFromSelectedBlocks(block) {
-  if (typeof block != 'undefined') {
-    if (block.hasOwnProperty('id')) {
-      delete selectedBlocks[block.id];
-    }
-  }
-}
 
 // window.onkeyup = function (event) {
 //   if (event.key == 'Alt') {

@@ -72,7 +72,7 @@ export class SelectionBox {
     this.SetY(position.y);
   }
 
-  Draw(viewport) {
-    viewport.DrawRectangle(this.x, this.y, this.width, this.height, this.color);
+  Draw() {
+    this.viewport.DrawRectangle(this.x, this.y, this.width, this.height, this.color);
   }
 }

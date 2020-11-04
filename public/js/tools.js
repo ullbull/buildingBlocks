@@ -1,43 +1,37 @@
-import { SelectionBox } from './SelectionBox.js';
 import * as helpers from './helpers.js';
-
-
-let selectedBlocks = {};
+import * as selector from './selector.js';
 
 const builder = {
-  draw: function (viewport) {
+  draw: function () {
     console.log("builder draw");
 
   },
-  mouseDown: function (event, viewport) {
+  mouseDown: function (event) {
     console.log("builder mouse down");
   },
-  mouseUp: function (event, viewport) {
+  mouseUp: function (event) {
     console.log("building");
   },
-  mouseMove: function (event, viewport) {
+  mouseMove: function (event) {
     // console.log("builder mouseMove");
   },
-  keyDown: function (event, viewport) {
+  keyDown: function (event) {
 
   },
-  keyUp: function (event, viewport) {
+  keyUp: function (event) {
 
   }
 }
 
 const mover = {
-  draw: function (viewport) {
+  draw: function () {
     console.log("mover draw");
-
   },
-  mouseDown: function (event, viewport) {
+  mouseDown: function (event) {
   },
-  mouseUp: function (event, viewport) {
+  mouseUp: function (event) {
   },
-  mouseMove: function (event, viewport) {
-    // console.log("mover mouseMove");
-
+  mouseMove: function (event) {
     viewport.x -= event.movementX / viewport.pixelSize;
     viewport.y -= event.movementY / viewport.pixelSize;
   },
@@ -48,50 +42,108 @@ const mover = {
 }
 
 const boxSelection = {
-  // selectionBox: {
-  //   x: 0,
-  //   y: 0,
-  //   width: 0,
-  //   height: 0,
-  //   color: 'rgba(200,200,255,0.5)'
-  // },
+  viewport: {},   // must give it a viewport
+  x: 0,
+  y: 0,
+  width: 0,
+  height: 0,
+  color: 'rgba(200,200,255,0.5)',
+  gridPoints: {},
 
+  initGridPoints: function () {
+    let point = {};
+    let key;
+    this.gridPoints = {};
 
-  draw: function (viewport) {
-    this.selectionBox.Draw(viewport);
+    // Create gridpoints for both positive and negative box size
+    let x;
+    let y;
+    let width = (this.width < 0) ? this.width * -1 : this.width;
+    let height = (this.height < 0) ? this.height * -1 : this.height;
+
+    for (let w = 0; w < width; w++) {
+      for (let h = 0; h < height; h++) {
+        x = (this.width < 0) ? (w * -1) - 1 : w;
+        y = (this.height < 0) ? (h * -1) - 1 : h;
+        point = {
+          x: Math.floor(this.x + x),
+          y: Math.floor(this.y + y)
+        };
+        key = helpers.positionToKey(point.x, point.y);
+        this.gridPoints[key] = 'SelectionBox';
+      }
+    }
   },
-  mouseDown: function (event, viewport) {
-    if (typeof this.selectionBox == 'undefined') { this.selectionBox = new SelectionBox(viewport); }
-    this.selectionBox.SetX(helpers.getXGrid(event.x, viewport.pixelSize));
-    this.selectionBox.SetY(helpers.getYGrid(event.y, viewport.pixelSize));
+
+  setWidth: function (width) {
+    this.width = width;
+    this.initGridPoints();
   },
-  mouseUp: function (event, viewport) {
+
+  setHeight: function (height) {
+    this.height = height;
+    this.initGridPoints();
   },
-  mouseMove: function (event, viewport) {
 
+  draw: function () {
+    this.viewport.DrawRectangle(this.x, this.y, this.width, this.height, this.color);
+  },
 
+  //////////////////////////////////////////
 
+  mouseDown: function (event) {
+    if (!(event.ctrlKey || event.buttons == 2)) {      
+      // Reset selected blocks
+      selector.resetBlocks();
+    }
 
-    this.selectionBox.SetWidth(viewport.CanvasXToWorld(event.x) - this.selectionBox.x);
-    this.selectionBox.SetHeight(viewport.CanvasYToWorld(event.y) - this.selectionBox.y);
+    this.setWidth(0);
+    this.setHeight(0);
+    this.x = helpers.getXGrid(event.x, this.viewport.pixelSize);
+    this.y = helpers.getYGrid(event.y, this.viewport.pixelSize);
+  },
 
-    for (const key in this.selectionBox.gridPoints) {
-      if (this.selectionBox.gridPoints.hasOwnProperty(key)) {
+  mouseUp: function (event) {
+  },
+
+  mouseMove: function (event) {
+    if (event.buttons == 1 || event.buttons == 2) {
+    // Left or right button down
+    this.setWidth(this.viewport.CanvasXToWorld(event.x) - this.x);
+    this.setHeight(this.viewport.CanvasYToWorld(event.y) - this.y);
+
+    for (const key in this.gridPoints) {
+      if (this.gridPoints.hasOwnProperty(key)) {
         if (event.buttons == 1) {   // Left button down
-          // addToSelectedBlocks(helpers.getBlockByKey(viewport, key));
+          selector.addBlock(helpers.getBlockByKey(this.viewport, key));
         }
         if (event.buttons == 2) {   // Right button down
-          // removeFromSelectedBlocks(helpers.getBlockByKey(viewport, key))
+          selector.removeBlock(helpers.getBlockByKey(this.viewport, key))
         }
       }
     }
 
+    }
   },
-  keyDown: function (event, viewport) {
+  keyDown: function (event) {
+    // if (event.key == 'Control') {
+    //   // Add to selected blocks
+    //   selector.addBlock(hoveredBlock);
+    // }
+
+    // if (event.key == 'Alt') {
+    //   event.preventDefault();
+    //   // Remove from selected blocks
+    //   selector.removeBlock(hoveredBlock);
+    // }
   },
-  keyUp: function (event, viewport) {
+  keyUp: function (event) {
   }
 }
+
+
+
+
 
 // function moveViewport(event, viewport) {
 //   viewport.x -= event.movementX / viewport.pixelSize;
