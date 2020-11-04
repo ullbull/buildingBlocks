@@ -1,3 +1,5 @@
+import * as helpers from './helpers.js';
+
 let selectedBlocks = {};
 
 function getBlocks() {
@@ -24,9 +26,27 @@ function removeBlock(block) {
   }
 }
 
+function addBlocksByGridPoints(gridPoints, viewport) {
+  for (const key in gridPoints) {
+    if (gridPoints.hasOwnProperty(key)) {
+      addBlock(helpers.getBlockByKey(key, viewport));
+    }
+  }
+}
+
+function removeBlocksByGridPoints(gridPoints, viewport) {
+  for (const key in gridPoints) {
+    if (gridPoints.hasOwnProperty(key)) {
+      removeBlock(helpers.getBlockByKey(key, viewport));
+    }
+  }
+}
+
 export {
   getBlocks,
   resetBlocks,
   addBlock,
-  removeBlock
+  removeBlock,
+  addBlocksByGridPoints,
+  removeBlocksByGridPoints
 }

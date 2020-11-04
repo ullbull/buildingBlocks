@@ -213,16 +213,18 @@ export class ViewPort {
   }
 
   DrawBlocks(blocks, options = {}) {
-    let hiddenBlocks = {};
-    if (options.hasOwnProperty('hiddenBlocks')) {
-      hiddenBlocks = options.hiddenBlocks;
+    let hiddenBlockIDs = {};
+    if (options.hasOwnProperty('hiddenBlockIDs')) {
+      hiddenBlockIDs = options.hiddenBlockIDs;
     }
 
     for (const key in blocks) {
       if (blocks.hasOwnProperty(key)) {
         const block = blocks[key];
-        if (!hiddenBlocks.hasOwnProperty(key)) {
+        if (!hiddenBlockIDs.hasOwnProperty(key)) {
           this.DrawBlock(block, options);
+        } else {
+          this.DrawBlock(block, {color : 'rgba(100,90,100,0.1'});
         }
       }
     }

@@ -86,56 +86,9 @@ function addGridPointTo(blockData, gridPoint) {
   blockData.gridPoints[key] = blockID;
 }
 
-function deleteBlockFrom(blockData, blockID) {
-  const block = blockData.blocks[blockID];
-  if (typeof block != 'undefined') {
-    // Delete grid points
-    for (const key in block.pixels) {
-      if (block.pixels.hasOwnProperty(key)) {
-        const position = blockModule.getGridPosition(block, key);
-        deleteGridPointFrom(blockData, position.x, position.y);
-      }
-    }
-
-    // Delete block
-    delete blockData.blocks[blockID];
-  }
-}
-
-function deleteBlockAndChildrenFrom(blockData, block) {
-  // Delete children
-  if (block.hasOwnProperty('children')) {
-    console.log(block.children);
-    for (const key in block.children) {
-      if (block.children.hasOwnProperty(key)) {
-        const child = block.children[key];
-        console.log(child);
-        // Delete locally
-        deleteBlockFrom(blockData, child.id);
-
-        // Delete from server
-        api.deleteBlockFromServer(child.id);
-      }
-    }
-  }
-  // Delete locally
-  deleteBlockFrom(blockData, block.id);
-
-  // Delete from server
-  api.deleteBlockFromServer(block.id);
-}
-
-function deleteGridPointFrom(blockData, x, y) {
-  const key = helpers.positionToKey(x, y);
-  delete blockData.gridPoints[key];
-}
-
 module.exports = {
   addBlockTo,
   addMultipleBlocksTo,
   addBlockAndChildrenTo,
-  addGridPointTo,
-  deleteBlockFrom,
-  deleteBlockAndChildrenFrom,
-  deleteGridPointFrom
+  addGridPointTo
 };

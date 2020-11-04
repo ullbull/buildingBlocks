@@ -1,23 +1,70 @@
 import * as helpers from './helpers.js';
 import * as selector from './selector.js';
+import * as blockModule from './block.js';
+import * as add from './addData.js';
+import * as api from './api.js';
+import * as blockHider from './blockHider.js';
+import * as remover from './remover.js';
 
 const builder = {
-  draw: function () {
-    console.log("builder draw");
+  viewport: {},   // must give it a viewport
+  block: blockModule.createBlock(0, 0, 4, 2),
 
+  draw: function () {
+    this.viewport.DrawBlock(this.block);
   },
+
   mouseDown: function (event) {
-    console.log("builder mouse down");
+    const wp = this.viewport.CanvasToWorldPosition(event.x, event.y);
+    if (event.button == 0) {  // Left button down
+
+      // Check if any block was clicked
+      const clickedBlock = helpers.getBlockByPosition(wp.x, wp.y, this.viewport);
+      if (clickedBlock) {
+        // Change this block to copy of clicked block
+        this.block = helpers.copyObject(clickedBlock);
+        // Get new blockID
+        this.block.id = helpers.generateID();
+
+        // Set anchor point
+        const clickedPixel = blockModule.getPositionInBlock(clickedBlock, wp.x, wp.y);
+        const anchorPoint = { x: clickedPixel.x, y: clickedPixel.y };
+        blockModule.setBlockAnchorPoint(this.block, anchorPoint);
+        blockModule.setBlockPosition(this.block, wp);
+
+        // Hide clicked block
+        blockHider.addHiddenBlockID(clickedBlock.id);
+      }
+    }
   },
+
   mouseUp: function (event) {
-    console.log("building");
+    if (event.button == 0) {  // Left button up 
+      // Add block
+      add.addBlockTo(this.viewport.blockData, this.block);
+
+      // Send blocks to server
+      api.sendData('/api', this.block);
+
+      // Delete hidden blocks
+      remover.deleteBlocksGlobally(this.viewport.blockData, blockHider.resetHiddenBlockIDs());
+
+      // Get new blockID
+      this.block.id = helpers.generateID();
+    }
   },
   mouseMove: function (event) {
-    // console.log("builder mouseMove");
+    const worldPosition = this.viewport.CanvasToWorldPosition(event.x, event.y)
+    blockModule.setBlockPosition(this.block, worldPosition);
+
+    const hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, this.viewport);
+    if (hoveredBlock) console.log(hoveredBlock.id, 'builder id', this.block.id);
   },
+
   keyDown: function (event) {
 
   },
+
   keyUp: function (event) {
 
   }
@@ -92,15 +139,15 @@ const boxSelection = {
   //////////////////////////////////////////
 
   mouseDown: function (event) {
-    if (!(event.ctrlKey || event.buttons == 2)) {      
-      // Reset selected blocks
-      selector.resetBlocks();
-    }
-
     this.setWidth(0);
     this.setHeight(0);
     this.x = helpers.getXGrid(event.x, this.viewport.pixelSize);
     this.y = helpers.getYGrid(event.y, this.viewport.pixelSize);
+
+    if (!(event.ctrlKey || event.buttons == 2)) {
+      // Reset selected blocks
+      selector.resetBlocks();
+    }
   },
 
   mouseUp: function (event) {
@@ -108,63 +155,24 @@ const boxSelection = {
 
   mouseMove: function (event) {
     if (event.buttons == 1 || event.buttons == 2) {
-    // Left or right button down
-    this.setWidth(this.viewport.CanvasXToWorld(event.x) - this.x);
-    this.setHeight(this.viewport.CanvasYToWorld(event.y) - this.y);
+      // Left or right button down
+      this.setWidth(this.viewport.CanvasXToWorld(event.x) - this.x);
+      this.setHeight(this.viewport.CanvasYToWorld(event.y) - this.y);
 
-    for (const key in this.gridPoints) {
-      if (this.gridPoints.hasOwnProperty(key)) {
-        if (event.buttons == 1) {   // Left button down
-          selector.addBlock(helpers.getBlockByKey(this.viewport, key));
-        }
-        if (event.buttons == 2) {   // Right button down
-          selector.removeBlock(helpers.getBlockByKey(this.viewport, key))
-        }
+      if (event.buttons == 1) {   // Left button down
+        selector.addBlocksByGridPoints(this.gridPoints, this.viewport)
+      }
+      if (event.buttons == 2) {   // Right button down
+        selector.removeBlocksByGridPoints(this.gridPoints, this.viewport);
       }
     }
-
-    }
   },
-  keyDown: function (event) {
-    // if (event.key == 'Control') {
-    //   // Add to selected blocks
-    //   selector.addBlock(hoveredBlock);
-    // }
 
-    // if (event.key == 'Alt') {
-    //   event.preventDefault();
-    //   // Remove from selected blocks
-    //   selector.removeBlock(hoveredBlock);
-    // }
+  keyDown: function (event) {
   },
   keyUp: function (event) {
   }
 }
-
-
-
-
-
-// function moveViewport(event, viewport) {
-//   viewport.x -= event.movementX / viewport.pixelSize;
-//   viewport.y -= event.movementY / viewport.pixelSize;
-// }
-
-// function boxSelection(event, selectionBox, mouse) {
-//   selectionBox.SetWidth(mouse.GetXWorldPosition() - selectionBox.x);
-//   selectionBox.SetHeight(mouse.GetYWorldPosition() - selectionBox.y);
-
-//   for (const key in selectionBox.gridPoints) {
-//     if (selectionBox.gridPoints.hasOwnProperty(key)) {
-//       if (event.buttons == 1) {   // Left button down
-//         addToSelectedBlocks(helpers.getBlockByKey(viewport, key));
-//       }
-//       if (event.buttons == 2) {   // Right button down
-//         removeFromSelectedBlocks(helpers.getBlockByKey(viewport, key))
-//       }
-//     }
-//   }
-// }
 
 export {
   builder,

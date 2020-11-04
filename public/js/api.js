@@ -23,14 +23,13 @@ async function getData(url) {
     return json;
   }
   
-  async function deleteBlockFromServer(blockID) {
-    const obj = {blockID}
+  async function deleteBlocksFromServer(blockIDs) {
     const options = {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(obj),
+      body: JSON.stringify(blockIDs),
     };
   
     // Send data to server
@@ -49,5 +48,5 @@ async function getData(url) {
   export {
     getData,
     sendData,
-    deleteBlockFromServer,
+    deleteBlocksFromServer,
   };

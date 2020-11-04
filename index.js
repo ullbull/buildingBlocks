@@ -2,6 +2,7 @@
 const express = require('express');
 const fileStream = require('fs');
 const add = require('./addData_njs.js');
+const remover = require('./remover_njs.js');
 const blockModule = require('./block_njs.js');
 const cleanup = require("./cleanup.js");
 
@@ -14,6 +15,7 @@ const fileExtension = '.json'
 const filePath = path + fileName + fileExtension;
 
 // let rawData = fileStream.readFileSync(fileName + '_1' + fileExtension);
+
 const rawData = fileStream.readFileSync(filePath);
 const blockData = JSON.parse(rawData);   // { "blocks": {}, "gridPoints": {} }
 const workers = {};
@@ -29,6 +31,25 @@ setInterval(() => deleteOldWorkers(), 1000);
 cleanup.deleteBadGridpoints(blockData);
 cleanup.deleteBadBlocks(blockData);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.get('/api', (request, response) => {
   response.json(blockData);
 });
@@ -38,9 +59,9 @@ app.post('/api', (request, response) => {
   // Get the data from client
   const data = request.body;
 
-  add.addBlockAndChildrenTo(blockData, data);
+  add.addBlockTo(blockData, data);
 
-  saveFile();
+  // saveFile();
 
   // Send a response back to client
   response.json({ message: 'thanks' });
@@ -48,16 +69,29 @@ app.post('/api', (request, response) => {
 
 app.delete('/api', (request, response) => {
   // Get the data from client
-  const blockID = request.body.blockID;
-  console.log('Deleting block ', blockID);
+  const blockIDs = request.body;
 
-  add.deleteBlockFrom(blockData, blockID)
+  remover.deleteBlocksLocally(blockData, blockIDs)
 
   saveFile();
 
   // Send a response back to client
   response.json({ message: 'thanks' });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //////////////////////////////////////////
 

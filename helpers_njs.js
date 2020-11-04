@@ -68,7 +68,7 @@ function getBlockUnderMouse(mouse) {
   return blockID;
 }
 
-function getBlockByKey(viewport, key) {
+function getBlockByKey(key, viewport) {
   const blockID = viewport.blockData.gridPoints[key];
   let block;
   if(typeof blockID != 'undefined') {
@@ -77,12 +77,13 @@ function getBlockByKey(viewport, key) {
   return block;
 }
 
-function getBlockByPosition(viewport, x, y) {
+// Return block at position
+function getBlockByPosition(x, y, viewport) {
   const key = positionToKey(x, y);
-  return getBlockByKey(viewport, key);
+  return getBlockByKey(key, viewport);
 }
 
-function GetXGrid(x, pixelSize) {
+function getXGrid(x, pixelSize) {
   return Math.floor(x / pixelSize);
 }
 
@@ -103,7 +104,7 @@ module.exports = {
   getBlockUnderMouse,
   getBlockByKey,
   getBlockByPosition,
-  GetXGrid,
+  getXGrid,
   getYGrid,
   getGridPosition
 };

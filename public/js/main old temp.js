@@ -6,7 +6,6 @@ import Mouse from './Mouse.js';
 import * as api from './api.js';
 import * as tools from './tools.js';
 import * as selector from './selector.js';
-import * as blockHider from './blockHider.js';
 
 
 const canvas = document.querySelector('canvas');
@@ -27,17 +26,8 @@ let hoveredBlock = {};
 // let selectedBlocks = tools.selectedBlocks;
 let hoveredBlockOptions = { color: highlightColor };
 let lastGridPosition = mouse.GetGridPosition();
-
-const builder = tools.builder;
-builder.viewport = viewport;
-
-const mover = tools.mover;
-mover.viewport = viewport;
-
-const boxSelection = tools.boxSelection;
-boxSelection.viewport = viewport;
-
-let tool = builder;
+let tool = tools.builder;
+tool.viewport = viewport;
 
 
 const appStatus = {
@@ -86,7 +76,7 @@ const appStatus = {
 };
 
 // Reload block data from server
-setInterval(() => viewport.InitBlockData(), 2000);
+setInterval(() => viewport.InitBlockData(), 1000);
 
 // Reload workers from server
 setInterval(async () => workers = await api.getData('/workers'), 100);
@@ -94,15 +84,68 @@ setInterval(async () => workers = await api.getData('/workers'), 100);
 function animate() {
   requestAnimationFrame(animate);
 
+  // Set transparency if no block is clicked or cursor is outside frame
+  const alphaValue = (
+    !appStatus.blockClicked ||
+    !appStatus.mouseInsideFrame
+  ) ? 0.5 : 1;
+
+  appStatus.hideCursor = (
+    appStatus.mouseOverBlock && !appStatus.mouseDown ||
+    appStatus.mouseDown && !appStatus.blockClicked
+  );
+
+  appStatus.hideHoveredBlock = (
+    appStatus.mouseDown
+  );
+
+  appStatus.hideSelectionBox = (
+    !appStatus.mouseDown
+  )
+
+  let hiddenBlocks = {};
+  if (cursor.hasOwnProperty('children')) {
+    hiddenBlocks = helpers.copyObject(cursor.children);
+    hiddenBlocks[cursor.id] = cursor;
+  }
+
   // Clear frame
   c.clearRect(0, 0, canvas.width, canvas.height);
 
   // // Draw blocks
-  viewport.DrawAllBlocks({hiddenBlockIDs: blockHider.getHiddenBlockIDs()});
+  viewport.DrawAllBlocks({ hiddenBlocks });
+
+  if (!appStatus.hideCursor) {
+    // Draw cursor
+    // viewport.DrawBlock(cursor, { alphaValue });
+
+    // Draw children
+    if (cursor.hasOwnProperty('children')) {
+      viewport.DrawBlocks(cursor.children, { alphaValue });
+    }
+  }
+
+
+  // Draw hovered block
+  if (!appStatus.hideHoveredBlock) viewport.DrawBlock(hoveredBlock, hoveredBlockOptions);
+
+  // Draw selected blocks
+  viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
+
+  // Draw workers
+  for (const key in workers) {
+    const worker = workers[key];
+    if (worker.id != workerID) {
+      viewport.DrawBlock(worker, { name: worker.name });
+    }
+  }
+
+  if (!appStatus.hideSelectionBox) {
+  }
 
   tool.draw();
 
-  viewport.DrawGrid();
+  if (!appStatus.hideGrid) viewport.DrawGrid();
 
   if (appStatus.debug) {
     viewport.DrawAllGridPoints();
@@ -121,25 +164,155 @@ window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
 
 async function mouseMove(event) {
-  // // Send this worker to server if mouse is moved one grid square
-  // if ((gridPosition.x != lastGridPosition.x) || (gridPosition.y != lastGridPosition.y)) {
-  //   const worker = helpers.copyObject(cursor);
-  //   worker.id = workerID;
-  //   worker.name = document.getElementById("playerName").value;
+  appStatus.updateMouseInsideFrame(event, canvas);
+  appStatus.updateMouseOverBlock(mouse);
 
-  //   await api.sendData('/workers', worker);
+  // Update mouse position
+  mouse.SetPosition(event.x, event.y);
+  const gridPosition = mouse.GetGridPosition();
 
-  //   lastGridPosition = mouse.GetGridPosition();
-  // }
+  appStatus.moveViewport = (
+    event.buttons == 4 ||   // Middle button down
+    (event.buttons == 1 && appStatus.spaceKeyDown)
+  );
+
+  appStatus.makeSelection = (
+    (event.buttons == 1 ||   // Left button down
+      event.buttons == 2) && // Right button down
+    !appStatus.blockClicked
+  );
+
+  if (appStatus.moveViewport) {
+    // tool = tools.mover;
+  }
+
+
+  // Update mouse position
+  mouse.SetPosition(event.x, event.y);
+
+  // Send this worker to server if mouse is moved one grid square
+  if ((gridPosition.x != lastGridPosition.x) || (gridPosition.y != lastGridPosition.y)) {
+    const worker = helpers.copyObject(cursor);
+    worker.id = workerID;
+    worker.name = document.getElementById("playerName").value;
+
+    await api.sendData('/workers', worker);
+
+    lastGridPosition = mouse.GetGridPosition();
+  }
+
+  // Move cursor
+  blockModule.setBlockPosition(cursor, mouse.GetWorldPosition());
+
+  if (appStatus.makeSelection) {
+  }
 
   tool.mouseMove(event);
 }
 
 function mouseDown(event) {
-   tool.mouseDown(event);
+
+  // Any mouse button down
+  appStatus.mouseDown = true;
+
+  if (event.button == 0) {
+    // Left button down
+
+    appStatus.updateMouseOverBlock(mouse);
+    appStatus.updateBlockClicked(event);
+
+    // Change cursor to clicked block
+    if (appStatus.blockClicked) {
+      const clickedPixel = blockModule.getPositionInBlock(hoveredBlock, mouse.GetXWorldPosition(), mouse.GetYWorldPosition());
+
+      // Copy clicked block to cursor
+      cursor = helpers.copyObject(hoveredBlock);
+
+      // Set anchor point
+      const anchorPoint = { x: clickedPixel.x, y: clickedPixel.y };
+      blockModule.setBlockAnchorPoint(cursor, anchorPoint);
+      blockModule.setBlockPosition(cursor, mouse.GetWorldPosition());
+
+      // Get children
+      cursor.children = helpers.copyObject(selector.getBlocks());
+
+    }
+
+  }
+
+  if (event.button == 2) {
+    // Right button down
+  }
+
+  tool.mouseDown(event);
 }
 
 function mouseUp(event) {
+
+
+
+  appStatus.updateMouseInsideFrame(event, canvas);
+  // Any button up
+  appStatus.updateMouseOverBlock(mouse);
+  appStatus.mouseDown = false;
+  mouse.lastX = event.x;
+  mouse.lastY = event.y;
+
+  if (event.button == 0) {  // Left button up
+    appStatus.deleteBlock = (
+      appStatus.blockClicked &&
+      !appStatus.mouseInsideFrame
+    )
+
+    appStatus.blockClicked = false;
+
+    appStatus.addBlock = (
+      !appStatus.makeSelection &&
+      appStatus.mouseInsideFrame
+    );
+
+
+    // Add blocks
+    if (appStatus.addBlock) {
+
+      appStatus.movingBlock = false;
+
+      // Add cursor
+      add.addBlockAndChildrenTo(viewport.blockData, cursor);
+
+      // Send block to server
+      api.sendData('/api', cursor);
+
+      // Get new blockID
+      cursor.id = helpers.generateID();
+
+      // Get new id for children
+      if (cursor.hasOwnProperty('children')) {
+        let children = cursor.children;
+        cursor.children = {};
+        let n = 0;
+        for (const key in children) {
+          if (children.hasOwnProperty(key)) {
+            const child = children[key];
+            child.id = cursor.id + '_' + n++;
+            cursor.children[child.id] = child;
+          }
+        }
+      }
+    }
+
+    // Delete blocks
+    if (appStatus.deleteBlock) {
+      add.deleteBlockAndChildrenFrom(viewport.blockData, cursor);
+    }
+  }
+
+  if (event.buttons == 1) {
+    // Left button up
+    appStatus.movedDistance = 0;
+  }
+
+
   tool.mouseUp(event);  
 }
 
