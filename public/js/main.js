@@ -24,7 +24,6 @@ const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 }
 let cursor = startBlock;
 let workers = {};
 let hoveredBlock = {};
-// let selectedBlocks = tools.selectedBlocks;
 let hoveredBlockOptions = { color: highlightColor };
 let lastGridPosition = mouse.GetGridPosition();
 
@@ -97,9 +96,13 @@ function animate() {
   // Clear frame
   c.clearRect(0, 0, canvas.width, canvas.height);
 
-  // // Draw blocks
-  viewport.DrawAllBlocks({hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1});
+  // Draw blocks
+  viewport.DrawAllBlocks({ hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
 
+  // Draw selected blocks
+  viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
+
+  // Draw tool
   tool.draw();
 
   viewport.DrawGrid();
@@ -136,11 +139,11 @@ async function mouseMove(event) {
 }
 
 function mouseDown(event) {
-   tool.mouseDown(event);
+  tool.mouseDown(event);
 }
 
 function mouseUp(event) {
-  tool.mouseUp(event);  
+  tool.mouseUp(event);
 }
 
 function mouseWheel(event) {
@@ -218,8 +221,7 @@ function keyDown(event) {
     appStatus.debug = !appStatus.debug;
     if (appStatus.debug) {
       console.log('cursor:', cursor);
-      console.log('selectedBlocks:', selectedBlocks);
-      console.log('selectionBox', selectionBox);
+      console.log('selectedBlocks:', selector.getBlocks());
       console.log('appStatus', appStatus);
     }
   }
