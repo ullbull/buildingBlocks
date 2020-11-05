@@ -10,6 +10,7 @@ const builder = {
   viewport: {},   // must give it a viewport
   block: blockModule.createBlock(0, 0, 4, 2),
   hideMe: false,
+  clickedBlock: null,
 
   draw: function () {
     if (!this.hideMe) {
@@ -17,12 +18,26 @@ const builder = {
     }
   },
 
-  changeBlockToClickedBlock: function (clickedBlock) {
+  build: function () {
+    // Add block
+    add.addBlockTo(this.viewport.blockData, this.block);
+
+    // Send blocks to server
+    api.sendData('/api', this.block);
+
+    // Delete hidden blocks
+    remover.deleteBlocksGlobally(this.viewport.blockData, blockHider.resetHiddenBlockIDs());
+
+    // Get new blockID
+    this.block.id = helpers.generateID();
+  },
+
+  changeBlockToClickedBlock: function () {
     // Get clicked pixel
-    const clickedPixel = blockModule.getPositionInBlock(clickedBlock, this.block.x, this.block.y);
+    const clickedPixel = blockModule.getPositionInBlock(this.clickedBlock, this.block.x, this.block.y);
 
     // Change this block to copy of clicked block
-    this.block = helpers.copyObject(clickedBlock);
+    this.block = helpers.copyObject(this.clickedBlock);
 
     // Set anchor point
     blockModule.setBlockAnchorPointAutoShift(this.block, clickedPixel.x, clickedPixel.y);
@@ -31,17 +46,17 @@ const builder = {
     this.block.id = helpers.generateID();
 
     // Hide clicked block
-    blockHider.addHiddenBlockID(clickedBlock.id);
+    blockHider.addHiddenBlockID(this.clickedBlock.id);
   },
 
   mouseDown: function (event) {
     if (event.button == 0) {  // Left button down
-      const clickedBlock = helpers.getBlockByPosition(this.block.x, this.block.y, this.viewport);
+      this.clickedBlock = helpers.getBlockByPosition(this.block.x, this.block.y, this.viewport);
 
       // Check if any block was clicked
-      if (clickedBlock) {
+      if (this.clickedBlock) {
         // Change this.block to clicked block
-        this.changeBlockToClickedBlock(clickedBlock);
+        this.changeBlockToClickedBlock();
 
         this.hideMe = false;
       }
@@ -50,17 +65,14 @@ const builder = {
 
   mouseUp: function (event) {
     if (event.button == 0) {  // Left button up 
-      // Add block
-      add.addBlockTo(this.viewport.blockData, this.block);
+      this.clickedBlock = null;
 
-      // Send blocks to server
-      api.sendData('/api', this.block);
-
-      // Delete hidden blocks
-      remover.deleteBlocksGlobally(this.viewport.blockData, blockHider.resetHiddenBlockIDs());
-
-      // Get new blockID
-      this.block.id = helpers.generateID();
+      if (helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20)) {
+        this.build();
+      } else {
+        // Delete block if dropped outside frame
+        remover.deleteBlocksGlobally(this.viewport.blockData, blockHider.resetHiddenBlockIDs());
+      }
     }
   },
 
@@ -69,10 +81,13 @@ const builder = {
     blockModule.setBlockPosition(this.block, worldPosition);
 
     const hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, this.viewport);
+    const insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20)
     
     this.hideMe = (
-      hoveredBlock &&
-      !blockHider.getHiddenBlockIDs().hasOwnProperty(hoveredBlock.id)
+      !insideFrame ||
+      (hoveredBlock &&
+      !blockHider.getHiddenBlockIDs().hasOwnProperty(hoveredBlock.id) &&
+      !this.clickedBlock)
     );
 
   },

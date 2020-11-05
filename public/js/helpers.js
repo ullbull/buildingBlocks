@@ -71,7 +71,7 @@ function getBlockUnderMouse(mouse) {
 function getBlockByKey(key, viewport) {
   const blockID = viewport.blockData.gridPoints[key];
   let block;
-  if(typeof blockID != 'undefined') {
+  if (typeof blockID != 'undefined') {
     block = viewport.blockData.blocks[blockID];
   }
   return block;
@@ -95,6 +95,13 @@ function getGridPosition(x, y, pixelSize) {
   return { x: this.GetXWorldPosition(x, pixelSize), y: this.getYGrid(y, pixelSize) };
 }
 
+function insideFrame(x, y, width, height, margin = 0) {
+  return (
+    x <= width - margin && y <= height - margin &&
+    x >= margin && y >= margin
+  );
+}
+
 export {
   positionToKey,
   colorValues,
@@ -106,5 +113,6 @@ export {
   getBlockByPosition,
   getXGrid,
   getYGrid,
-  getGridPosition
+  getGridPosition,
+  insideFrame
 };
