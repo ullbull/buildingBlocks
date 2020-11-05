@@ -209,6 +209,13 @@ export class ViewPort {
       if (options.hasOwnProperty('name')) {
         this.DrawText(options.name, block.x, block.y);
       }
+
+      ///////DEBUGGING CODE/////////////
+      if (options.hasOwnProperty('drawAnchorPoint')) {
+        this.DrawRectangle(block.x, block.y, 1, 1, 'pink');
+        // this.DrawText('bx: ' + block.x + ' by: ' + block.y, block.x, block.y - 1);
+        // this.DrawText('ax: ' + block.anchorPoint.x + ' ay: ' + block.anchorPoint.y, block.x, block.y);
+      }
     }
   }
 

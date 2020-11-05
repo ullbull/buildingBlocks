@@ -9,31 +9,41 @@ import * as remover from './remover.js';
 const builder = {
   viewport: {},   // must give it a viewport
   block: blockModule.createBlock(0, 0, 4, 2),
+  hideMe: false,
 
   draw: function () {
-    this.viewport.DrawBlock(this.block);
+    if (!this.hideMe) {
+      this.viewport.DrawBlock(this.block);
+    }
+  },
+
+  changeBlockToClickedBlock: function (clickedBlock) {
+    // Get clicked pixel
+    const clickedPixel = blockModule.getPositionInBlock(clickedBlock, this.block.x, this.block.y);
+
+    // Change this block to copy of clicked block
+    this.block = helpers.copyObject(clickedBlock);
+
+    // Set anchor point
+    blockModule.setBlockAnchorPointAutoShift(this.block, clickedPixel.x, clickedPixel.y);
+
+    // Get new blockID
+    this.block.id = helpers.generateID();
+
+    // Hide clicked block
+    blockHider.addHiddenBlockID(clickedBlock.id);
   },
 
   mouseDown: function (event) {
-    const wp = this.viewport.CanvasToWorldPosition(event.x, event.y);
     if (event.button == 0) {  // Left button down
+      const clickedBlock = helpers.getBlockByPosition(this.block.x, this.block.y, this.viewport);
 
       // Check if any block was clicked
-      const clickedBlock = helpers.getBlockByPosition(wp.x, wp.y, this.viewport);
       if (clickedBlock) {
-        // Change this block to copy of clicked block
-        this.block = helpers.copyObject(clickedBlock);
-        // Get new blockID
-        this.block.id = helpers.generateID();
+        // Change this.block to clicked block
+        this.changeBlockToClickedBlock(clickedBlock);
 
-        // Set anchor point
-        const clickedPixel = blockModule.getPositionInBlock(clickedBlock, wp.x, wp.y);
-        const anchorPoint = { x: clickedPixel.x, y: clickedPixel.y };
-        blockModule.setBlockAnchorPoint(this.block, anchorPoint);
-        blockModule.setBlockPosition(this.block, wp);
-
-        // Hide clicked block
-        blockHider.addHiddenBlockID(clickedBlock.id);
+        this.hideMe = false;
       }
     }
   },
@@ -53,12 +63,18 @@ const builder = {
       this.block.id = helpers.generateID();
     }
   },
+
   mouseMove: function (event) {
     const worldPosition = this.viewport.CanvasToWorldPosition(event.x, event.y)
     blockModule.setBlockPosition(this.block, worldPosition);
 
     const hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, this.viewport);
-    if (hoveredBlock) console.log(hoveredBlock.id, 'builder id', this.block.id);
+    
+    this.hideMe = (
+      hoveredBlock &&
+      !blockHider.getHiddenBlockIDs().hasOwnProperty(hoveredBlock.id)
+    );
+
   },
 
   keyDown: function (event) {

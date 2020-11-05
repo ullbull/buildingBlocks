@@ -121,17 +121,27 @@ function moveBlock(block, position) {
 }
 
 
-function setBlockAnchorPoint(block, anchorPoint) {
+function setBlockAnchorPoint(block, x, y) {
   if (block.hasOwnProperty('children')) {
     for (const key in block.children) {
       if (block.children.hasOwnProperty(key)) {
         const child = block.children[key];
-        child.anchorPoint = anchorPoint;
+        child.anchorPoint = { x, y };
       }
     }
   }
 
-  block.anchorPoint = anchorPoint;
+  block.anchorPoint = { x, y };
+}
+
+function setBlockAnchorPointAutoShift(block, x, y) {
+  const xDistance = x - block.anchorPoint.x;
+  const yDistance = y - block.anchorPoint.y;
+
+  setBlockAnchorPoint(block, x, y);
+
+  block.x += xDistance;
+  block.y += yDistance;
 }
 
 // Translate block pixel to position on grid
@@ -142,8 +152,6 @@ function getGridPosition(block, key) {
       x: pixel.x + block.x - block.anchorPoint.x,
       y: pixel.y + block.y - block.anchorPoint.y
     };
-  } else {
-    console.error('Property not found! ', key);
   }
 }
 
@@ -173,6 +181,7 @@ function blockPixelToGridKey(block, key) {
 
 function getPositionInBlock(block, x, y) {
   return {
+    //   2 -   1     +       0             = 1
     x: x - block.x + block.anchorPoint.x,
     y: y - block.y + block.anchorPoint.y
   };
@@ -185,6 +194,7 @@ export {
   setBlockPosition,
   moveBlock,
   setBlockAnchorPoint,
+  setBlockAnchorPointAutoShift,
   getGridPosition,
   getGridPointKeysFromBlock,
   getGridPoint,

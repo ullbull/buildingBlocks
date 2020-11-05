@@ -98,7 +98,7 @@ function animate() {
   c.clearRect(0, 0, canvas.width, canvas.height);
 
   // // Draw blocks
-  viewport.DrawAllBlocks({hiddenBlockIDs: blockHider.getHiddenBlockIDs()});
+  viewport.DrawAllBlocks({hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1});
 
   tool.draw();
 
