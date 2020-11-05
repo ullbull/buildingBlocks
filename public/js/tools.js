@@ -11,10 +11,16 @@ const builder = {
   block: blockModule.createBlock(0, 0, 4, 2),
   hideMe: false,
   clickedBlock: null,
+  insideFrame: false,
 
   draw: function () {
+    const alphaValue = (
+      this.clickedBlock &&
+      this.insideFrame
+    ) ? 1 : 0.5;
+
     if (!this.hideMe) {
-      this.viewport.DrawBlock(this.block);
+      this.viewport.DrawBlock(this.block, { alphaValue });
     }
   },
 
@@ -66,8 +72,9 @@ const builder = {
   mouseUp: function (event) {
     if (event.button == 0) {  // Left button up 
       this.clickedBlock = null;
+      this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20);
 
-      if (helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20)) {
+      if (this.insideFrame) {
         this.build();
       } else {
         // Delete block if dropped outside frame
@@ -81,13 +88,12 @@ const builder = {
     blockModule.setBlockPosition(this.block, worldPosition);
 
     const hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, this.viewport);
-    const insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20)
-    
+    this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20)
+
     this.hideMe = (
-      !insideFrame ||
-      (hoveredBlock &&
+      hoveredBlock &&
       !blockHider.getHiddenBlockIDs().hasOwnProperty(hoveredBlock.id) &&
-      !this.clickedBlock)
+      !this.clickedBlock
     );
 
   },
