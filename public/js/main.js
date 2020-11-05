@@ -188,6 +188,16 @@ function download(content, fileName, contentType) {
 }
 
 function keyDown(event) {
+  if (event.key == 'b') {
+    tool = new tools.Builder(viewport);
+  }
+  if (event.key == 'm') {
+    tool = new tools.Mover(viewport);
+  }
+  if (event.key == 's') {
+    tool = new tools.BoxSelection(viewport);
+  }
+
   if (event.key == 'ArrowUp') {
     viewport.y--;
   }
@@ -199,17 +209,6 @@ function keyDown(event) {
   }
   if (event.key == 'ArrowRight') {
     viewport.x++;
-  }
-
-  if (event.key == 'Control' && !appStatus.blockClicked) {
-    // Add to selected blocks
-    // selector.addBlock(hoveredBlock);
-  }
-  if (event.key == 'Alt') {
-
-
-    // Change draw color for hovered block
-    hoveredBlockOptions = {};
   }
 
   if (event.code == 'Space') {
