@@ -6,14 +6,14 @@ import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as remover from './remover.js';
 
-const builder = {
-  viewport: {},   // must give it a viewport
-  block: blockModule.createBlock(0, 0, 4, 2),
-  hideMe: false,
-  clickedBlock: null,
-  insideFrame: false,
+function Builder (viewport) {
+  this.viewport = viewport;
+  this.block = blockModule.createBlock(0, 0, 4, 2);
+  this.hideMe = false;
+  this.clickedBlock = null;
+  this.insideFrame = false;
 
-  draw: function () {
+  this.draw = function () {
     const alphaValue = (
       this.clickedBlock &&
       this.insideFrame
@@ -22,9 +22,9 @@ const builder = {
     if (!this.hideMe) {
       this.viewport.DrawBlock(this.block, { alphaValue });
     }
-  },
+  }
 
-  build: function () {
+  this.build = function () {
     // Add block
     add.addBlockTo(this.viewport.blockData, this.block);
 
@@ -36,9 +36,9 @@ const builder = {
 
     // Get new blockID
     this.block.id = helpers.generateID();
-  },
+  }
 
-  changeBlockToClickedBlock: function () {
+  this.changeBlockToClickedBlock = function () {
     // Get clicked pixel
     const clickedPixel = blockModule.getPositionInBlock(this.clickedBlock, this.block.x, this.block.y);
 
@@ -53,9 +53,9 @@ const builder = {
 
     // Hide clicked block
     blockHider.addHiddenBlockID(this.clickedBlock.id);
-  },
+  }
 
-  mouseDown: function (event) {
+  this.mouseDown = function (event) {
     if (event.button == 0) {  // Left button down
       this.clickedBlock = helpers.getBlockByPosition(this.block.x, this.block.y, this.viewport);
 
@@ -67,9 +67,9 @@ const builder = {
         this.hideMe = false;
       }
     }
-  },
+  }
 
-  mouseUp: function (event) {
+  this.mouseUp = function (event) {
     if (event.button == 0) {  // Left button up 
       this.clickedBlock = null;
       this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20);
@@ -81,9 +81,9 @@ const builder = {
         remover.deleteBlocksGlobally(this.viewport.blockData, blockHider.resetHiddenBlockIDs());
       }
     }
-  },
+  }
 
-  mouseMove: function (event) {
+  this.mouseMove = function (event) {
     const worldPosition = this.viewport.CanvasToWorldPosition(event.x, event.y)
     blockModule.setBlockPosition(this.block, worldPosition);
 
@@ -96,45 +96,54 @@ const builder = {
       !this.clickedBlock
     );
 
-  },
+  }
 
-  keyDown: function (event) {
+  this.keyDown = function (event) {
 
-  },
+  }
 
-  keyUp: function (event) {
+  this.keyUp = function (event) {
 
   }
 }
 
-const mover = {
-  draw: function () {
-    console.log("mover draw");
-  },
-  mouseDown: function (event) {
-  },
-  mouseUp: function (event) {
-  },
-  mouseMove: function (event) {
-    viewport.x -= event.movementX / viewport.pixelSize;
-    viewport.y -= event.movementY / viewport.pixelSize;
-  },
-  keyDown: function (event, viewport) {
-  },
-  keyUp: function (event, viewport) {
+function Mover(viewport) {
+  this.viewport = viewport;
+
+  this.draw = function () {
+  }
+
+  this.mouseDown = function (event) {
+  }
+
+  this.mouseUp = function (event) {
+  }
+
+  this.mouseMove = function (event) {
+    if (event.buttons == 4) {
+      // Middle button down
+      this.viewport.x -= event.movementX / this.viewport.pixelSize;
+      this.viewport.y -= event.movementY / this.viewport.pixelSize;
+    }
+  }
+
+  this.keyDown = function (event) {
+  }
+
+  this.keyUp = function (event) {
   }
 }
 
-const boxSelection = {
-  viewport: {},   // must give it a viewport
-  x: 0,
-  y: 0,
-  width: 0,
-  height: 0,
-  color: 'rgba(200,200,255,0.5)',
-  gridPoints: {},
+function BoxSelection(viewport) {
+  this.viewport = viewport;
+  this.x = 0;
+  this.y = 0;
+  this.width = 0;
+  this.height = 0;
+  this.color = 'rgba(200,200,255,0.5)';
+  this.gridPoints = {};
 
-  initGridPoints: function () {
+  this.initGridPoints = function () {
     let point = {};
     let key;
     this.gridPoints = {};
@@ -157,25 +166,25 @@ const boxSelection = {
         this.gridPoints[key] = 'SelectionBox';
       }
     }
-  },
+  }
 
-  setWidth: function (width) {
+  this.setWidth = function (width) {
     this.width = width;
     this.initGridPoints();
-  },
+  }
 
-  setHeight: function (height) {
+  this.setHeight = function (height) {
     this.height = height;
     this.initGridPoints();
-  },
+  }
 
-  draw: function () {
+  this.draw = function () {
     this.viewport.DrawRectangle(this.x, this.y, this.width, this.height, this.color);
-  },
+  }
 
   //////////////////////////////////////////
 
-  mouseDown: function (event) {
+  this.mouseDown = function (event) {
     this.setWidth(0);
     this.setHeight(0);
     this.x = helpers.getXGrid(event.x, this.viewport.pixelSize);
@@ -185,12 +194,12 @@ const boxSelection = {
       // Reset selected blocks
       selector.resetBlocks();
     }
-  },
+  }
 
-  mouseUp: function (event) {
-  },
+  this.mouseUp = function (event) {
+  }
 
-  mouseMove: function (event) {
+  this.mouseMove = function (event) {
     if (event.buttons == 1 || event.buttons == 2) {
       // Left or right button down
       this.setWidth(this.viewport.CanvasXToWorld(event.x) - this.x);
@@ -203,16 +212,16 @@ const boxSelection = {
         selector.removeBlocksByGridPoints(this.gridPoints, this.viewport);
       }
     }
-  },
+  }
 
-  keyDown: function (event) {
-  },
-  keyUp: function (event) {
+  this.keyDown = function (event) {
+  }
+  this.keyUp = function (event) {
   }
 }
 
 export {
-  builder,
-  mover,
-  boxSelection
+  Builder,
+  Mover,
+  BoxSelection
 }

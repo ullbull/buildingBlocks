@@ -28,16 +28,16 @@ let hoveredBlock = {};
 let hoveredBlockOptions = { color: highlightColor };
 let lastGridPosition = mouse.GetGridPosition();
 
-const builder = tools.builder;
-builder.viewport = viewport;
+// const builder = tools.builder;
+// builder.viewport = viewport;
 
-const mover = tools.mover;
-mover.viewport = viewport;
+// const mover = tools.mover;
+// mover.viewport = viewport;
 
-const boxSelection = tools.boxSelection;
-boxSelection.viewport = viewport;
+// const boxSelection = tools.boxSelection;
+// boxSelection.viewport = viewport;
 
-let tool = builder;
+let tool = new tools.BoxSelection(viewport);
 
 
 const appStatus = {
