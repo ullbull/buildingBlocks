@@ -201,7 +201,6 @@ function keyDown(event) {
     viewport.x++;
   }
 
-  tool.keyDown(event);
   if (event.key == 'Control' && !appStatus.blockClicked) {
     // Add to selected blocks
     // selector.addBlock(hoveredBlock);
@@ -225,6 +224,8 @@ function keyDown(event) {
       console.log('appStatus', appStatus);
     }
   }
+
+  tool.keyDown(event);
 }
 
 function keyUp(event) {
@@ -233,6 +234,8 @@ function keyUp(event) {
   if (event.key == 'Alt') {
     hoveredBlockOptions = { color: highlightColor };
   }
+
+  tool.keyUp(event);
 }
 
 

@@ -6,7 +6,7 @@ import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as remover from './remover.js';
 
-function Builder (viewport) {
+function Builder(viewport) {
   this.viewport = viewport;
   this.block = blockModule.createBlock(0, 0, 4, 2);
   this.hideMe = false;
@@ -142,11 +142,10 @@ function BoxSelection(viewport) {
   this.height = 0;
   this.color = 'rgba(200,200,255,0.5)';
   this.gridPoints = {};
+  // this.hideMe = true;
 
   this.initGridPoints = function () {
-    let point = {};
-    let key;
-    this.gridPoints = {};
+    this.clearGridPoints();
 
     // Create gridpoints for both positive and negative box size
     let x;
@@ -158,13 +157,48 @@ function BoxSelection(viewport) {
       for (let h = 0; h < height; h++) {
         x = (this.width < 0) ? (w * -1) - 1 : w;
         y = (this.height < 0) ? (h * -1) - 1 : h;
-        point = {
+
+        const point = {
           x: Math.floor(this.x + x),
           y: Math.floor(this.y + y)
         };
-        key = helpers.positionToKey(point.x, point.y);
-        this.gridPoints[key] = 'SelectionBox';
+
+        this.addGridPoint(point.x, point.y);
       }
+    }
+  }
+
+  this.clearGridPoints = function () {
+    this.gridPoints = {};
+  }
+
+  this.addGridPoint = function (x, y) {
+    const key = helpers.positionToKey(x, y);
+    this.gridPoints[key] = 'SelectionBox';
+  }
+
+  this.addGridPointsByMovement = function(event) {
+    const movementPxX = Math.abs(event.movementX) / this.viewport.pixelSize;
+    const movementPxY = Math.abs(event.movementY) / this.viewport.pixelSize;
+    let x = this.wp.x;
+    let y = this.wp.y;
+
+    // for (let ix = 0; ix < movementPxX; ix++) {
+    //   for (let iy = 0; iy < movementPxY; iy++) { 
+    //     x = (event.movementX < 0) ? this.wp.x + ix : this.wp.x - ix;
+    //     y = (event.movementY < 0) ? this.wp.y + iy : this.wp.y - iy; 
+    //     this.addGridPoint(x, y);
+    //   }
+    // }
+
+
+    for (let ix = 0; ix < movementPxX; ix++) {
+      this.addGridPoint(x, y);
+      x = (event.movementX < 0) ? x+1 : x-1;
+    }
+    for (let iy = 0; iy < movementPxY; iy++) {
+      this.addGridPoint(x, y);
+      y = (event.movementY < 0) ? y+1 : y-1;
     }
   }
 
@@ -179,44 +213,84 @@ function BoxSelection(viewport) {
   }
 
   this.draw = function () {
-    this.viewport.DrawRectangle(this.x, this.y, this.width, this.height, this.color);
+    if (true) {
+      this.viewport.DrawRectangle(this.x, this.y, this.width, this.height, this.color);
+    }
   }
 
-  //////////////////////////////////////////
+  /////////////////////////////////////////////////////
 
   this.mouseDown = function (event) {
     this.setWidth(0);
     this.setHeight(0);
-    this.x = helpers.getXGrid(event.x, this.viewport.pixelSize);
-    this.y = helpers.getYGrid(event.y, this.viewport.pixelSize);
+    this.x = this.wp.x;
+    this.y = this.wp.y;
 
-    if (!(event.ctrlKey || event.buttons == 2)) {
+    if (!(event.ctrlKey || event.altKey || event.buttons == 2)) {
       // Reset selected blocks
       selector.resetBlocks();
     }
   }
 
   this.mouseUp = function (event) {
+    // this.hideMe = true;
+    this.setWidth(0);
+    this.setHeight(0);
   }
 
   this.mouseMove = function (event) {
-    if (event.buttons == 1 || event.buttons == 2) {
+    this.wp = this.viewport.CanvasToWorldPosition(event.x, event.y);
+
+    const select = (
+      event.buttons == 1 && !event.altKey
+    );
+
+    const deselect = (
+      event.buttons == 2 ||
+      event.buttons == 1 && event.altKey
+    );
+
+    if (select || deselect) {
       // Left or right button down
       this.setWidth(this.viewport.CanvasXToWorld(event.x) - this.x);
       this.setHeight(this.viewport.CanvasYToWorld(event.y) - this.y);
 
-      if (event.buttons == 1) {   // Left button down
+      if (select) {   // Left button down
         selector.addBlocksByGridPoints(this.gridPoints, this.viewport)
       }
-      if (event.buttons == 2) {   // Right button down
+      if (deselect) {   // Right button down
+        selector.removeBlocksByGridPoints(this.gridPoints, this.viewport);
+      }
+    }
+    else if (event.ctrlKey || event.altKey) {
+      this.x = this.wp.x;
+      this.y = this.wp.y;
+      
+      this.addGridPointsByMovement(event);
+
+      if(event.ctrlKey) {
+        selector.addBlocksByGridPoints(this.gridPoints, this.viewport)
+      } else if (event.altKey) {
         selector.removeBlocksByGridPoints(this.gridPoints, this.viewport);
       }
     }
   }
 
   this.keyDown = function (event) {
+    if (event.ctrlKey || event.altKey) {
+      const hoveredBlock = helpers.getBlockByPosition(this.wp.x, this.wp.y, this.viewport);
+      if (event.ctrlKey) {    // Add hovered block
+        selector.addBlock(hoveredBlock);
+      }
+      else if (event.altKey) {  // Remove hovered block
+        event.preventDefault();
+        selector.removeBlock(hoveredBlock);
+      }
+    }
   }
+
   this.keyUp = function (event) {
+    this.clearGridPoints();
   }
 }
 
