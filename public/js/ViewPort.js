@@ -216,6 +216,7 @@ export class ViewPort {
         // this.DrawText('bx: ' + block.x + ' by: ' + block.y, block.x, block.y - 1);
         // this.DrawText('ax: ' + block.anchorPoint.x + ' ay: ' + block.anchorPoint.y, block.x, block.y);
       }
+      this.DrawText(block.id, block.x, block.y);
     }
   }
 

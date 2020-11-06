@@ -1,4 +1,5 @@
 import * as helpers from './helpers.js';
+import * as linkKeeper from './linkKeeper.js';
 
 function createBlock(x = 0, y = 0, width = 0, height = 0, color = 'gray', anchorPoint = { x: 0, y: 0 }) {
   let key;
@@ -96,6 +97,27 @@ function setBlockPosition(block, position) {
   // Move block
   block.x = position.x;
   block.y = position.y;
+}
+
+function setObjectPosition(object, position, data) {
+
+  const children = linkKeeper.getChildren(object.id, data);
+  // Find distance to new position
+  const xDistance = position.x - object.x;
+  const yDistance = position.y - object.y;
+
+  // Move children according to distance
+  for (const key in children) {
+    if (children.hasOwnProperty(key)) {
+      const child = children[key];
+      child.x += xDistance;
+      child.y += yDistance;
+    }
+  }
+
+  // Move block
+  object.x = position.x;
+  object.y = position.y;
 }
 
 function moveBlock(block, position) {
@@ -199,5 +221,6 @@ export {
   getGridPointKeysFromBlock,
   getGridPoint,
   blockPixelToGridKey,
-  getPositionInBlock
+  getPositionInBlock,
+  setObjectPosition
 };

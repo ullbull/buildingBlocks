@@ -7,7 +7,7 @@ import * as api from './api.js';
 import * as tools from './tools.js';
 import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
-
+import * as linkKeeper from './linkKeeper.js';
 
 const canvas = document.querySelector('canvas');
 canvas.width = innerWidth - 1;
@@ -85,7 +85,7 @@ const appStatus = {
 };
 
 // Reload block data from server
-setInterval(() => viewport.InitBlockData(), 2000);
+setInterval(() => viewport.InitBlockData(), 1000);
 
 // Reload workers from server
 setInterval(async () => workers = await api.getData('/workers'), 100);
@@ -110,7 +110,6 @@ function animate() {
   if (appStatus.debug) {
     viewport.DrawAllGridPoints();
     viewport.DrawGridPoints(tool.gridPoints, 'red');
-    console.log('cursor.id', cursor.id);
   }
 }
 
@@ -218,9 +217,9 @@ function keyDown(event) {
   if (event.key == 'd') {
     appStatus.debug = !appStatus.debug;
     if (appStatus.debug) {
-      console.log('cursor:', cursor);
       console.log('selectedBlocks:', selector.getBlocks());
       console.log('appStatus', appStatus);
+      console.log('links', linkKeeper.getLinks());
     }
   }
 

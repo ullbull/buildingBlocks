@@ -7,7 +7,9 @@ function getBlocks() {
 }
 
 function resetBlocks() {
+  const blocks = selectedBlocks;
   selectedBlocks = {};
+  return blocks;
 }
 
 function addBlock(block) {

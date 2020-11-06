@@ -5,27 +5,48 @@ import * as add from './addData.js';
 import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as remover from './remover.js';
+import * as linkKeeper from './linkKeeper.js';
 
 function Builder(viewport) {
+  this.id = helpers.generateID();
   this.viewport = viewport;
-  this.block = blockModule.createBlock(0, 0, 4, 2);
+  this.x = 0;
+  this.y = 0;
+  const block = blockModule.createBlock(0, 0, 4, 2);
+  this.block = block;
   this.hideMe = false;
   this.hoveredBlock = null;
   this.clickedBlock = null;
   this.insideFrame = false;
+  this.children = {},
+  this.blocks = {};
+  this.blocks[block.id] = block;
 
-  this.draw = function () {
-    const alphaValue = (
-      this.clickedBlock &&
-      this.insideFrame
-    ) ? 1 : 0.5;
+    this.draw = function () {
+      const alphaValue = (
+        this.clickedBlock &&
+        this.insideFrame
+      ) ? 1 : 0.5;
 
-    if (!this.hideMe) {
-      this.viewport.DrawBlock(this.block, { alphaValue });
-    } else {
-      this.viewport.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
+      if (!this.hideMe) {
+        // Draw block
+        this.viewport.DrawBlock(this.block, { alphaValue });
+
+
+      }
+      if (this.hoveredBlock) {
+        // Draw hovered block
+        this.viewport.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
+      }
+
+      this.viewport.DrawBlock(this.block, { color: 'purple', alphaValue });
+
+      // Draw children
+      this.viewport.DrawBlocks(
+        linkKeeper.getChildren(this.id, this.viewport.blockData.blocks),
+        { color: 'purple', alphaValue }
+      );
     }
-  }
 
   this.build = function () {
     // Add block
@@ -34,8 +55,8 @@ function Builder(viewport) {
     // Send blocks to server
     api.sendData('/api', this.block);
 
-    // Delete hidden blocks
-    remover.deleteBlocksGlobally(this.viewport.blockData, blockHider.resetHiddenBlockIDs());
+    // Un hide hidden blocks
+    blockHider.resetHiddenBlockIDs();
 
     // Get new blockID
     this.block.id = helpers.generateID();
@@ -51,8 +72,14 @@ function Builder(viewport) {
     // Set anchor point
     blockModule.setBlockAnchorPointAutoShift(this.block, clickedPixel.x, clickedPixel.y);
 
-    // Get new blockID
-    this.block.id = helpers.generateID();
+    // // Get new blockID
+    // this.block.id = helpers.generateID();
+
+    // Add selected blocks as children
+    linkKeeper.addChildrenToParent(this, selector.resetBlocks());
+
+    // // Add selected blocks as children
+    // this.block.children = helpers.copyObject(selector.resetBlocks());
 
     // Hide clicked block
     blockHider.addHiddenBlockID(this.clickedBlock.id);
@@ -68,6 +95,9 @@ function Builder(viewport) {
         this.changeBlockToClickedBlock();
 
         this.hideMe = false;
+      } else {
+        linkKeeper.addChildrenToParent(this.block, selector.resetBlocks());
+
       }
     }
   }
@@ -88,7 +118,8 @@ function Builder(viewport) {
 
   this.mouseMove = function (event) {
     const worldPosition = this.viewport.CanvasToWorldPosition(event.x, event.y)
-    blockModule.setBlockPosition(this.block, worldPosition);
+    this.x = worldPosition.x;
+    this.y = worldPosition.y;
 
     this.hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, this.viewport);
     this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20)

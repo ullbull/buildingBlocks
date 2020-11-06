@@ -31,25 +31,6 @@ setInterval(() => deleteOldWorkers(), 1000);
 cleanup.deleteBadGridpoints(blockData);
 cleanup.deleteBadBlocks(blockData);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 app.get('/api', (request, response) => {
   response.json(blockData);
 });
