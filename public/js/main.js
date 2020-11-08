@@ -50,6 +50,10 @@ blc.AddBuildingBlock(pxl3);
 blc.SetY(1);
 blc.Draw();
 
+console.log('blc', blc);
+console.log('log', blc.GetData());
+
+
 
 // const blc2 = Block.createBlock(5,5,2,2,'blue', viewport);
 const blc2 = new Block(4,4,3,3,'blue', viewport);

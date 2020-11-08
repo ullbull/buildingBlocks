@@ -5,7 +5,7 @@ class BaseBuildingBlock {
     this.id;
     this.x = x;
     this.y = y;
-    this.content;
+    this.content = {};
     this.viewPort = viewPort;
   }
   GetID() {
@@ -33,8 +33,8 @@ class BaseBuildingBlock {
     for (const key in this.content) {
       if (this.content.hasOwnProperty(key)) {
         const element = this.content[key];
-        if (element.getData != null) {
-          data[element.GetID()] = element.getData();
+        if (element.GetData != null) {
+          data[element.GetID()] = element.GetData();
         }
         else {
           data = this.content;

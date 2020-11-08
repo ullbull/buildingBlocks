@@ -14,57 +14,61 @@ function Builder(viewport) {
   this.x = 0;
   this.y = 0;
   // const block = blockModule.createBlock(0, 0, 4, 2);
-  const block = new Block(0,0,3,3,'orange',viewport);
+  const block = new Block(0, 0, 3, 3, 'orange', viewport);
   this.block = block;
   this.hideMe = false;
   this.hoveredBlock = null;
   this.clickedBlock = null;
   this.insideFrame = false;
   this.children = {},
-  this.blocks = {};
+    this.blocks = {};
   this.blocks[block.id] = block;
 
-    this.draw = function () {
-      const alphaValue = (
-        this.clickedBlock &&
-        this.insideFrame
-      ) ? 1 : 0.5;
+  this.draw = function () {
+    const alphaValue = (
+      this.clickedBlock &&
+      this.insideFrame
+    ) ? 1 : 0.5;
 
-      if (!this.hideMe) {
-        // Draw block
-        // this.viewport.DrawBlock(this.block, { alphaValue });
-        this.block.Draw();
+    if (!this.hideMe) {
+      // Draw block
+      // this.viewport.DrawBlock(this.block, { alphaValue });
+      this.block.Draw();
 
-      }
-      if (this.hoveredBlock) {
-        // Draw hovered block
-        this.viewport.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
-      }
-
-      this.viewport.DrawBlock(this.block, { color: 'purple', alphaValue });
-
-      // // Draw children
-      // this.viewport.DrawBlocks(
-      //   linkKeeper.getChildren(this.id, this.viewport.blockData.blocks),
-      //   { color: 'purple', alphaValue }
-      // );
-
-      // Draw this position
-      this.viewport.DrawRectangle(this.x, this.y, 1, 1, 'black');
+    }
+    if (this.hoveredBlock) {
+      // Draw hovered block
+      this.viewport.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
     }
 
+    this.viewport.DrawBlock(this.block, { color: 'purple', alphaValue });
+
+    // // Draw children
+    // this.viewport.DrawBlocks(
+    //   linkKeeper.getChildren(this.id, this.viewport.blockData.blocks),
+    //   { color: 'purple', alphaValue }
+    // );
+
+    // Draw this position
+    this.viewport.DrawRectangle(this.x, this.y, 1, 1, 'black');
+  }
+
   this.build = function () {
+    console.log(this.viewport.blockData);
     // Add block
     add.addBlockTo(this.viewport.blockData, this.block);
 
+    const block = this.block.GetData();
+    console.log('sending this', block);
     // Send blocks to server
-    api.sendData('/api', this.block);
+    api.sendData('/api', block);
 
     // Un hide hidden blocks
     blockHider.resetHiddenBlockIDs();
 
     // Get new blockID
     this.block.id = helpers.generateID();
+    console.log(this.viewport.blockData);
   }
 
   this.changeBlockToClickedBlock = function () {

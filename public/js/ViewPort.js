@@ -15,7 +15,7 @@ export class ViewPort {
     this.blockData = { blocks: {}, gridPoints: {} };
     this.pixels = {};
     this.anchorPoint = { x: 0, y: 0 };
-    this.InitBlockData();
+    // this.InitBlockData();
   }
 
   async InitBlockData() {

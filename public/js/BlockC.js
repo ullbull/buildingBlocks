@@ -1,14 +1,12 @@
+import { BaseBuildingBlock } from './BaseBuildingBlock.js';
+import { Pixel } from './Pixel.js';
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
-import { Pixel } from './Pixel.js';
 
-
-class Block {
-  constructor(x = 0, y = 0, width = 0, height = 0, color = 'gray', viewPort) {
-    this.ID = helpers.generateID();
-    this.x = 0;
-    this.y = 0;
-    this.buildingBlocks = {};
+class Block extends BaseBuildingBlock {
+  constructor(x, y, width, height, color, viewPort) {
+    super(x, y, viewPort);
+    this.id = helpers.generateID();
 
     this.fillBlockWithPixels = function (width, height) {
       for (let h = 0; h < height; h++) {
@@ -25,16 +23,8 @@ class Block {
     this.SetPosition(x, y);
   }
 
-  GetX() {
-    return this.x;
-  }
-
-  GetY() {
-    return this.y;
-  }
-
   GetID() {
-    return this.ID;
+    return this.id;
   }
 
   SetPosition(x, y) {
@@ -43,9 +33,9 @@ class Block {
     const yDistance = y - this.y;
 
     // Move each buildingBlock according to distance
-    for (const key in this.buildingBlocks) {
-      if (this.buildingBlocks.hasOwnProperty(key)) {
-        const b = this.buildingBlocks[key];
+    for (const key in this.content) {
+      if (this.content.hasOwnProperty(key)) {
+        const b = this.content[key];
         b.SetX(b.GetX() + xDistance);
         b.SetY(b.GetY() + yDistance);
       }
@@ -65,37 +55,26 @@ class Block {
   }
 
   SetID(id) {
-    this.ID = id;
+    this.id = id;
   }
 
-  SetBuildingBlocks(buildingBlocks) {
-    findClearEdgesInBuildingBlock(buildingBlocks);
-    console.log(buildingBlocks);
-    this.buildingBlocks = buildingBlocks;
+  SetContent(content) {
+    findClearEdgesInBuildingBlock(content);
+    this.content = content;
   }
 
   AddBuildingBlock(buildingBlock) {
-    this.buildingBlocks[buildingBlock.GetID()] = buildingBlock;
-    this.SetBuildingBlocks(this.buildingBlocks);
+    this.content[buildingBlock.GetID()] = buildingBlock;
+    this.SetContent(this.content);
   }
 
   Draw() {
-    for (const key in this.buildingBlocks) {
-      if (this.buildingBlocks.hasOwnProperty(key)) {
-        this.buildingBlocks[key].Draw();
+    for (const key in this.content) {
+      if (this.content.hasOwnProperty(key)) {
+        this.content[key].Draw();
       }
     }
   }
-
-  GetData() {
-    const data = {
-      id: this.id,
-      x: this.x,
-      y: this.y,
-      buildingBlocks: this.buildingBlocks
-    }
-  }
-
 }
 
 function findClearEdgesInBuildingBlock(buildingBlocks) {
