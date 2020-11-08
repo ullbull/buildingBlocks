@@ -6,13 +6,15 @@ import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as remover from './remover.js';
 import * as linkKeeper from './linkKeeper.js';
+import { Block } from './BlockC.js';
 
 function Builder(viewport) {
   this.id = helpers.generateID();
   this.viewport = viewport;
   this.x = 0;
   this.y = 0;
-  const block = blockModule.createBlock(0, 0, 4, 2);
+  // const block = blockModule.createBlock(0, 0, 4, 2);
+  const block = new Block(0,0,3,3,'orange',viewport);
   this.block = block;
   this.hideMe = false;
   this.hoveredBlock = null;
@@ -30,8 +32,8 @@ function Builder(viewport) {
 
       if (!this.hideMe) {
         // Draw block
-        this.viewport.DrawBlock(this.block, { alphaValue });
-
+        // this.viewport.DrawBlock(this.block, { alphaValue });
+        this.block.Draw();
 
       }
       if (this.hoveredBlock) {
@@ -41,11 +43,14 @@ function Builder(viewport) {
 
       this.viewport.DrawBlock(this.block, { color: 'purple', alphaValue });
 
-      // Draw children
-      this.viewport.DrawBlocks(
-        linkKeeper.getChildren(this.id, this.viewport.blockData.blocks),
-        { color: 'purple', alphaValue }
-      );
+      // // Draw children
+      // this.viewport.DrawBlocks(
+      //   linkKeeper.getChildren(this.id, this.viewport.blockData.blocks),
+      //   { color: 'purple', alphaValue }
+      // );
+
+      // Draw this position
+      this.viewport.DrawRectangle(this.x, this.y, 1, 1, 'black');
     }
 
   this.build = function () {
@@ -120,6 +125,7 @@ function Builder(viewport) {
     const worldPosition = this.viewport.CanvasToWorldPosition(event.x, event.y)
     this.x = worldPosition.x;
     this.y = worldPosition.y;
+    this.block.SetPosition(this.x, this.y);
 
     this.hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, this.viewport);
     this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20)

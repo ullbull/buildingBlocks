@@ -4,7 +4,7 @@ import { Pixel } from './Pixel.js';
 
 
 class Block {
-  constructor(x = 0, y = 0, width = 0, height = 0, color = 'gray', viewPort, anchorPoint = { x: 0, y: 0 }) {
+  constructor(x = 0, y = 0, width = 0, height = 0, color = 'gray', viewPort) {
     this.ID = helpers.generateID();
     this.x = 0;
     this.y = 0;
@@ -24,8 +24,6 @@ class Block {
 
     this.SetPosition(x, y);
   }
-
-
 
   GetX() {
     return this.x;
@@ -89,25 +87,15 @@ class Block {
     }
   }
 
+  GetData() {
+    const data = {
+      id: this.id,
+      x: this.x,
+      y: this.y,
+      buildingBlocks: this.buildingBlocks
+    }
+  }
 
-
-  // createBlock(x = 0, y = 0, width = 0, height = 0, color = 'gray', viewPort, anchorPoint = { x: 0, y: 0 }) {
-  //   const buildingBlocks = []
-
-  //   // Fill block with pixels
-  //   for (let h = 0; h < height; h++) {
-  //     for (let w = 0; w < width; w++) {
-  //       buildingBlocks.push(new Pixel(w, h, color, viewPort))
-  //     }
-  //   }
-
-  //   const block = new Block();
-  //   buildingBlocks.forEach(buildingBlock => {
-  //     block.AddBuildingBlock(buildingBlock);
-  //   });
-  //   block.SetPosition(x, y);
-  //   return block;
-  // }
 }
 
 function findClearEdgesInBuildingBlock(buildingBlocks) {

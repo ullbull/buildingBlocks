@@ -41,6 +41,7 @@ const pxl = new Pixel(1,3, 'purple', viewport);
 const pxl2 = new Pixel(2,3, 'red', viewport);
 const pxl3 = new Pixel(1,4, 'purple', viewport);
 
+console.log('log', pxl3.GetData());
 
 const blc = new Block(0,0);
 blc.AddBuildingBlock(pxl);
@@ -49,10 +50,10 @@ blc.AddBuildingBlock(pxl3);
 blc.SetY(1);
 blc.Draw();
 
+
 // const blc2 = Block.createBlock(5,5,2,2,'blue', viewport);
 const blc2 = new Block(4,4,3,3,'blue', viewport);
 blc2.Draw();
-
 
 // const builder = tools.builder;
 // builder.viewport = viewport;
@@ -111,11 +112,11 @@ const appStatus = {
   }
 };
 
-// Reload block data from server
-setInterval(() => viewport.InitBlockData(), 1000);
+// // Reload block data from server
+// setInterval(() => viewport.InitBlockData(), 1000);
 
-// Reload workers from server
-setInterval(async () => workers = await api.getData('/workers'), 100);
+// // Reload workers from server
+// setInterval(async () => workers = await api.getData('/workers'), 100);
 
 function animate() {
   requestAnimationFrame(animate);
@@ -278,4 +279,4 @@ function keyUp(event) {
 //   }
 // }
 
-// animate();
+animate();
