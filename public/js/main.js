@@ -8,6 +8,8 @@ import * as tools from './tools.js';
 import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
 import * as linkKeeper from './linkKeeper.js';
+import { Block } from './BlockC.js';
+import { Pixel } from './Pixel.js';
 
 const canvas = document.querySelector('canvas');
 canvas.width = innerWidth - 1;
@@ -26,6 +28,31 @@ let workers = {};
 let hoveredBlock = {};
 let hoveredBlockOptions = { color: highlightColor };
 let lastGridPosition = mouse.GetGridPosition();
+
+// const blc = new Block(1,2);
+// console.log(blc);
+// console.log(blc.GetX());
+// blc.SetX(7);
+// console.log(blc.GetX());
+// console.log(blc.GetID());
+// blc.Draw();
+
+const pxl = new Pixel(1,3, 'purple', viewport);
+const pxl2 = new Pixel(2,3, 'red', viewport);
+const pxl3 = new Pixel(1,4, 'purple', viewport);
+
+
+const blc = new Block(0,0);
+blc.AddBuildingBlock(pxl);
+blc.AddBuildingBlock(pxl2);
+blc.AddBuildingBlock(pxl3);
+blc.SetY(1);
+blc.Draw();
+
+// const blc2 = Block.createBlock(5,5,2,2,'blue', viewport);
+const blc2 = new Block(4,4,3,3,'blue', viewport);
+blc2.Draw();
+
 
 // const builder = tools.builder;
 // builder.viewport = viewport;
@@ -251,4 +278,4 @@ function keyUp(event) {
 //   }
 // }
 
-animate();
+// animate();

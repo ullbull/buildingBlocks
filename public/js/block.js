@@ -40,7 +40,7 @@ function findClearEdges(pixels) {
 
   for (const key in pixels) {
     if (pixels.hasOwnProperty(key)) {
-      let pixel = pixels[key];
+      const pixel = pixels[key];
       pixel.clearEdges = [];
 
       // Top

@@ -102,6 +102,18 @@ function insideFrame(x, y, width, height, margin = 0) {
   );
 }
 
+// function getFilledRectangle(width, height, content) {
+//   const rectangle = {};
+//   // Fill rectangle with content
+//   for (let h = 0; h < height; h++) {
+//     for (let w = 0; w < width; w++) {
+//       rectangle[content.GetID()] = content;
+//       this.AddBuildingBlock(new Pixel(w, h, color, viewPort));
+//     }
+//   }
+
+// }
+
 export {
   positionToKey,
   colorValues,
