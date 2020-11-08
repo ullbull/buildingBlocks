@@ -3,10 +3,10 @@ import * as blockModule from './block.js';
 import * as api from './api.js';
 
 function addBlockTo(blockData, block) {
-  const blockCopy = helpers.copyObject(block);
+  // const blockCopy = helpers.copyObject(block);
 
   // If this block exist in block data
-  const blockDouble = blockData.blocks[blockCopy.id];
+  const blockDouble = blockData.blocks[block.GetID()];
   if (blockDouble) {
     const gridPointKeys = blockModule.getGridPointKeysFromBlock(blockDouble);
     // Delete blocks grid points from block data
@@ -16,7 +16,7 @@ function addBlockTo(blockData, block) {
   }
 
   // Add the block
-  blockData.blocks[blockCopy.id] = blockCopy;
+  blockData.blocks[block.GetID()] = block;
 
   // Add grid points
   for (const key in block.pixels) {

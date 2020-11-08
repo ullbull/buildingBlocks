@@ -8,6 +8,7 @@ import * as tools from './tools.js';
 import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
 import * as linkKeeper from './linkKeeper.js';
+import * as dataKeeper from './dataKeeper.js';
 import { Block } from './BlockC.js';
 import { Pixel } from './Pixel.js';
 
@@ -48,16 +49,32 @@ blc.AddBuildingBlock(pxl);
 blc.AddBuildingBlock(pxl2);
 blc.AddBuildingBlock(pxl3);
 blc.SetY(1);
-blc.Draw();
+// blc.Draw();
 
 console.log('blc', blc);
 console.log('log', blc.GetData());
 
+let blockData = dataKeeper.blockData;
+console.log(blockData);
 
+add.addBlockTo(dataKeeper.blockData, blc.Copy());
 
 // const blc2 = Block.createBlock(5,5,2,2,'blue', viewport);
-const blc2 = new Block(4,4,3,3,'blue', viewport);
-blc2.Draw();
+const blc2 = new Block(5,2,3,3,'blue', viewport);
+// blc2.SetPosition(2,2);
+dataKeeper.blockData.blocks[blc2.GetID()] = blc2;
+
+add.addBlockTo(dataKeeper.blockData, blc2);
+for (const key in dataKeeper.blockData.blocks) {
+  if (dataKeeper.blockData.blocks.hasOwnProperty(key)) {
+    const block = dataKeeper.blockData.blocks[key];
+    if(block.Draw != null) {
+      block.Draw();
+    } else {
+      console.error(block);
+    }
+  }
+}
 
 // const builder = tools.builder;
 // builder.viewport = viewport;
@@ -122,6 +139,8 @@ const appStatus = {
 // // Reload workers from server
 // setInterval(async () => workers = await api.getData('/workers'), 100);
 
+const test = {'t': blc};
+
 function animate() {
   requestAnimationFrame(animate);
 
@@ -129,7 +148,19 @@ function animate() {
   c.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw blocks
-  viewport.DrawAllBlocks({ hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
+  // viewport.DrawAllBlocks({ hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
+  viewport.DrawBlocks(dataKeeper.blockData.blocks, { hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
+
+  for (const key in dataKeeper.blockData.blocks) {
+    if (dataKeeper.blockData.blocks.hasOwnProperty(key)) {
+      const block = dataKeeper.blockData.blocks[key];
+      if(block.Draw != null) {
+        block.Draw();
+      } else {
+        console.error(block);
+      }
+    }
+  }
 
   // Draw selected blocks
   viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
@@ -283,4 +314,4 @@ function keyUp(event) {
 //   }
 // }
 
-animate();
+// animate();

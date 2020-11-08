@@ -1,3 +1,5 @@
+import * as dataKeeper from './dataKeeper.js';
+
 function positionToKey(x, y) {
   return x + ',' + y;
 }
@@ -64,15 +66,15 @@ function getBlockUnderMouse(mouse) {
   const key = this.positionToKey(mouse.GetXWorldPosition(), mouse.GetYWorldPosition());
 
   // Check if mouse is over any pixel
-  const blockID = mouse.viewport.blockData.gridPoints[key];
+  const blockID = mouse.dataKeeper.blockData.gridPoints[key];
   return blockID;
 }
 
 function getBlockByKey(key, viewport) {
-  const blockID = viewport.blockData.gridPoints[key];
+  const blockID = dataKeeper.blockData.gridPoints[key];
   let block;
   if (typeof blockID != 'undefined') {
-    block = viewport.blockData.blocks[blockID];
+    block = dataKeeper.blockData.blocks[blockID];
   }
   return block;
 }

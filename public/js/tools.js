@@ -6,6 +6,7 @@ import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as remover from './remover.js';
 import * as linkKeeper from './linkKeeper.js';
+import * as dataKeeper from './dataKeeper.js';
 import { Block } from './BlockC.js';
 
 function Builder(viewport) {
@@ -16,6 +17,7 @@ function Builder(viewport) {
   // const block = blockModule.createBlock(0, 0, 4, 2);
   const block = new Block(0, 0, 3, 3, 'orange', viewport);
   this.block = block;
+  console.log('builders block', this.block);
   this.hideMe = false;
   this.hoveredBlock = null;
   this.clickedBlock = null;
@@ -45,7 +47,7 @@ function Builder(viewport) {
 
     // // Draw children
     // this.viewport.DrawBlocks(
-    //   linkKeeper.getChildren(this.id, this.viewport.blockData.blocks),
+    //   linkKeeper.getChildren(this.id, dataKeeper.blockData.blocks),
     //   { color: 'purple', alphaValue }
     // );
 
@@ -54,9 +56,9 @@ function Builder(viewport) {
   }
 
   this.build = function () {
-    console.log(this.viewport.blockData);
     // Add block
-    add.addBlockTo(this.viewport.blockData, this.block);
+    add.addBlockTo(dataKeeper.blockData, this.block.Copy());
+
 
     const block = this.block.GetData();
     console.log('sending this', block);
@@ -68,7 +70,7 @@ function Builder(viewport) {
 
     // Get new blockID
     this.block.id = helpers.generateID();
-    console.log(this.viewport.blockData);
+    console.log(dataKeeper.blockData);
   }
 
   this.changeBlockToClickedBlock = function () {
@@ -120,7 +122,7 @@ function Builder(viewport) {
         this.build();
       } else {
         // Delete block if dropped outside frame
-        remover.deleteBlocksGlobally(this.viewport.blockData, blockHider.resetHiddenBlockIDs());
+        remover.deleteBlocksGlobally(dataKeeper.blockData, blockHider.resetHiddenBlockIDs());
       }
     }
   }

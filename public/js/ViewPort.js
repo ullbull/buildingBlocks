@@ -1,6 +1,7 @@
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import * as api from './api.js';
+import * as dataKeeper from './dataKeeper.js';
 
 export class ViewPort {
   constructor(width, height, pixelSize, c) {
@@ -12,7 +13,7 @@ export class ViewPort {
     this.c = c;
     this.actualWidth = width * pixelSize;
     this.actualHeight = height * pixelSize;
-    this.blockData = { blocks: {}, gridPoints: {} };
+    // this.blockData = { blocks: {}, gridPoints: {} };
     this.pixels = {};
     this.anchorPoint = { x: 0, y: 0 };
     // this.InitBlockData();
@@ -238,9 +239,9 @@ export class ViewPort {
     }
   }
 
-  DrawAllBlocks(options) {
-    this.DrawBlocks(this.blockData.blocks, options);
-  }
+  // DrawAllBlocks(options) {
+  //   this.DrawBlocks(this.blockData.blocks, options);
+  // }
 
   DrawGridPoint(gridPoint, color = 'blue') {
     const position = gridPoint.split(',');
@@ -257,9 +258,9 @@ export class ViewPort {
     }
   }
 
-  DrawAllGridPoints() {
-    this.DrawGridPoints(this.blockData.gridPoints);
-  }
+  // DrawAllGridPoints() {
+  //   this.DrawGridPoints(this.blockData.gridPoints);
+  // }
 
   SetCenterX(x) {
     this.x = x - this.width / 2;
