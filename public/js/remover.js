@@ -1,7 +1,7 @@
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import * as api from './api.js';
-
+import * as dataKeeper from './dataKeeper.js';
 
 function deleteBlockLocally(blockData, blockID) {
   const block = blockData.blocks[blockID];

@@ -1,7 +1,7 @@
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import { ViewPort } from './ViewPort.js';
-import * as add from './addData.js';
+import * as dataKeeper from './dataKeeper.js';
 import Mouse from './Mouse.js';
 import * as api from './api.js';
 import * as tools from './tools.js';
@@ -16,8 +16,8 @@ const c = canvas.getContext('2d');
 
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
-const viewport = new ViewPort(canvas.width, canvas.height, 20, c);
-const mouse = new Mouse(viewport);
+const viewPort = new ViewPort(canvas.width, canvas.height, 20, c);
+const mouse = new Mouse(viewPort);
 const margin = 20;
 const workerID = (Date.now() + Math.random()).toString();
 const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
@@ -36,7 +36,7 @@ let lastGridPosition = mouse.GetGridPosition();
 // const boxSelection = tools.boxSelection;
 // boxSelection.viewport = viewport;
 
-let tool = new tools.BoxSelection(viewport);
+let tool = new tools.BoxSelection(viewPort);
 
 
 const appStatus = {
@@ -85,7 +85,7 @@ const appStatus = {
 };
 
 // Reload block data from server
-setInterval(() => viewport.InitBlockData(), 2000);
+setInterval(() => viewPort.InitBlockData(), 2000);
 
 // Reload workers from server
 setInterval(async () => workers = await api.getData('/workers'), 100);
@@ -97,19 +97,19 @@ function animate() {
   c.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw blocks
-  viewport.DrawAllBlocks({ hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
+  viewPort.DrawAllBlocks({ hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
 
   // Draw selected blocks
-  viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
+  viewPort.DrawBlocks(selector.getBlocks(), { color: highlightColor });
 
   // Draw tool
   tool.draw();
 
-  viewport.DrawGrid();
+  viewPort.DrawGrid();
 
   if (appStatus.debug) {
-    viewport.DrawAllGridPoints();
-    viewport.DrawGridPoints(tool.gridPoints, 'red');
+    viewPort.DrawAllGridPoints();
+    viewPort.DrawGridPoints(tool.gridPoints, 'red');
     console.log('cursor.id', cursor.id);
   }
 }
@@ -148,14 +148,14 @@ function mouseUp(event) {
 
 function mouseWheel(event) {
   let zoomValue = event.deltaY / 100;
-  let newPixelSize = viewport.pixelSize - zoomValue;
-  let oldPixelSize = viewport.pixelSize;
+  let newPixelSize = viewPort.pixelSize - zoomValue;
+  let oldPixelSize = viewPort.pixelSize;
 
-  appStatus.hideGrid = (viewport.pixelSize < 10);
+  appStatus.hideGrid = (viewPort.pixelSize < 10);
 
   if (newPixelSize >= 1) {
     // Zoom in/out
-    viewport.pixelSize = newPixelSize;
+    viewPort.pixelSize = newPixelSize;
 
     // Update mouse position
     mouse.SetPosition(event.x, event.y);
@@ -169,8 +169,8 @@ function mouseWheel(event) {
     };
 
     // Move canvas to zoom in/out at cursor position
-    viewport.SetXAtAnchorPoint(anchorPoint.x, x);
-    viewport.SetYAtAnchorPoint(anchorPoint.y, y);
+    viewPort.SetXAtAnchorPoint(anchorPoint.x, x);
+    viewPort.SetYAtAnchorPoint(anchorPoint.y, y);
   }
 }
 
@@ -189,26 +189,26 @@ function download(content, fileName, contentType) {
 
 function keyDown(event) {
   if (event.key == 'b') {
-    tool = new tools.Builder(viewport);
+    tool = new tools.Builder(viewPort);
   }
   if (event.key == 'm') {
-    tool = new tools.Mover(viewport);
+    tool = new tools.Mover(viewPort);
   }
   if (event.key == 's') {
-    tool = new tools.BoxSelection(viewport);
+    tool = new tools.BoxSelection(viewPort);
   }
 
   if (event.key == 'ArrowUp') {
-    viewport.y--;
+    viewPort.y--;
   }
   if (event.key == 'ArrowDown') {
-    viewport.y++;
+    viewPort.y++;
   }
   if (event.key == 'ArrowLeft') {
-    viewport.x--;
+    viewPort.x--;
   }
   if (event.key == 'ArrowRight') {
-    viewport.x++;
+    viewPort.x++;
   }
 
   if (event.code == 'Space') {

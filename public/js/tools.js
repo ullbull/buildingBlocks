@@ -1,7 +1,7 @@
 import * as helpers from './helpers.js';
 import * as selector from './selector.js';
 import * as blockModule from './block.js';
-import * as add from './addData.js';
+import * as dataKeeper from './dataKeeper.js';
 import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as remover from './remover.js';
@@ -29,13 +29,13 @@ function Builder(viewport) {
 
   this.build = function () {
     // Add block
-    add.addBlockTo(this.viewport.blockData, this.block);
-
+    dataKeeper.addBlock(this.block);
+    
     // Send blocks to server
     api.sendData('/api', this.block);
 
     // Delete hidden blocks
-    remover.deleteBlocksGlobally(this.viewport.blockData, blockHider.resetHiddenBlockIDs());
+    dataKeeper.deleteBlocks(blockHider.resetHiddenBlockIDs());
 
     // Get new blockID
     this.block.id = helpers.generateID();
@@ -81,7 +81,7 @@ function Builder(viewport) {
         this.build();
       } else {
         // Delete block if dropped outside frame
-        remover.deleteBlocksGlobally(this.viewport.blockData, blockHider.resetHiddenBlockIDs());
+        dataKeeper.deleteBlocks(blockHider.resetHiddenBlockIDs());
       }
     }
   }
