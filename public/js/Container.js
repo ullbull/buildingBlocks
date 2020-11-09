@@ -1,15 +1,29 @@
 import * as helpers from './helpers.js';
 
-class BaseBuildingBlock {
-  constructor(x, y, viewPort) {
+class Container {
+  constructor(x, y) {
     this.id;
     this.x = x;
     this.y = y;
     this.content = {};
-    this.viewPort = viewPort;
+    this.anchorPointX = 0;
+    this.anchorPointY = 0;
   }
+
+  Draw() {
+    for (const key in this.content) {
+      if (this.content.hasOwnProperty(key)) {
+        this.content[key].Draw();
+      }
+    }
+  }
+
   GetID() {
     return this.id;
+  }
+
+  SetID(id) {
+    this.id = id;
   }
 
   GetX() {
@@ -26,6 +40,34 @@ class BaseBuildingBlock {
 
   SetY(y) {
     this.y = y;
+  }
+
+  GetAnchorPointX() {
+    return this.anchorPointX;
+  }
+
+  GetAnchorPointY() {
+    return this.anchorPointY;
+  }
+
+  GetAnchorPoint() {
+    return {
+      x: this.GetAnchorPointX(),
+      y: this.GetAnchorPointY()
+    }
+  }
+
+  SetAnchorPointX(x) {
+    this.anchorPointX = x;
+  }
+
+  SetAnchorPointY(y) {
+    this.anchorPointY = y;
+  }
+
+  SetAnchorPoint(x, y) {
+    this.SetAnchorPointX(x);
+    this.SetAnchorPointY(y);
   }
 
   GetContentData() {
@@ -52,10 +94,10 @@ class BaseBuildingBlock {
       y: this.GetY(),
       content: this.GetContentData()
     }
-  } 
+  }
 }
 
-export {BaseBuildingBlock};
+export { Container };
 
   // data = {
   //   id: 43234,

@@ -1,4 +1,4 @@
-import { BaseBuildingBlock } from './BaseBuildingBlock.js';
+import { Container } from './Container.js';
 import * as helpers from './helpers.js';
 
 // class Pixel {
@@ -75,21 +75,35 @@ import * as helpers from './helpers.js';
 //   }
 // }
 
-class Pixel extends BaseBuildingBlock {
+class Pixel extends Container {
   constructor(x, y, color, viewPort) {
-    super(x, y, viewPort);
-
+    super(x, y);
+    this.viewPort = viewPort;
     this.content = color;
-    this.color = color;     // to be able to use "this" in DrawPixel(), need to change this later
   }
 
   GetID() {
     return helpers.positionToKey(this.x, this.y);
   }
 
-  Draw() {
-    this.viewPort.DrawPixel(this);
-    this.viewPort.StrokePixel(this, 0.2, 'rgba(50,50,70,1)');
+  SetID() {
+    console.error('Not allowed');
+  }
+
+  Draw(offsetX = 0, offsetY = 0) {
+    const pixel = {
+      x: this.x + offsetX,
+      y: this.y + offsetY,
+      color: this.content,
+      clearEdges: this.clearEdges
+    };
+
+    this.viewPort.DrawPixel(pixel);
+    this.viewPort.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)');
+  }
+
+  GetData() {
+    return this.content;
   }
 }
 

@@ -7,15 +7,14 @@ import * as blockHider from './blockHider.js';
 import * as remover from './remover.js';
 import * as linkKeeper from './linkKeeper.js';
 import * as dataKeeper from './dataKeeper.js';
-import { Block } from './BlockC.js';
+import { Block, createBlock } from './BlockC.js';
 
 function Builder(viewport) {
   this.id = helpers.generateID();
   this.viewport = viewport;
   this.x = 0;
   this.y = 0;
-  // const block = blockModule.createBlock(0, 0, 4, 2);
-  const block = new Block(0, 0, 3, 3, 'orange', viewport);
+  const block = createBlock(0, 0, 3, 3, 'orange', viewport);
   this.block = block;
   console.log('builders block', this.block);
   this.hideMe = false;
@@ -57,13 +56,11 @@ function Builder(viewport) {
 
   this.build = function () {
     // Add block
-    add.addBlockTo(dataKeeper.blockData, this.block.Copy());
+    add.addBlockTo(dataKeeper.blockData, this.block);
 
-
-    const block = this.block.GetData();
-    console.log('sending this', block);
-    // Send blocks to server
-    api.sendData('/api', block);
+    // console.log('sending this', block);
+    // // Send blocks to server
+    // api.sendData('/api', block);
 
     // Un hide hidden blocks
     blockHider.resetHiddenBlockIDs();

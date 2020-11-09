@@ -4,6 +4,13 @@ function positionToKey(x, y) {
   return x + ',' + y;
 }
 
+function keyToPosition(key) {
+  const arr = key.split(',');
+  const x = parseInt(arr[0]);
+  const y = parseInt(arr[1]);
+  return { x, y };
+}
+
 // return array of [r,g,b,a] from any valid color. if failed returns undefined
 function colorValues(color) {
   if (!color)
@@ -118,6 +125,7 @@ function insideFrame(x, y, width, height, margin = 0) {
 
 export {
   positionToKey,
+  keyToPosition,
   colorValues,
   getAlphaColor,
   generateID,

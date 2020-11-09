@@ -9,7 +9,7 @@ import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
 import * as linkKeeper from './linkKeeper.js';
 import * as dataKeeper from './dataKeeper.js';
-import { Block } from './BlockC.js';
+import { Block, createBlock } from './BlockC.js';
 import { Pixel } from './Pixel.js';
 
 const canvas = document.querySelector('canvas');
@@ -38,38 +38,65 @@ let lastGridPosition = mouse.GetGridPosition();
 // console.log(blc.GetID());
 // blc.Draw();
 
-const pxl = new Pixel(1,3, 'purple', viewport);
-const pxl2 = new Pixel(2,3, 'red', viewport);
-const pxl3 = new Pixel(1,4, 'purple', viewport);
+
+let blockData = dataKeeper.blockData;
+const pxl = new Pixel(1, 3, 'purple', viewport);
+const pxl2 = new Pixel(2, 3, 'red', viewport);
+const pxl3 = new Pixel(5, 4, 'purple', viewport);
+
+const content = {}
+content[pxl.GetID()] = pxl;
+content[pxl2.GetID()] = pxl2;
+content[pxl3.GetID()] = pxl3;
 
 console.log('log', pxl3.GetData());
 
-const blc = new Block(0,0);
-blc.AddBuildingBlock(pxl);
-blc.AddBuildingBlock(pxl2);
-blc.AddBuildingBlock(pxl3);
-blc.SetY(1);
-// blc.Draw();
+console.log('from blockModule:',blockModule.createBlock(1, 1, 2, 3, 'green'));
 
-console.log('blc', blc);
-console.log('log', blc.GetData());
+const bluePrint = {
+  id: '1234',
+  x: 3,
+  y: 0,
+  anchorPoint: { x: 0, y: 0 },
+  pixels: {
+    '0,0': 'blue',
+    '1,0': 'green',
+    '2,0': 'yellow',
+    '2,1': 'blue'
+  }
+}
+const blc = new Block(bluePrint, viewport);
+blc.SetPosition(3,3);
+console.log('bluePrint: ', bluePrint);
+console.log('bluePrint from block: ', blc.GetBluePrint());
+// add.addBlockTo(dataKeeper.blockData, blc);
 
-let blockData = dataKeeper.blockData;
-console.log(blockData);
+const blc3 = createBlock(7,7, 2,2, 'yellow', viewport);
+// blockData.blocks[blc3.GetID()] = blc3;
+add.addBlockTo(blockData, blc3);
+// blockData.blocks[blc3.GetID()].Draw()
 
-// add.addBlockTo(dataKeeper.blockData, blc.Copy());
+// console.log('blc3', blc3);
+// console.log('blockData', blockData);
+// console.log('blc3.GetID',blc3.GetID());
+// console.log('block in data', blockData.blocks[blc3.GetID()]);
+// const a = blockData.blocks[blc3.GetID()];
+// a.SetPosition(0,0)
 
-// const blc2 = Block.createBlock(5,5,2,2,'blue', viewport);
-const blc2 = new Block(5,2,3,3,'white', viewport);
-const buildingBlocks = [pxl, pxl2, pxl3];
-blc2.ReMake(buildingBlocks);
-add.addBlockTo(dataKeeper.blockData, blc2);
-blc.SetPosition(2,2);
+// blc3.Draw();
+// dataKeeper.blockData.blocks[blc3.GetID()].Draw();
+// const blc2 = new Block(5,2,3,3,'white', viewport);
+// add.addBlockTo(dataKeeper.blockData, blc2);
 
+// const buildingBlocks = [pxl, pxl2, pxl3];
+// blc2.ReMake(buildingBlocks);
+// blc.SetPosition(2,2);
+
+console.log('blockData', dataKeeper.blockData);
 for (const key in dataKeeper.blockData.blocks) {
   if (dataKeeper.blockData.blocks.hasOwnProperty(key)) {
     const block = dataKeeper.blockData.blocks[key];
-    if(block.Draw != null) {
+    if (block.Draw != null) {
       block.Draw();
     } else {
       console.error(block);
@@ -140,7 +167,7 @@ const appStatus = {
 // // Reload workers from server
 // setInterval(async () => workers = await api.getData('/workers'), 100);
 
-const test = {'t': blc};
+const test = { 't': blc };
 
 function animate() {
   requestAnimationFrame(animate);
@@ -155,7 +182,7 @@ function animate() {
   for (const key in dataKeeper.blockData.blocks) {
     if (dataKeeper.blockData.blocks.hasOwnProperty(key)) {
       const block = dataKeeper.blockData.blocks[key];
-      if(block.Draw != null) {
+      if (block.Draw != null) {
         block.Draw();
       } else {
         console.error(block);
@@ -315,4 +342,4 @@ function keyUp(event) {
 //   }
 // }
 
-// animate();
+animate();
