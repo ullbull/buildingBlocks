@@ -3,7 +3,7 @@ import { Pixel } from './Pixel.js';
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 
-class Block extends BaseBuildingBlock {
+class Container extends BaseBuildingBlock {
   constructor(x, y, width, height, color, viewPort) {
     super(x, y, viewPort);
     this.id = helpers.generateID();
@@ -79,6 +79,15 @@ class Block extends BaseBuildingBlock {
     this.SetContent(this.content);
   }
 
+  ReMake(buildingBlock) {
+    // Reset content
+    this.content = {};
+
+    buildingBlock.forEach(buildingBlock => {
+      this.AddBuildingBlock(buildingBlock);
+    });
+  }
+
   Draw() {
     for (const key in this.content) {
       if (this.content.hasOwnProperty(key)) {
@@ -138,6 +147,11 @@ function findClearEdgesInBuildingBlock(buildingBlocks) {
     }
   }
 }
+
+class Block extends Container {
+}
+
+
 
 export {
   Block

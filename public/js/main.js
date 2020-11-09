@@ -57,14 +57,15 @@ console.log('log', blc.GetData());
 let blockData = dataKeeper.blockData;
 console.log(blockData);
 
-add.addBlockTo(dataKeeper.blockData, blc.Copy());
+// add.addBlockTo(dataKeeper.blockData, blc.Copy());
 
 // const blc2 = Block.createBlock(5,5,2,2,'blue', viewport);
-const blc2 = new Block(5,2,3,3,'blue', viewport);
-// blc2.SetPosition(2,2);
-dataKeeper.blockData.blocks[blc2.GetID()] = blc2;
-
+const blc2 = new Block(5,2,3,3,'white', viewport);
+const buildingBlocks = [pxl, pxl2, pxl3];
+blc2.ReMake(buildingBlocks);
 add.addBlockTo(dataKeeper.blockData, blc2);
+blc.SetPosition(2,2);
+
 for (const key in dataKeeper.blockData.blocks) {
   if (dataKeeper.blockData.blocks.hasOwnProperty(key)) {
     const block = dataKeeper.blockData.blocks[key];
