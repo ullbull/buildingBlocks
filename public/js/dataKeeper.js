@@ -117,6 +117,16 @@ function deleteBlocks(blockIDs) {
   }
 }
 
+function deleteBlockGlobally(blockID) {
+  deleteBlock(blockID);
+  api.deleteBlocksFromServer({ blockID });
+}
+
+function deleteBlocksGlobally(blockIDs) {
+  deleteBlocks(blockIDs);
+  api.deleteBlocksFromServer(blockIDs);
+}
+
 function deleteGridPoint(x, y) {
   const key = helpers.positionToKey(x, y);
   delete blockData.gridPoints[key];
@@ -131,5 +141,7 @@ export {
   addGridPoint,
   deleteBlock,
   deleteBlocks,
+  deleteBlockGlobally,
+  deleteBlocksGlobally,
   deleteGridPoint
 };

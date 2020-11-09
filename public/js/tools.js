@@ -4,7 +4,6 @@ import * as blockModule from './block.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as api from './api.js';
 import * as blockHider from './blockHider.js';
-import * as remover from './remover.js';
 
 function Builder(viewport) {
   this.viewport = viewport;
@@ -35,7 +34,7 @@ function Builder(viewport) {
     api.sendData('/api', this.block);
 
     // Delete hidden blocks
-    dataKeeper.deleteBlocks(blockHider.resetHiddenBlockIDs());
+    dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
 
     // Get new blockID
     this.block.id = helpers.generateID();
@@ -81,7 +80,7 @@ function Builder(viewport) {
         this.build();
       } else {
         // Delete block if dropped outside frame
-        dataKeeper.deleteBlocks(blockHider.resetHiddenBlockIDs());
+        dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
       }
     }
   }
