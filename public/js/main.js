@@ -2,7 +2,6 @@ import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import { ViewPort } from './ViewPort.js';
 import * as dataKeeper from './dataKeeper.js';
-import Mouse from './Mouse.js';
 import * as api from './api.js';
 import * as tools from './tools.js';
 import * as selector from './selector.js';
@@ -17,25 +16,11 @@ const c = canvas.getContext('2d');
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
 const viewPort = new ViewPort(canvas.width, canvas.height, 20, c);
-const mouse = new Mouse(viewPort);
 const margin = 20;
 const workerID = (Date.now() + Math.random()).toString();
 const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
 let cursor = startBlock;
 let workers = {};
-let hoveredBlock = {};
-let hoveredBlockOptions = { color: highlightColor };
-let lastGridPosition = mouse.GetGridPosition();
-
-// const builder = tools.builder;
-// builder.viewport = viewport;
-
-// const mover = tools.mover;
-// mover.viewport = viewport;
-
-// const boxSelection = tools.boxSelection;
-// boxSelection.viewport = viewport;
-
 let tool = new tools.Builder(viewPort);
 
 
@@ -157,12 +142,10 @@ function mouseWheel(event) {
     // Zoom in/out
     viewPort.pixelSize = newPixelSize;
 
-    // Update mouse position
-    mouse.SetPosition(event.x, event.y);
-
-    let x = mouse.GetXGrid();
-    let y = mouse.GetYGrid();
-
+    // Get mouse grid position
+    let x = viewPort.ValueToGridValue(event.x);
+    let y = viewPort.ValueToGridValue(event.y);
+    
     const anchorPoint = {
       x: (x / oldPixelSize) * newPixelSize,
       y: (y / oldPixelSize) * newPixelSize

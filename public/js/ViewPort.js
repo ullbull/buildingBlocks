@@ -15,7 +15,6 @@ export class ViewPort {
     this.actualHeight = height * pixelSize;
     this.pixels = {};
     this.anchorPoint = { x: 0, y: 0 };
-    // this.InitBlockData();
   }
 
   WorldXToViewport(x) {
