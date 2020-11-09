@@ -13,15 +13,9 @@ export class ViewPort {
     this.c = c;
     this.actualWidth = width * pixelSize;
     this.actualHeight = height * pixelSize;
-    // dataKeeper.blockData = { blocks: {}, gridPoints: {} };
     this.pixels = {};
     this.anchorPoint = { x: 0, y: 0 };
-    this.InitBlockData();
-  }
-
-  async InitBlockData() {
-    const blockData = await api.getData('/api');
-    dataKeeper.setBlockData(blockData);
+    // this.InitBlockData();
   }
 
   WorldXToViewport(x) {

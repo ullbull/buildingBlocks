@@ -36,7 +36,7 @@ let lastGridPosition = mouse.GetGridPosition();
 // const boxSelection = tools.boxSelection;
 // boxSelection.viewport = viewport;
 
-let tool = new tools.BoxSelection(viewPort);
+let tool = new tools.Builder(viewPort);
 
 
 const appStatus = {
@@ -85,7 +85,7 @@ const appStatus = {
 };
 
 // Reload block data from server
-setInterval(() => viewPort.InitBlockData(), 2000);
+setInterval(() => dataKeeper.initBlockData(), 2000);
 
 // Reload workers from server
 setInterval(async () => workers = await api.getData('/workers'), 100);
