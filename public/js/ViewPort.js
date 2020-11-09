@@ -11,44 +11,11 @@ export class ViewPort {
     this.height = height;
     this.pixelSize = pixelSize;
     this.context = context;
-    this.actualWidth = width * pixelSize;
-    this.actualHeight = height * pixelSize;
+    // this.actualWidth = width * pixelSize;
+    // this.actualHeight = height * pixelSize;
     this.pixels = {};
     this.anchorPoint = { x: 0, y: 0 };
   }
-
-  // WorldXToViewport(x) {
-  //   x -= this.x;
-  //   x = position.toValueViewport(x);
-  //   return x;
-  // }
-
-  // WorldYToViewport(y) {
-  //   y -= this.y;
-  //   y = position.toValueViewport(y);
-  //   return y;
-  // }
-
-  // toValueViewport(value) {
-  //   return value * this.pixelSize;
-  // }
-
-  // // Actual position to grid position
-  // ValueToGridValue(value) {
-  //   return Math.floor(value / this.pixelSize);
-  // }
-
-  // CanvasXToWorld(x) {
-  //   return Math.floor((x / this.pixelSize) + this.x);
-  // }
-
-  // CanvasYToWorld(y) {
-  //   return Math.floor((y / this.pixelSize) + this.y);
-  // }
-
-  // CanvasToWorldPosition(x, y) {
-  //   return { 'x': this.CanvasXToWorld(x), 'y': this.CanvasYToWorld(y) };
-  // }
 
   DrawGrid() {
     // Don't draw grid if pixelSize is too small
