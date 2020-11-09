@@ -1,62 +1,62 @@
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
-import * as api from './api.js';
 import * as dataKeeper from './dataKeeper.js';
+import * as position from './positionTranslator.js';
 
 export class ViewPort {
-  constructor(width, height, pixelSize, c) {
+  constructor(width, height, pixelSize, context) {
     this.x = 0;
     this.y = 0;
     this.width = width;
     this.height = height;
     this.pixelSize = pixelSize;
-    this.c = c;
+    this.context = context;
     this.actualWidth = width * pixelSize;
     this.actualHeight = height * pixelSize;
     this.pixels = {};
     this.anchorPoint = { x: 0, y: 0 };
   }
 
-  WorldXToViewport(x) {
-    x -= this.x;
-    x = this.ToValueViewport(x);
-    return x;
-  }
+  // WorldXToViewport(x) {
+  //   x -= this.x;
+  //   x = position.toValueViewport(x);
+  //   return x;
+  // }
 
-  WorldYToViewport(y) {
-    y -= this.y;
-    y = this.ToValueViewport(y);
-    return y;
-  }
+  // WorldYToViewport(y) {
+  //   y -= this.y;
+  //   y = position.toValueViewport(y);
+  //   return y;
+  // }
 
-  ToValueViewport(value) {
-    return value * this.pixelSize;
-  }
+  // toValueViewport(value) {
+  //   return value * this.pixelSize;
+  // }
 
-  // Actual position to grid position
-  ValueToGridValue(value) {
-    return Math.floor(value / this.pixelSize);
-  }
+  // // Actual position to grid position
+  // ValueToGridValue(value) {
+  //   return Math.floor(value / this.pixelSize);
+  // }
 
-  CanvasXToWorld(x) {
-    return Math.floor((x / this.pixelSize) + this.x);
-  }
+  // CanvasXToWorld(x) {
+  //   return Math.floor((x / this.pixelSize) + this.x);
+  // }
 
-  CanvasYToWorld(y) {
-    return Math.floor((y / this.pixelSize) + this.y);
-  }
+  // CanvasYToWorld(y) {
+  //   return Math.floor((y / this.pixelSize) + this.y);
+  // }
 
-  CanvasToWorldPosition(x, y) {
-    return { 'x': this.CanvasXToWorld(x), 'y': this.CanvasYToWorld(y) };
-  }
+  // CanvasToWorldPosition(x, y) {
+  //   return { 'x': this.CanvasXToWorld(x), 'y': this.CanvasYToWorld(y) };
+  // }
 
   DrawGrid() {
     // Don't draw grid if pixelSize is too small
     if (this.pixelSize < 5) return;
 
-    this.c.lineWidth = 1;
-    this.c.strokeStyle = 'rgba(0,0,0,' + (this.pixelSize / 150) + ')';
-    this.c.beginPath();
+    this.context.lineWidth = 1;
+    this.context.strokeStyle = 'rgba(0,0,0,' + (this.pixelSize / 150) + ')';
+    this.context.beginPath();
     let x;
     let y;
 
@@ -64,34 +64,32 @@ export class ViewPort {
     for (let row = 0; row < this.height; row += this.pixelSize) {
       x = 0;
       y = -((this.y * this.pixelSize) % this.pixelSize) + row;
-      this.c.moveTo(x, y);
+      this.context.moveTo(x, y);
 
       x = this.width;
-      this.c.lineTo(x, y);
+      this.context.lineTo(x, y);
     }
 
     // Draw columns
     for (let column = 0; column < this.width; column += this.pixelSize) {
       x = -((this.x * this.pixelSize) % this.pixelSize) + column;
       y = 0;
-      this.c.moveTo(x, y);
+      this.context.moveTo(x, y);
 
       y = this.height;
-      this.c.lineTo(x, y);
+      this.context.lineTo(x, y);
     }
-    this.c.stroke();
+    this.context.stroke();
   }
 
   DrawRectangle(x, y, width, height, color) {
-    this.c.fillStyle = color;
-    x = this.WorldXToViewport(x);
-    y = this.WorldYToViewport(y);
-    // x = this.ToValueViewport(x);
-    // y = this.ToValueViewport(y);
-    width = this.ToValueViewport(width);
-    height = this.ToValueViewport(height);
+    this.context.fillStyle = color;
+    x = position.worldXToViewport(x, this);
+    y = position.worldYToViewport(y, this);
+    width = position.toValueViewport(width, this);
+    height = position.toValueViewport(height, this);
 
-    this.c.fillRect(x, y, width, height);
+    this.context.fillRect(x, y, width, height);
   }
 
   DrawPixel(pixel, options = {}) {
@@ -105,23 +103,23 @@ export class ViewPort {
   }
 
   DrawText(text, x, y, size = 18, color = 'black', font = 'Arial') {
-    this.c.font = '' + size + 'px ' + font;
-    this.c.fillStyle = color;
-    x = this.WorldXToViewport(x);
-    y = this.WorldYToViewport(y);
-    this.c.fillText(text, x, y);
+    this.context.font = '' + size + 'px ' + font;
+    this.context.fillStyle = color;
+    x = position.worldXToViewport(x, this);
+    y = position.worldYToViewport(y, this);
+    this.context.fillText(text, x, y);
   }
 
   StrokePixel(pixel, lineWidth, color) {
-    let x = this.WorldXToViewport(pixel.x);
-    let y = this.WorldYToViewport(pixel.y);
+    let x = position.worldXToViewport(pixel.x, this);
+    let y = position.worldYToViewport(pixel.y, this);
     let pixelSize = 1;
-    pixelSize = this.ToValueViewport(pixelSize);
+    pixelSize = position.toValueViewport(pixelSize, this);
 
     // let edges = ['right'];
-    this.c.lineWidth = this.ToValueViewport(lineWidth);
-    this.c.strokeStyle = color;
-    this.c.beginPath();
+    this.context.lineWidth = position.toValueViewport(lineWidth, this);
+    this.context.strokeStyle = color;
+    this.context.beginPath();
 
     pixel.clearEdges.forEach(edge => {
       let xStart;
@@ -136,8 +134,8 @@ export class ViewPort {
           xEnd = xStart + pixelSize;
           yEnd = yStart;
 
-          this.c.moveTo(xStart, yStart);
-          this.c.lineTo(xEnd, yEnd);
+          this.context.moveTo(xStart, yStart);
+          this.context.lineTo(xEnd, yEnd);
           break;
         case 'bottom':
           xStart = x;
@@ -145,8 +143,8 @@ export class ViewPort {
           xEnd = xStart + pixelSize;
           yEnd = yStart;
 
-          this.c.moveTo(xStart, yStart);
-          this.c.lineTo(xEnd, yEnd);
+          this.context.moveTo(xStart, yStart);
+          this.context.lineTo(xEnd, yEnd);
           break;
         case 'left':
           xStart = x;
@@ -154,8 +152,8 @@ export class ViewPort {
           xEnd = xStart;
           yEnd = yStart + pixelSize;
 
-          this.c.moveTo(xStart, yStart);
-          this.c.lineTo(xEnd, yEnd);
+          this.context.moveTo(xStart, yStart);
+          this.context.lineTo(xEnd, yEnd);
           break;
         case 'right':
           xStart = x + pixelSize;
@@ -163,8 +161,8 @@ export class ViewPort {
           xEnd = xStart;
           yEnd = yStart + pixelSize;
 
-          this.c.moveTo(xStart, yStart);
-          this.c.lineTo(xEnd, yEnd);
+          this.context.moveTo(xStart, yStart);
+          this.context.lineTo(xEnd, yEnd);
           break;
         default:
           console.log('Invalid value for edge: ', edge);
@@ -174,7 +172,7 @@ export class ViewPort {
     });
 
     // Stroke edges
-    this.c.stroke();
+    this.context.stroke();
   }
 
   DrawBlock(block, options = {}) {

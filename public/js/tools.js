@@ -4,9 +4,10 @@ import * as blockModule from './block.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as api from './api.js';
 import * as blockHider from './blockHider.js';
+import * as position from './positionTranslator.js';
 
-function Builder(viewport) {
-  this.viewport = viewport;
+function Builder(viewPort) {
+  this.viewPort = viewPort;
   this.block = blockModule.createBlock(0, 0, 4, 2);
   this.hideMe = false;
   this.hoveredBlock = null;
@@ -20,9 +21,9 @@ function Builder(viewport) {
     ) ? 1 : 0.5;
 
     if (!this.hideMe) {
-      this.viewport.DrawBlock(this.block, { alphaValue });
+      this.viewPort.DrawBlock(this.block, { alphaValue });
     } else {
-      this.viewport.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
+      this.viewPort.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
     }
   }
 
@@ -86,7 +87,7 @@ function Builder(viewport) {
   }
 
   this.mouseMove = function (event) {
-    const worldPosition = this.viewport.CanvasToWorldPosition(event.x, event.y)
+    const worldPosition = position.canvasToWorldPosition(event.x, event.y, this.viewPort)
     blockModule.setBlockPosition(this.block, worldPosition);
 
     this.hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, this.viewport);

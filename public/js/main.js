@@ -6,16 +6,17 @@ import * as api from './api.js';
 import * as tools from './tools.js';
 import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
+import * as position from './positionTranslator.js';
 
 
 const canvas = document.querySelector('canvas');
 canvas.width = innerWidth - 1;
 canvas.height = innerHeight - 40;
-const c = canvas.getContext('2d');
+const context = canvas.getContext('2d');
 
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
-const viewPort = new ViewPort(canvas.width, canvas.height, 20, c);
+const viewPort = new ViewPort(canvas.width, canvas.height, 20, context);
 const margin = 20;
 const workerID = (Date.now() + Math.random()).toString();
 const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
@@ -79,7 +80,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   // Clear frame
-  c.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw blocks
   viewPort.DrawAllBlocks({ hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
@@ -143,8 +144,8 @@ function mouseWheel(event) {
     viewPort.pixelSize = newPixelSize;
 
     // Get mouse grid position
-    let x = viewPort.ValueToGridValue(event.x);
-    let y = viewPort.ValueToGridValue(event.y);
+    let x = position.valueToGridValue(event.x, viewPort);
+    let y = position.valueToGridValue(event.y, viewPort);
     
     const anchorPoint = {
       x: (x / oldPixelSize) * newPixelSize,
