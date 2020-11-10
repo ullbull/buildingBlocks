@@ -1,8 +1,7 @@
 'use strict';
 const express = require('express');
 const fileStream = require('fs');
-const add = require('./addData_njs.js');
-const remover = require('./remover_njs.js');
+const dataKeeper = require('./dataKeeper_njs.js');
 const blockModule = require('./block_njs.js');
 const cleanup = require("./cleanup.js");
 
@@ -18,6 +17,8 @@ const filePath = path + fileName + fileExtension;
 
 const rawData = fileStream.readFileSync(filePath);
 const blockData = JSON.parse(rawData);   // { "blocks": {}, "gridPoints": {} }
+dataKeeper.setBlockData(JSON.parse(rawData));
+console.log(dataKeeper.getBlockData());
 const workers = {};
 exports.workers = workers;
 
@@ -28,8 +29,8 @@ app.use(express.json({ limit: '1mb' }));
 setInterval(() => deleteOldWorkers(), 1000);
 
 // Cleanup if block data is corrupt
-cleanup.deleteBadGridpoints(blockData);
-cleanup.deleteBadBlocks(blockData);
+cleanup.deleteBadGridpoints(dataKeeper.getBlockData());
+cleanup.deleteBadBlocks(dataKeeper.getBlockData());
 
 
 
@@ -51,7 +52,7 @@ cleanup.deleteBadBlocks(blockData);
 
 
 app.get('/api', (request, response) => {
-  response.json(blockData);
+  response.json(dataKeeper.getBlockData());
 });
 
 app.post('/api', (request, response) => {
@@ -59,7 +60,7 @@ app.post('/api', (request, response) => {
   // Get the data from client
   const data = request.body;
 
-  add.addBlockTo(blockData, data);
+  dataKeeper.addBlock(data);
 
   // saveFile();
 
@@ -71,7 +72,7 @@ app.delete('/api', (request, response) => {
   // Get the data from client
   const blockIDs = request.body;
 
-  remover.deleteBlocksLocally(blockData, blockIDs)
+  dataKeeper.deleteBlocks(blockIDs)
 
   saveFile();
 
@@ -108,7 +109,7 @@ async function deleteOldWorkers() {
 }
 
 function saveFile() {
-  let dataString = JSON.stringify(blockData);
+  let dataString = JSON.stringify(dataKeeper.getBlockData());
   // let dataString = JSON.stringify(blockData, null, 2);
 
   // Copy file

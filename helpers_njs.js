@@ -1,3 +1,5 @@
+const dataKeeper = require('./dataKeeper_njs.js');
+
 function positionToKey(x, y) {
   return x + ',' + y;
 }
@@ -64,15 +66,15 @@ function getBlockUnderMouse(mouse) {
   const key = this.positionToKey(mouse.GetXWorldPosition(), mouse.GetYWorldPosition());
 
   // Check if mouse is over any pixel
-  const blockID = mouse.viewport.blockData.gridPoints[key];
+  const blockID = mouse.dataKeeper.blockData.gridPoints[key];
   return blockID;
 }
 
 function getBlockByKey(key, viewport) {
-  const blockID = viewport.blockData.gridPoints[key];
+  const blockID = dataKeeper.blockData.gridPoints[key];
   let block;
-  if(typeof blockID != 'undefined') {
-    block = viewport.blockData.blocks[blockID];
+  if (typeof blockID != 'undefined') {
+    block = dataKeeper.blockData.blocks[blockID];
   }
   return block;
 }
@@ -95,6 +97,13 @@ function getGridPosition(x, y, pixelSize) {
   return { x: this.GetXWorldPosition(x, pixelSize), y: this.getYGrid(y, pixelSize) };
 }
 
+function insideFrame(x, y, width, height, margin = 0) {
+  return (
+    x <= width - margin && y <= height - margin &&
+    x >= margin && y >= margin
+  );
+}
+
 module.exports = {
   positionToKey,
   colorValues,
@@ -106,5 +115,6 @@ module.exports = {
   getBlockByPosition,
   getXGrid,
   getYGrid,
-  getGridPosition
+  getGridPosition,
+  insideFrame
 };

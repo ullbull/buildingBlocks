@@ -22,7 +22,8 @@ const workerID = (Date.now() + Math.random()).toString();
 const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
 let cursor = startBlock;
 let workers = {};
-let tool = new tools.Builder(viewPort);
+console.log(viewPort);
+let tool = new tools.BoxSelection(viewPort);
 
 
 const appStatus = {
@@ -71,6 +72,7 @@ const appStatus = {
 };
 
 // Reload block data from server
+dataKeeper.initBlockData();
 setInterval(() => dataKeeper.initBlockData(), 2000);
 
 // Reload workers from server

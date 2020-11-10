@@ -198,7 +198,7 @@ export class ViewPort {
   }
 
   DrawAllBlocks(options) {
-    this.DrawBlocks(dataKeeper.blockData.blocks, options);
+    this.DrawBlocks(dataKeeper.getBlockData().blocks, options);
   }
 
   DrawGridPoint(gridPoint, color = 'blue') {

@@ -66,15 +66,15 @@ function getBlockUnderMouse(mouse) {
   const key = this.positionToKey(mouse.GetXWorldPosition(), mouse.GetYWorldPosition());
 
   // Check if mouse is over any pixel
-  const blockID = mouse.dataKeeper.blockData.gridPoints[key];
+  const blockID = mouse.dataKeeper.getBlockData().gridPoints[key];
   return blockID;
 }
 
 function getBlockByKey(key, viewport) {
-  const blockID = dataKeeper.blockData.gridPoints[key];
+  const blockID = dataKeeper.getBlockData().gridPoints[key];
   let block;
   if (typeof blockID != 'undefined') {
-    block = dataKeeper.blockData.blocks[blockID];
+    block = dataKeeper.getBlockData().blocks[blockID];
   }
   return block;
 }
