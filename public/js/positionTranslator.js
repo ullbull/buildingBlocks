@@ -36,10 +36,6 @@ function canvasYToWorld(y, viewPort) {
 }
 
 function canvasToWorldPosition(x, y, viewPort) {
-  if (!viewPort) {
-    console.error('viewPort is undefined');
-    return;
-  }
   return {
     'x': canvasXToWorld(x, viewPort),
     'y': canvasYToWorld(y, viewPort)

@@ -137,8 +137,8 @@ function Mover(viewport) {
   }
 }
 
-function BoxSelection(viewport) {
-  this.viewPort = viewport;
+function BoxSelection(viewPort) {
+  this.viewPort = viewPort;
   this.x = 0;
   this.y = 0;
   this.width = 0;
@@ -225,6 +225,7 @@ function BoxSelection(viewport) {
   this.mouseDown = function (event) {
     this.setWidth(0);
     this.setHeight(0);
+    this.wp = position.canvasToWorldPosition(event.x, event.y, this.viewPort);
     this.x = this.wp.x;
     this.y = this.wp.y;
 

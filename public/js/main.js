@@ -3,7 +3,7 @@ import * as blockModule from './block.js';
 import { ViewPort } from './ViewPort.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as api from './api.js';
-import * as tools from './tools.js';
+import { ToolManager } from './toolManager.js';
 import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
@@ -22,8 +22,7 @@ const workerID = (Date.now() + Math.random()).toString();
 const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
 let cursor = startBlock;
 let workers = {};
-console.log(viewPort);
-let tool = new tools.BoxSelection(viewPort);
+let toolManager = new ToolManager(viewPort);
 
 
 const appStatus = {
@@ -91,13 +90,13 @@ function animate() {
   viewPort.DrawBlocks(selector.getBlocks(), { color: highlightColor });
 
   // Draw tool
-  tool.draw();
+  toolManager.drawTool();
 
   viewPort.DrawGrid();
 
   if (appStatus.debug) {
     viewPort.DrawAllGridPoints();
-    viewPort.DrawGridPoints(tool.gridPoints, 'red');
+    viewPort.DrawGridPoints(toolManager.gridPoints, 'red');
     console.log('cursor.id', cursor.id);
   }
 }
@@ -123,15 +122,15 @@ async function mouseMove(event) {
   //   lastGridPosition = mouse.GetGridPosition();
   // }
 
-  tool.mouseMove(event);
+  toolManager.mouseMove(event);
 }
 
 function mouseDown(event) {
-  tool.mouseDown(event);
+  toolManager.mouseDown(event);
 }
 
 function mouseUp(event) {
-  tool.mouseUp(event);
+  toolManager.mouseUp(event);
 }
 
 function mouseWheel(event) {
@@ -148,7 +147,7 @@ function mouseWheel(event) {
     // Get mouse grid position
     let x = position.valueToGridValue(event.x, viewPort);
     let y = position.valueToGridValue(event.y, viewPort);
-    
+
     const anchorPoint = {
       x: (x / oldPixelSize) * newPixelSize,
       y: (y / oldPixelSize) * newPixelSize
@@ -175,13 +174,13 @@ function download(content, fileName, contentType) {
 
 function keyDown(event) {
   if (event.key == 'b') {
-    tool = new tools.Builder(viewPort);
+    toolManager = new tools.Builder(viewPort);
   }
   if (event.key == 'm') {
-    tool = new tools.Mover(viewPort);
+    toolManager = new tools.Mover(viewPort);
   }
   if (event.key == 's') {
-    tool = new tools.BoxSelection(viewPort);
+    toolManager = new tools.BoxSelection(viewPort);
   }
 
   if (event.key == 'ArrowUp') {
@@ -210,7 +209,7 @@ function keyDown(event) {
     }
   }
 
-  tool.keyDown(event);
+  toolManager.keyDown(event);
 }
 
 function keyUp(event) {
@@ -220,7 +219,7 @@ function keyUp(event) {
     hoveredBlockOptions = { color: highlightColor };
   }
 
-  tool.keyUp(event);
+  toolManager.keyUp(event);
 }
 
 
