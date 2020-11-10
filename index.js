@@ -59,7 +59,7 @@ app.post('/api', (request, response) => {
   // Get the data from client
   const data = request.body;
 
-  add.dataKeeper.addBlock(data);
+  add.addBlockTo(blockData, data);
 
   // saveFile();
 
