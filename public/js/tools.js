@@ -254,8 +254,8 @@ function BoxSelection(viewport) {
 
     if (select || deselect) {
       // Left or right button down
-      this.setWidth(position.canvasXToWorld((event.x) - this.x, this.viewPort));
-      this.setHeight(position.canvasYToWorld((event.y) - this.y, this.viewPort));
+      this.setWidth(this.wp.x - this.x);
+      this.setHeight(this.wp.y - this.y);
 
       if (select) {   // Left button down
         selector.addBlocksByGridPoints(this.gridPoints, this.viewPort)
