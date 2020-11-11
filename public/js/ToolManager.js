@@ -14,62 +14,152 @@ or
 left click empty space without dragging
 */
 
-function ToolManager() {
-  this.builder = new tools.Builder();
-  this.boxSelection = new tools.BoxSelection();
-  this.mover = new tools.Mover();
-  this.currentTool = this.builder;
+const builder = new tools.Builder();
+const boxSelection = new tools.BoxSelection();
+const mover = new tools.Mover();
+let currentTool = builder;
 
-  this.drawTool = function () {
-    this.currentTool.draw();
+function drawTool() {
+  currentTool.draw();
+}
+
+function mouseDown(event) {
+  if (mouse.hoveredBlock) {
+    currentTool = builder;
   }
 
-  this.mouseDown = function (event) {
-    if (mouse.hoveredBlock) {
-      this.currentTool = this.builder;
-    }
+  currentTool.mouseDown(event);
+  boxSelection.mouseDown(event);
+}
 
-    this.currentTool.mouseDown(event);
-    this.boxSelection.mouseDown(event);
+function mouseUp(event) {
+  currentTool.mouseUp(event);
+}
+
+function mouseMove(event) {
+  const minMovement = mouse.getViewPort().pixelSize;
+  if (event.movementX >= minMovement ||
+    event.movementY >= minMovement) {
   }
 
-  this.mouseUp = function (event) {
-    this.currentTool.mouseUp(event);
+  switch (event.buttons) {
+    case 0:     // No button down while moving
+      currentTool = builder;
+      break;
+
+    case 1:     // Left button down while moving
+    case 2:     // Right button down while moving
+      if (!mouse.clickedBlock) {
+        currentTool = boxSelection;
+      }
+      break;
+
+    case 4:     // Middle button down while moving
+      currentTool = mover;
+      break;
+
+    default:
+      break;
   }
 
-  this.mouseMove = function (event) {
-    switch (event.buttons) {
-      case 0:     // No button down while moving
-        this.currentTool = this.builder;
-        break;
+  currentTool.mouseMove(event);
+}
 
-      case 1:     // Left button down while moving
-      case 2:     // Right button down while moving
-        if(!mouse.clickedBlock) {
-          this.currentTool = this.boxSelection;
-        }
-        break;
+function keyDown(event) {
+  currentTool.keyDown(event);
+}
 
-      case 4:     // Middle button down while moving
-        this.currentTool = this.mover;
-        break;
-
-      default:
-        break;
-    }
-
-    this.currentTool.mouseMove(event);
-  }
-
-  this.keyDown = function (event) {
-    this.currentTool.keyDown(event);
-  }
-
-  this.keyUp = function (event) {
-    this.currentTool.keyUp(event);
-  }
+function keyUp(event) {
+  currentTool.keyUp(event);
 }
 
 export {
-  ToolManager
+  drawTool,
+  mouseDown,
+  mouseUp,
+  mouseMove,
+  keyDown,
+  keyUp
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function ToolManager() {
+//   builder = new tools.Builder();
+//   boxSelection = new tools.BoxSelection();
+//   mover = new tools.Mover();
+//   currentTool = builder;
+
+//   drawTool = function () {
+//     currentTool.draw();
+//   }
+
+//   mouseDown = function (event) {
+//     if (mouse.hoveredBlock) {
+//       currentTool = builder;
+//     }
+
+//     currentTool.mouseDown(event);
+//     boxSelection.mouseDown(event);
+//   }
+
+//   mouseUp = function (event) {
+//     currentTool.mouseUp(event);
+//   }
+
+//   mouseMove = function (event) {
+//     const minMovement = mouse.getViewPort().pixelSize;
+//     if (event.movementX >= minMovement ||
+//       event.movementY >= minMovement) {
+//     }
+
+//     switch (event.buttons) {
+//       case 0:     // No button down while moving
+//         currentTool = builder;
+//         break;
+
+//       case 1:     // Left button down while moving
+//       case 2:     // Right button down while moving
+//         if (!mouse.clickedBlock) {
+//           currentTool = boxSelection;
+//         }
+//         break;
+
+//       case 4:     // Middle button down while moving
+//         currentTool = mover;
+//         break;
+
+//       default:
+//         break;
+//     }
+
+//     currentTool.mouseMove(event);
+//   }
+
+//   keyDown = function (event) {
+//     currentTool.keyDown(event);
+//   }
+
+//   keyUp = function (event) {
+//     currentTool.keyUp(event);
+//   }
+// }
+
+// export {
+//   ToolManager
+// }

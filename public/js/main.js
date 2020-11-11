@@ -3,7 +3,8 @@ import * as blockModule from './block.js';
 import { ViewPort } from './ViewPort.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as api from './api.js';
-import { ToolManager } from './toolManager.js';
+// import { ToolManager } from './toolManager.js';
+import * as toolManager from './toolManager.js';
 import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
@@ -24,7 +25,7 @@ const workerID = (Date.now() + Math.random()).toString();
 const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
 let cursor = startBlock;
 let workers = {};
-let toolManager = new ToolManager();
+// let toolManager = new ToolManager();
 
 
 const appStatus = {
