@@ -7,6 +7,8 @@ let wp = { x: 0, y: 0 };    // World Position
 let hoveredBlock = null;
 let clickedBlock = null;
 let insideFrame = false;
+let clickAndDrag = false;
+let buttonDown = false;
 
 function setViewPort(viewPort_) {
   viewPort = viewPort_;
@@ -17,6 +19,8 @@ function getViewPort() {
 }
 
 function mouseDown(event) {
+  buttonDown = true;
+
   if (event.button == 0) {  // Left button down
     clickedBlock = helpers.getBlockByPosition(
       wp.x, wp.y, viewPort
@@ -25,6 +29,9 @@ function mouseDown(event) {
 }
 
 function mouseUp(event) {
+  buttonDown = false;
+  clickAndDrag = false;
+
   if (event.button == 0) {  // Left button up 
     clickedBlock = null;
   }
@@ -34,13 +41,17 @@ function mouseMove(event) {
   wp = position.canvasToWorldPosition(
     event.x, event.y, viewPort
   );
+
   hoveredBlock = helpers.getBlockByPosition(
     wp.x, wp.y, viewPort
   );
+
   insideFrame = helpers.insideFrame(
     event.x, event.y, window.innerWidth,
     window.innerHeight, 20
   );
+
+  clickAndDrag = (event.buttons > 0);
 }
 
 function mouseWheel(event) {
@@ -61,6 +72,8 @@ export {
   hoveredBlock,
   clickedBlock,
   insideFrame,
+  clickAndDrag,
+  buttonDown,
   setViewPort,
   getViewPort,
   mouseDown,

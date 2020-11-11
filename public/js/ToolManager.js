@@ -2,9 +2,16 @@ import * as tools from './tools.js';
 import * as mouse from './mouse.js';
 
 /*
-middle click and move "move"
-click and drag empty space "select"
-left click without dragging "build"
+tool move =
+middle click and move
+
+tool select =
+click and drag empty space
+
+tool build =
+left click on block
+or
+left click empty space without dragging
 */
 
 function ToolManager() {
@@ -18,6 +25,10 @@ function ToolManager() {
   }
 
   this.mouseDown = function (event) {
+    if (mouse.hoveredBlock) {
+      this.currentTool = this.builder;
+    }
+
     this.currentTool.mouseDown(event);
     this.boxSelection.mouseDown(event);
   }
@@ -34,6 +45,9 @@ function ToolManager() {
 
       case 1:     // Left button down while moving
       case 2:     // Right button down while moving
+        if(!mouse.clickedBlock) {
+          this.currentTool = this.boxSelection;
+        }
         break;
 
       case 4:     // Middle button down while moving
