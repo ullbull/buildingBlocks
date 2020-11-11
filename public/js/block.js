@@ -9,7 +9,7 @@ function createBlock(x = 0, y = 0, width = 0, height = 0, color = 'gray', anchor
     x,
     y,
     anchorPoint: anchorPoint,
-    pixels: {},
+    content: {},
   }
 
   // Fill block with pixels
@@ -17,15 +17,58 @@ function createBlock(x = 0, y = 0, width = 0, height = 0, color = 'gray', anchor
     for (let w = 0; w < width; w++) {
       key = helpers.positionToKey(w, h);
 
-      // Add pixel to the block
-      block.pixels[key] = createPixel(w, h, color);
+      // Add pixel to block
+      block.content[key] = createPixel(w, h, color);
     }
   }
 
-  findClearEdges(block.pixels);
+  findClearEdges(block.content);
   return block;
 }
 
+function createBlockContainer(x = 0, y = 0, width = 0, height = 0, color = 'gray', anchorPoint = { x: 0, y: 0 }) {
+  let block;
+  const id = helpers.generateID();
+
+  let container = {
+    id,
+    x,
+    y,
+    anchorPoint: anchorPoint,
+    pixels: {},
+  }
+
+  // Fill container with blocks
+  for (let h = 0; h < height/2; h++) {
+    for (let w = 0; w < width/2; w++) {
+      block = createBlock(w*2, h*2, width/2, height/2, color, anchorPoint);
+
+      // Add block to container
+      container.pixels[block.id] = block;
+    }
+  }
+
+  // findClearEdges(block.pixels);
+  return container;
+}
+
+function createContainer(x = 0, y = 0, anchorPoint = { x: 0, y: 0 }) {
+  const id = helpers.generateID();
+
+  let container = {
+    id,
+    x,
+    y,
+    anchorPoint: anchorPoint,
+    content: {},
+  }
+
+  return container;
+}
+
+function addToContainer(content, container) {
+  container.content[content.id] = content;
+}
 
 function createPixel(x, y, color) {
   return { x, y, color };
@@ -78,21 +121,6 @@ function findClearEdges(pixels) {
 }
 
 function setBlockPosition(block, position) {
-  if (block.hasOwnProperty('children')) {
-    // Find distance to new position
-    const xDistance = position.x - block.x;
-    const yDistance = position.y - block.y;
-
-    // Move children according to distance
-    for (const key in block.children) {
-      if (block.children.hasOwnProperty(key)) {
-        const child = block.children[key];
-        child.x += xDistance;
-        child.y += yDistance;
-      }
-    }
-  }
-
   // Move block
   block.x = position.x;
   block.y = position.y;
@@ -155,6 +183,16 @@ function getGridPosition(block, key) {
   }
 }
 
+function getGridPosition_new(block, key) {
+  if (block.content.hasOwnProperty(key)) {
+    const pixel = block.content[key];
+    return {
+      x: pixel.x + block.x - block.anchorPoint.x,
+      y: pixel.y + block.y - block.anchorPoint.y
+    };
+  }
+}
+
 function getGridPointKeysFromBlock(block) {
   const gridPointKeys = [];
 
@@ -189,6 +227,9 @@ function getPositionInBlock(block, x, y) {
 
 export {
   createBlock,
+  createBlockContainer,
+  createContainer,
+  addToContainer,
   createPixel,
   findClearEdges,
   setBlockPosition,
@@ -196,6 +237,7 @@ export {
   setBlockAnchorPoint,
   setBlockAnchorPointAutoShift,
   getGridPosition,
+  getGridPosition_new,
   getGridPointKeysFromBlock,
   getGridPoint,
   blockPixelToGridKey,

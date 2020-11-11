@@ -142,6 +142,35 @@ export class ViewPort {
     this.context.stroke();
   }
 
+  DrawContainer(container, options) {
+    for (const key in container.content) {
+      if (container.content.hasOwnProperty(key)) {
+        const element = container.content[key];
+        if (element.hasOwnProperty('content')) {
+          this.DrawContainer(element);
+        } else {
+          const pixel = helpers.copyObject(element);
+
+          if (typeof options.color != 'undefined') {
+            pixel.color = options.color;
+          }
+
+          if (options.hasOwnProperty('alphaValue')) {
+            pixel.color = helpers.getAlphaColor(pixel.color, options.alphaValue);
+          }
+
+          // Set pixel relative to block
+          const position = blockModule.getGridPosition_new(container, key);
+          pixel.x = position.x;
+          pixel.y = position.y;
+
+          this.DrawPixel(pixel);
+          this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)');
+        }
+      }
+    }
+  }
+
   DrawBlock(block, options = {}) {
     if (block.hasOwnProperty('pixels')) {
       for (const key in block.pixels) {
@@ -191,8 +220,45 @@ export class ViewPort {
         if (!hiddenBlockIDs.hasOwnProperty(key)) {
           this.DrawBlock(block, options);
         } else {
-          this.DrawBlock(block, {color : 'rgba(100,90,100,0.1'});
+          this.DrawBlock(block, { color: 'rgba(100,90,100,0.1' });
         }
+      }
+    }
+  }
+
+  DrawBlockContainer(blockContainer, options = {}) {
+    if (blockContainer.hasOwnProperty('pixels')) {
+      for (const key in blockContainer.pixels) {
+        if (blockContainer.pixels.hasOwnProperty(key)) {
+          const block = helpers.copyObject(blockContainer.pixels[key]);
+
+          if (typeof options.color != 'undefined') {
+            block.color = options.color;
+          }
+
+          if (options.hasOwnProperty('alphaValue')) {
+            block.color = helpers.getAlphaColor(block.color, options.alphaValue);
+          }
+
+          // Set block relative to container
+          const position = blockModule.getGridPosition(blockContainer, key);
+          block.x = position.x;
+          block.y = position.y;
+
+          this.DrawBlock(block, options);
+          // this.StrokePixel(block, 0.2, 'rgba(50,50,70,1)');
+        }
+      }
+
+      if (options.hasOwnProperty('name')) {
+        this.DrawText(options.name, blockContainer.x, blockContainer.y);
+      }
+
+      ///////DEBUGGING CODE/////////////
+      if (options.hasOwnProperty('drawAnchorPoint')) {
+        this.DrawRectangle(blockContainer.x, blockContainer.y, 1, 1, 'pink');
+        // this.DrawText('bx: ' + block.x + ' by: ' + block.y, block.x, block.y - 1);
+        // this.DrawText('ax: ' + block.anchorPoint.x + ' ay: ' + block.anchorPoint.y, block.x, block.y);
       }
     }
   }

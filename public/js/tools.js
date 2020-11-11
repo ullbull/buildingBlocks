@@ -10,6 +10,12 @@ import * as mouse from './mouse.js';
 
 function Builder() {
   this.block = blockModule.createBlock(0, 0, 4, 2);
+  // this.block2 = blockModule.createBlock(5, 5, 4, 2);
+  // this.blocks = {}
+  // this.block = blockModule.createBlockContainer(0,0,4,4);
+  // this.blocks[this.block.id] = this.block;
+  // this.blocks[this.block2.id] = this.block2;
+
   this.hideMe = false;
   this.hoveredBlock = null;
   this.clickedBlock = null;
@@ -22,6 +28,8 @@ function Builder() {
     ) ? 1 : 0.5;
 
     if (!this.hideMe) {
+      // mouse.viewPort.DrawBlockContainer(this.block);
+      // mouse.viewPort.DrawBlocks(this.blocks, { alphaValue });
       mouse.viewPort.DrawBlock(this.block, { alphaValue });
     } else {
       mouse.viewPort.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
