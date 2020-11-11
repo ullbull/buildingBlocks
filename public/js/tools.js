@@ -223,14 +223,16 @@ function BoxSelection() {
   /////////////////////////////////////////////////////
 
   this.mouseDown = function (event) {
-    this.setWidth(0);
-    this.setHeight(0);
-    this.x = mouse.wp.x;
-    this.y = mouse.wp.y;
-
-    if (!(event.ctrlKey || event.altKey || event.buttons == 2)) {
-      // Reset selected blocks
-      selector.resetBlocks();
+    if (mouse.leftButton || mouse.rightButton) {
+      this.setWidth(0);
+      this.setHeight(0);
+      this.x = mouse.wp.x;
+      this.y = mouse.wp.y;
+      
+      if (!(event.ctrlKey || event.altKey || mouse.rightButton)) {
+        // Reset selected blocks
+        selector.resetBlocks();
+      }
     }
   }
 

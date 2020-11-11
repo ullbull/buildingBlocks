@@ -3,10 +3,13 @@ import * as mouse from './mouse.js';
 
 /*
 tool move =
-middle click and move
+Middle click and drag
 
 tool select =
-click and drag empty space
+Left or right click and drag empty space
+
+tool build =
+mouseUp
 
 tool build =
 left click on block
@@ -24,10 +27,6 @@ function drawTool() {
 }
 
 function mouseDown(event) {
-  if (mouse.hoveredBlock) {
-    currentTool = builder;
-  }
-
   currentTool.mouseDown(event);
   boxSelection.mouseDown(event);
 }
@@ -38,28 +37,19 @@ function mouseUp(event) {
 
 function mouseMove(event) {
   const minMovement = mouse.getViewPort().pixelSize;
-  if (event.movementX >= minMovement ||
-    event.movementY >= minMovement) {
-  }
-
-  switch (event.buttons) {
-    case 0:     // No button down while moving
+  if (mouse.dragDistance > minMovement) {
+    
+    if (event.buttons == 0) {      // No buttons down
       currentTool = builder;
-      break;
-
-    case 1:     // Left button down while moving
-    case 2:     // Right button down while moving
-      if (!mouse.clickedBlock) {
+    }
+    else if (mouse.leftButton || mouse.rightButton) {
+      if (!mouse.clickedBlock) {  // Left or right click and drag empty space
         currentTool = boxSelection;
       }
-      break;
-
-    case 4:     // Middle button down while moving
+    }
+    else if (mouse.middleButton) {
       currentTool = mover;
-      break;
-
-    default:
-      break;
+    }
   }
 
   currentTool.mouseMove(event);

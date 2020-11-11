@@ -9,6 +9,10 @@ let clickedBlock = null;
 let insideFrame = false;
 let clickAndDrag = false;
 let buttonDown = false;
+let leftButton = false;
+let rightButton = false;
+let middleButton = false;
+let dragDistance = 0;
 
 function setViewPort(viewPort_) {
   viewPort = viewPort_;
@@ -20,11 +24,19 @@ function getViewPort() {
 
 function mouseDown(event) {
   buttonDown = true;
+  dragDistance = 0;
 
   if (event.button == 0) {  // Left button down
+    leftButton = true;
     clickedBlock = helpers.getBlockByPosition(
       wp.x, wp.y, viewPort
     );
+  }
+  else if (event.button == 1) {  // Middle button down 
+    middleButton = true;
+  }
+  else if (event.button == 2) {  // Right button down 
+    rightButton = true;
   }
 }
 
@@ -33,7 +45,14 @@ function mouseUp(event) {
   clickAndDrag = false;
 
   if (event.button == 0) {  // Left button up 
+    leftButton = false;
     clickedBlock = null;
+  }
+  else if (event.button == 1) {  // Middle button up 
+    middleButton = false;
+  }
+  else if (event.button == 2) {  // Right button up 
+    rightButton = false;
   }
 }
 
@@ -52,6 +71,10 @@ function mouseMove(event) {
   );
 
   clickAndDrag = (event.buttons > 0);
+
+  if (event.buttons > 0) {
+    dragDistance += Math.abs(event.movementX) + Math.abs(event.movementY);
+  }
 }
 
 function mouseWheel(event) {
@@ -74,6 +97,10 @@ export {
   insideFrame,
   clickAndDrag,
   buttonDown,
+  leftButton,
+  rightButton,
+  middleButton,
+  dragDistance,
   setViewPort,
   getViewPort,
   mouseDown,
