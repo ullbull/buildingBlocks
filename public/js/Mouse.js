@@ -1,71 +1,45 @@
-export default class Mouse {
-  constructor(viewport) {
-    this.x = 0;
-    this.y = 0;
-    this.viewport = viewport
-  }
+import * as helpers from './helpers.js';
+import * as position from './positionTranslator.js';
 
-  SetX(x) {
-    this.x = x;
-  }
+function Mouse(viewPort) {
+  this.viewPort = viewPort;
+  this.wp = { x: 0, y:0 };    // World Position
+  this.hoveredBlock = null;
+  this.clickedBlock = null;
+  this.insideFrame = false;
 
-  SetY(y) {
-    this.y = y;
-  }
-
-  SetPosition(x, y) {
-    this.SetX(x);
-    this.SetY(y);
-  }
-
-  GetPosition() {
-    return { x: this.x, y: this.y }
-  }
-
-  GetGridPosition() {
-    return { x: this.GetXGrid(), y: this.GetYGrid() };
-  }
-
-  GetXGrid() {
-    return Math.floor(this.x / this.viewport.pixelSize);
-  }
-
-  GetYGrid() {
-    return Math.floor(this.y / this.viewport.pixelSize);
-  }
-
-  GetXWorldPosition() {
-    return this.viewport.CanvasXToWorld(this.x);
-  }
-
-  GetYWorldPosition() {
-    return this.viewport.CanvasYToWorld(this.y);
-  }
-
-  GetWorldPosition() {
-    return this.viewport.CanvasToWorldPosition(this.x, this.y);
-  }
-
-  Draw(options = {}) {
-    const size = 10;
-    const color = 'black';
-    if (options.hasOwnProperty('size')) {
-      size = options.size;
+  this.mouseDown = function (event) {
+    if (event.button == 0) {  // Left button down
+      this.clickedBlock = helpers.getBlockByPosition(
+        this.wp.x, this.wp.y, this.viewPort
+      );
     }
-
-    this.viewport.c.fillStyle = color;
-    this.viewport.c.fillRect(this.x, this.y, size, size);
   }
 
-  DrawWorldP(options = {}) {
-    const pixel = {
-      x: this.GetXWorldPosition(),
-      y: this.GetYWorldPosition(),
-      color: 'blue'
+  this.mouseUp = function (event) {
+    if (event.button == 0) {  // Left button up 
+      this.clickedBlock = null;
     }
-    this.viewport.DrawPixel(pixel);
   }
 
+  this.mouseMove = function (event) {
+    this.wp = position.canvasToWorldPosition(
+      event.x, event.y, this.viewPort
+    );
+    this.hoveredBlock = helpers.getBlockByPosition(
+      this.wp.x, this.wp.y, this.viewPort
+    );
+    this.insideFrame = helpers.insideFrame(
+      event.x, event.y, window.innerWidth,
+      window.innerHeight, 20
+    );
+  }
+
+  this.keyDown = function (event) {
+
+  }
+
+  this.keyUp = function (event) {
+
+  }
 }
-
-// module.exports = Mouse;
