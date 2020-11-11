@@ -9,7 +9,7 @@ import * as mouse from './mouse.js';
 
 
 function Builder() {
-  this.block = blockModule.createBlock(0, 0, 4, 2);
+  this.block = blockModule.createBlock_new(0, 0, 4, 2);
   // this.block2 = blockModule.createBlock(5, 5, 4, 2);
   // this.blocks = {}
   // this.block = blockModule.createBlockContainer(0,0,4,4);
@@ -30,9 +30,9 @@ function Builder() {
     if (!this.hideMe) {
       // mouse.viewPort.DrawBlockContainer(this.block);
       // mouse.viewPort.DrawBlocks(this.blocks, { alphaValue });
-      mouse.viewPort.DrawBlock(this.block, { alphaValue });
+      mouse.viewPort.DrawContainer(this.block, { alphaValue });
     } else {
-      mouse.viewPort.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
+      mouse.viewPort.DrawContainer(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
     }
   }
 

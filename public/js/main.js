@@ -31,14 +31,15 @@ let workers = {};
 // viewPort.DrawBlockContainer(container);
 // viewPort.DrawGrid();
 
-let container = blockModule.createContainer(1,1);
-let ctr = blockModule.createContainer(5,5);
-let bl = blockModule.createBlock(0,0,2,2);
-let bl2 = blockModule.createBlock(4,4,3,2);
-// blockModule.addToContainer(bl, ctr);
-blockModule.addToContainer(bl, container);
-blockModule.addToContainer(bl2, container);
-viewPort.DrawContainer(bl2, { color: 'yellow', alphaValue: 0.5 });
+// let container = blockModule.createContainer(1,1);
+// let ctr = blockModule.createContainer(5,5);
+// let bl = blockModule.createBlock(0,0,2,2);
+// let bl2 = blockModule.createBlock(4,4,3,2);
+// // blockModule.addToContainer(bl, ctr);
+// blockModule.addToContainer(bl, container);
+// blockModule.addToContainer(bl2, container);
+// // viewPort.DrawContainer(container, { color: 'yellow', alphaValue: 0.5 });
+// viewPort.DrawContainer(container);
 
 const appStatus = {
   moveViewport: false,
@@ -255,4 +256,4 @@ function keyUp(event) {
 //   }
 // }
 
-// animate();
+animate();

@@ -26,29 +26,10 @@ function createBlock(x = 0, y = 0, width = 0, height = 0, color = 'gray', anchor
   return block;
 }
 
-function createBlockContainer(x = 0, y = 0, width = 0, height = 0, color = 'gray', anchorPoint = { x: 0, y: 0 }) {
-  let block;
-  const id = helpers.generateID();
-
-  let container = {
-    id,
-    x,
-    y,
-    anchorPoint: anchorPoint,
-    pixels: {},
-  }
-
-  // Fill container with blocks
-  for (let h = 0; h < height/2; h++) {
-    for (let w = 0; w < width/2; w++) {
-      block = createBlock(w*2, h*2, width/2, height/2, color, anchorPoint);
-
-      // Add block to container
-      container.pixels[block.id] = block;
-    }
-  }
-
-  // findClearEdges(block.pixels);
+function createBlock_new(x = 0, y = 0, width = 0, height = 0, color = 'gray', anchorPoint = { x: 0, y: 0 }) {
+  const container = createContainer(x, y, anchorPoint);
+  const block = createBlock(x, y, width, height, color, anchorPoint)
+  addToContainer(block, container);
   return container;
 }
 
@@ -227,7 +208,7 @@ function getPositionInBlock(block, x, y) {
 
 export {
   createBlock,
-  createBlockContainer,
+  createBlock_new,
   createContainer,
   addToContainer,
   createPixel,

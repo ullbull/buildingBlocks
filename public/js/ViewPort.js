@@ -142,12 +142,17 @@ export class ViewPort {
     this.context.stroke();
   }
 
-  DrawContainer(container, options) {
+  DrawContainer(container, options = {}) {
     for (const key in container.content) {
       if (container.content.hasOwnProperty(key)) {
         const element = container.content[key];
         if (element.hasOwnProperty('content')) {
-          this.DrawContainer(element);
+          if (!options.hasOwnProperty('offsetPosition')) {
+            options.offsetPosition = { x: 0, y: 0 };
+          }
+          options.offsetPosition.x += container.x;
+          options.offsetPosition.y += container.y;
+          this.DrawContainer(element, options);
         } else {
           const pixel = helpers.copyObject(element);
 
@@ -163,6 +168,11 @@ export class ViewPort {
           const position = blockModule.getGridPosition_new(container, key);
           pixel.x = position.x;
           pixel.y = position.y;
+
+          if (options.hasOwnProperty('offsetPosition')) {
+            pixel.x += options.offsetPosition.x;
+            pixel.y += options.offsetPosition.y;
+          }
 
           this.DrawPixel(pixel);
           this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)');
@@ -218,9 +228,9 @@ export class ViewPort {
       if (blocks.hasOwnProperty(key)) {
         const block = blocks[key];
         if (!hiddenBlockIDs.hasOwnProperty(key)) {
-          this.DrawBlock(block, options);
+          this.DrawContainer(block, options);
         } else {
-          this.DrawBlock(block, { color: 'rgba(100,90,100,0.1' });
+          this.DrawContainer(block, { color: 'rgba(100,90,100,0.1' });
         }
       }
     }
