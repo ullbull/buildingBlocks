@@ -7,6 +7,7 @@ import { ToolManager } from './toolManager.js';
 import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
+import * as mouse from './mouse.js';
 
 
 const canvas = document.querySelector('canvas');
@@ -17,12 +18,13 @@ const context = canvas.getContext('2d');
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
 const viewPort = new ViewPort(canvas.width, canvas.height, 20, context);
+mouse.setViewPort(viewPort);
 const margin = 20;
 const workerID = (Date.now() + Math.random()).toString();
 const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
 let cursor = startBlock;
 let workers = {};
-let toolManager = new ToolManager(viewPort);
+let toolManager = new ToolManager();
 
 
 const appStatus = {
@@ -121,15 +123,18 @@ async function mouseMove(event) {
 
   //   lastGridPosition = mouse.GetGridPosition();
   // }
-
+  
+  mouse.mouseMove(event);
   toolManager.mouseMove(event);
 }
 
 function mouseDown(event) {
+  mouse.mouseDown(event);
   toolManager.mouseDown(event);
 }
 
 function mouseUp(event) {
+  mouse.mouseUp(event);
   toolManager.mouseUp(event);
 }
 

@@ -5,9 +5,10 @@ import * as dataKeeper from './dataKeeper.js';
 import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
+import * as mouse from './mouse.js';
 
-function Builder(viewPort) {
-  this.viewPort = viewPort;
+
+function Builder() {
   this.block = blockModule.createBlock(0, 0, 4, 2);
   this.hideMe = false;
   this.hoveredBlock = null;
@@ -21,16 +22,16 @@ function Builder(viewPort) {
     ) ? 1 : 0.5;
 
     if (!this.hideMe) {
-      this.viewPort.DrawBlock(this.block, { alphaValue });
+      mouse.viewPort.DrawBlock(this.block, { alphaValue });
     } else {
-      this.viewPort.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
+      mouse.viewPort.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
     }
   }
 
   this.build = function () {
     // Add block
     dataKeeper.addBlock(this.block);
-    
+
     // Send blocks to server
     api.sendData('/api', this.block);
 
@@ -60,7 +61,7 @@ function Builder(viewPort) {
 
   this.mouseDown = function (event) {
     if (event.button == 0) {  // Left button down
-      this.clickedBlock = helpers.getBlockByPosition(this.block.x, this.block.y, this.viewPort);
+      this.clickedBlock = helpers.getBlockByPosition(this.block.x, this.block.y, mouse.viewPort);
 
       // Check if any block was clicked
       if (this.clickedBlock) {
@@ -87,10 +88,10 @@ function Builder(viewPort) {
   }
 
   this.mouseMove = function (event) {
-    const worldPosition = position.canvasToWorldPosition(event.x, event.y, this.viewPort)
+    const worldPosition = position.canvasToWorldPosition(event.x, event.y, mouse.viewPort)
     blockModule.setBlockPosition(this.block, worldPosition);
 
-    this.hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, this.viewPort);
+    this.hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, mouse.viewPort);
     this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20)
 
     this.hideMe = (
@@ -110,9 +111,7 @@ function Builder(viewPort) {
   }
 }
 
-function Mover(viewport) {
-  this.viewPort = viewport;
-
+function Mover() {
   this.draw = function () {
   }
 
@@ -125,8 +124,8 @@ function Mover(viewport) {
   this.mouseMove = function (event) {
     if (event.buttons == 4) {
       // Middle button down
-      this.viewPort.x -= event.movementX / this.viewPort.pixelSize;
-      this.viewPort.y -= event.movementY / this.viewPort.pixelSize;
+      mouse.getViewPort().x -= event.movementX / mouse.getViewPort().pixelSize;
+      mouse.getViewPort().y -= event.movementY / mouse.getViewPort().pixelSize;
     }
   }
 
@@ -137,8 +136,7 @@ function Mover(viewport) {
   }
 }
 
-function BoxSelection(viewPort) {
-  this.viewPort = viewPort;
+function BoxSelection() {
   this.x = 0;
   this.y = 0;
   this.width = 0;
@@ -181,8 +179,8 @@ function BoxSelection(viewPort) {
   }
 
   this.addGridPointsByMovement = function (event) {
-    const movementPxX = Math.abs(event.movementX) / this.viewPort.pixelSize;
-    const movementPxY = Math.abs(event.movementY) / this.viewPort.pixelSize;
+    const movementPxX = Math.abs(event.movementX) / mouse.viewPort.pixelSize;
+    const movementPxY = Math.abs(event.movementY) / mouse.viewPort.pixelSize;
     let x = this.wp.x;
     let y = this.wp.y;
 
@@ -216,7 +214,9 @@ function BoxSelection(viewPort) {
 
   this.draw = function () {
     if (true) {
-      this.viewPort.DrawRectangle(this.x, this.y, this.width, this.height, this.color);
+      mouse.viewPort.DrawRectangle(
+        this.x, this.y, this.width, this.height, this.color
+      );
     }
   }
 
@@ -225,9 +225,8 @@ function BoxSelection(viewPort) {
   this.mouseDown = function (event) {
     this.setWidth(0);
     this.setHeight(0);
-    this.wp = position.canvasToWorldPosition(event.x, event.y, this.viewPort);
-    this.x = this.wp.x;
-    this.y = this.wp.y;
+    this.x = mouse.wp.x;
+    this.y = mouse.wp.y;
 
     if (!(event.ctrlKey || event.altKey || event.buttons == 2)) {
       // Reset selected blocks
@@ -242,7 +241,6 @@ function BoxSelection(viewPort) {
   }
 
   this.mouseMove = function (event) {
-    this.wp = position.canvasToWorldPosition(event.x, event.y, this.viewPort);
 
     const select = (
       event.buttons == 1 && !event.altKey
@@ -255,33 +253,36 @@ function BoxSelection(viewPort) {
 
     if (select || deselect) {
       // Left or right button down
-      this.setWidth(this.wp.x - this.x);
-      this.setHeight(this.wp.y - this.y);
+      this.setWidth(mouse.wp.x - this.x);
+      this.setHeight(mouse.wp.y - this.y);
 
       if (select) {   // Left button down
-        selector.addBlocksByGridPoints(this.gridPoints, this.viewPort)
+        selector.addBlocksByGridPoints(this.gridPoints, mouse.viewPort)
       }
       if (deselect) {   // Right button down
-        selector.removeBlocksByGridPoints(this.gridPoints, this.viewPort);
+        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort);
       }
     }
     else if (event.ctrlKey || event.altKey) {
-      this.x = this.wp.x;
-      this.y = this.wp.y;
+      this.x = mouse.wp.x;
+      this.y = mouse.wp.y;
 
       this.addGridPointsByMovement(event);
 
       if (event.ctrlKey) {
-        selector.addBlocksByGridPoints(this.gridPoints, this.viewPort)
+        selector.addBlocksByGridPoints(this.gridPoints, mouse.viewPort)
       } else if (event.altKey) {
-        selector.removeBlocksByGridPoints(this.gridPoints, this.viewPort);
+        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort);
       }
     }
   }
 
   this.keyDown = function (event) {
     if (event.ctrlKey || event.altKey) {
-      const hoveredBlock = helpers.getBlockByPosition(this.wp.x, this.wp.y, this.viewPort);
+      const hoveredBlock = helpers.getBlockByPosition(
+        mouse.wp.x, mouse.wp.y, mouse.viewPort
+      );
+
       if (event.ctrlKey) {
         // Add hovered block
         selector.addBlock(hoveredBlock);

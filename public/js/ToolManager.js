@@ -1,20 +1,16 @@
 import * as tools from './tools.js';
+import * as mouse from './mouse.js';
+
 /*
 middle click and move "move"
 click and drag empty space "select"
 left click without dragging "build"
 */
 
-function ToolManager(viewPort) {
-  console.log(viewPort);
-  this.viewPort = viewPort;
-  console.log(this.viewPort);
-
-  this.builder = new tools.Builder(this.viewPort);
-  console.log(this.builder);
-  console.log(this.builder.viewPort);
-  this.boxSelection = new tools.BoxSelection(this.viewPort);
-  this.mover = new tools.Mover(this.viewPort);
+function ToolManager() {
+  this.builder = new tools.Builder();
+  this.boxSelection = new tools.BoxSelection();
+  this.mover = new tools.Mover();
   this.currentTool = this.builder;
 
   this.drawTool = function () {

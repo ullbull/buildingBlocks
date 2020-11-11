@@ -1,45 +1,72 @@
 import * as helpers from './helpers.js';
 import * as position from './positionTranslator.js';
 
-function Mouse(viewPort) {
-  this.viewPort = viewPort;
-  this.wp = { x: 0, y:0 };    // World Position
-  this.hoveredBlock = null;
-  this.clickedBlock = null;
-  this.insideFrame = false;
+// Must call setViewPort() before use
+let viewPort;
+let wp = { x: 0, y: 0 };    // World Position
+let hoveredBlock = null;
+let clickedBlock = null;
+let insideFrame = false;
 
-  this.mouseDown = function (event) {
-    if (event.button == 0) {  // Left button down
-      this.clickedBlock = helpers.getBlockByPosition(
-        this.wp.x, this.wp.y, this.viewPort
-      );
-    }
-  }
+function setViewPort(viewPort_) {
+  viewPort = viewPort_;
+}
 
-  this.mouseUp = function (event) {
-    if (event.button == 0) {  // Left button up 
-      this.clickedBlock = null;
-    }
-  }
+function getViewPort() {
+  return viewPort;
+}
 
-  this.mouseMove = function (event) {
-    this.wp = position.canvasToWorldPosition(
-      event.x, event.y, this.viewPort
-    );
-    this.hoveredBlock = helpers.getBlockByPosition(
-      this.wp.x, this.wp.y, this.viewPort
-    );
-    this.insideFrame = helpers.insideFrame(
-      event.x, event.y, window.innerWidth,
-      window.innerHeight, 20
+function mouseDown(event) {
+  if (event.button == 0) {  // Left button down
+    clickedBlock = helpers.getBlockByPosition(
+      wp.x, wp.y, viewPort
     );
   }
+}
 
-  this.keyDown = function (event) {
-
+function mouseUp(event) {
+  if (event.button == 0) {  // Left button up 
+    clickedBlock = null;
   }
+}
 
-  this.keyUp = function (event) {
+function mouseMove(event) {
+  wp = position.canvasToWorldPosition(
+    event.x, event.y, viewPort
+  );
+  hoveredBlock = helpers.getBlockByPosition(
+    wp.x, wp.y, viewPort
+  );
+  insideFrame = helpers.insideFrame(
+    event.x, event.y, window.innerWidth,
+    window.innerHeight, 20
+  );
+}
 
-  }
+function mouseWheel(event) {
+
+}
+
+function keyDown(event) {
+
+}
+
+function keyUp(event) {
+
+}
+
+export {
+  viewPort,
+  wp,
+  hoveredBlock,
+  clickedBlock,
+  insideFrame,
+  setViewPort,
+  getViewPort,
+  mouseDown,
+  mouseUp,
+  mouseMove,
+  mouseWheel,
+  keyDown,
+  keyUp
 }
