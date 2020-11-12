@@ -49,24 +49,40 @@ export class ViewPort {
     this.context.stroke();
   }
 
-  DrawRectangle(x, y, width, height, color) {
+  DrawRectangle(x, y, width, height, color, options = {}) {
+    if (!options.hasOwnProperty('offsetPosition')) {
+      options.offsetPosition = { x: 0, y: 0 };
+    }
+    x += options.offsetPosition.x;
+    y += options.offsetPosition.y;
+
     this.context.fillStyle = color;
     x = position.worldXToViewport(x, this);
     y = position.worldYToViewport(y, this);
     width = position.toValueViewport(width, this);
     height = position.toValueViewport(height, this);
 
+
     this.context.fillRect(x, y, width, height);
   }
 
-  DrawPixel(pixel, options = {}) {
+  DrawPixel(x, y, color, options = {}) {
+    // Quick fix. need to change later
+    if (typeof x.color != 'undefined') {
+      this.DrawPixelP(x, y);
+    }
+
     let size = 1;
     if (options.hasOwnProperty('size')) {
       size = options.size;
     }
 
     // Draw Pixel
-    this.DrawRectangle(pixel.x, pixel.y, size, size, pixel.color);
+    this.DrawRectangle(x, y, size, size, color, options);
+  }
+
+  DrawPixelP(pixel, options = {}) {
+    this.DrawPixel(pixel.x, pixel.y, pixel.color, options)
   }
 
   DrawText(text, x, y, size = 18, color = 'black', font = 'Arial') {
@@ -77,11 +93,16 @@ export class ViewPort {
     this.context.fillText(text, x, y);
   }
 
-  StrokePixel(pixel, lineWidth, color) {
+  StrokePixel(pixel, lineWidth, color, options = {}) {
     let x = position.worldXToViewport(pixel.x, this);
     let y = position.worldYToViewport(pixel.y, this);
     let pixelSize = 1;
     pixelSize = position.toValueViewport(pixelSize, this);
+
+    if (options.hasOwnProperty('offsetPosition')) {
+      x += options.offsetPosition.x * this.pixelSize;
+      y += options.offsetPosition.y * this.pixelSize;
+    }
 
     // let edges = ['right'];
     this.context.lineWidth = position.toValueViewport(lineWidth, this);
@@ -147,13 +168,20 @@ export class ViewPort {
       if (container.content.hasOwnProperty(key)) {
         const element = container.content[key];
         if (element.hasOwnProperty('content')) {
+          // This element has content.
+          // Send that content through this function again and
+          // use containers position as offset
           if (!options.hasOwnProperty('offsetPosition')) {
             options.offsetPosition = { x: 0, y: 0 };
           }
           options.offsetPosition.x += container.x;
           options.offsetPosition.y += container.y;
           this.DrawContainer(element, options);
-        } else {
+        }
+
+        else {
+          // This element is a pixel.
+          // Draw that pixel
           const pixel = helpers.copyObject(element);
 
           if (typeof options.color != 'undefined') {
@@ -164,24 +192,17 @@ export class ViewPort {
             pixel.color = helpers.getAlphaColor(pixel.color, options.alphaValue);
           }
 
-          // Set pixel relative to block
-          const position = blockModule.getGridPosition_new(container, key);
-          pixel.x = position.x;
-          pixel.y = position.y;
+          pixel.x += container.x;
+          pixel.y += container.y;
 
-          if (options.hasOwnProperty('offsetPosition')) {
-            pixel.x += options.offsetPosition.x;
-            pixel.y += options.offsetPosition.y;
-          }
-
-          this.DrawPixel(pixel);
-          this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)');
+          this.DrawPixelP(pixel, options);
+          this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)', options);
         }
       }
     }
   }
 
-  DrawBlock(block, options = {}) {
+  DrawBlock_old(block, options = {}) {
     if (block.hasOwnProperty('pixels')) {
       for (const key in block.pixels) {
         if (block.pixels.hasOwnProperty(key)) {
@@ -255,7 +276,7 @@ export class ViewPort {
           block.x = position.x;
           block.y = position.y;
 
-          this.DrawBlock(block, options);
+          this.DrawContainer(block, options);
           // this.StrokePixel(block, 0.2, 'rgba(50,50,70,1)');
         }
       }
@@ -293,7 +314,7 @@ export class ViewPort {
   }
 
   DrawAllGridPoints() {
-    this.DrawGridPoints(dataKeeper.blockData.gridPoints);
+    this.DrawGridPoints(dataKeeper.getBlockData().gridPoints);
   }
 
   SetCenterX(x) {

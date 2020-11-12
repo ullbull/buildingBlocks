@@ -33,10 +33,11 @@ function addBlock(block) {
   // Add the block
   blockData.blocks[blockCopy.id] = blockCopy;
 
+  console.log('block', block);
   // Add grid points
-  for (const key in block.pixels) {
-    if (block.pixels.hasOwnProperty(key)) {
-
+  for (const key in block.content) {
+    if (block.content.hasOwnProperty(key)) {
+      console.log('key', key, ' value', block.content[key]);
       // Get grid point
       const gridPoint = blockModule.getGridPoint(block, key);
 
@@ -76,23 +77,23 @@ function addGridPoint(gridPoint) {
     const pixelKey = helpers.positionToKey(position.x, position.y);
 
     // delete pixel from the block
-    delete block.pixels[pixelKey];
+    delete block.content[pixelKey];
 
     // Check if block is empty
     let blockEmpty = true;
-    for (const key in block.pixels) {
-      if (block.pixels.hasOwnProperty(key)) {
+    for (const key in block.content) {
+      if (block.content.hasOwnProperty(key)) {
         blockEmpty = false;
         break;
       }
     }
 
-    // Delete block if it is empty of pixels
+    // Delete block if it has no content
     if (blockEmpty) {
       delete blockData.blocks[id];
     } else {
       // find clear edges in that block
-      blockModule.findClearEdges(block.pixels);
+      blockModule.findClearEdges(block.content);
     }
 
   }
@@ -105,8 +106,8 @@ function deleteBlock(blockID) {
   const block = blockData.blocks[blockID];
   if (typeof block != 'undefined') {
     // Delete grid points
-    for (const key in block.pixels) {
-      if (block.pixels.hasOwnProperty(key)) {
+    for (const key in block.content) {
+      if (block.content.hasOwnProperty(key)) {
         const position = blockModule.getGridPosition(block, key);
         deleteGridPoint(position.x, position.y);
       }

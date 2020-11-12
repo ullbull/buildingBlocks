@@ -225,6 +225,7 @@ function keyDown(event) {
       console.log('cursor:', cursor);
       console.log('selectedBlocks:', selector.getBlocks());
       console.log('appStatus', appStatus);
+      console.log('blockData', dataKeeper.getBlockData());
     }
   }
 

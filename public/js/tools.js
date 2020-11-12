@@ -10,6 +10,7 @@ import * as mouse from './mouse.js';
 
 function Builder() {
   this.block = blockModule.createBlock_new(0, 0, 4, 2);
+  console.log('block', this.block);
   // this.block2 = blockModule.createBlock(5, 5, 4, 2);
   // this.blocks = {}
   // this.block = blockModule.createBlockContainer(0,0,4,4);
