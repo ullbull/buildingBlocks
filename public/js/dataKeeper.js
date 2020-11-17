@@ -35,16 +35,31 @@ function addBlock(block) {
 
   console.log('block', block);
   // Add grid points
-  for (const key in block.content) {
-    if (block.content.hasOwnProperty(key)) {
-      console.log('key', key, ' value', block.content[key]);
-      // Get grid point
-      const gridPoint = blockModule.getGridPoint(block, key);
-
-      // Add grid points
+  const gridPoints = {};
+  blockModule.getGridPointsInContainer(blockCopy, gridPoints);
+  console.log('gpts',gridPoints);
+  for (const key in gridPoints) {
+    if (gridPoints.hasOwnProperty(key)) {
+      const gridPoint = gridPoints[key];
       addGridPoint(gridPoint);
     }
   }
+  
+  
+  
+  
+  
+  
+  // for (const key in block.content) {
+  //   if (block.content.hasOwnProperty(key)) {
+  //     console.log('key', key, ' value', block.content[key]);
+  //     // Get grid point
+  //     const gridPoint = blockModule.getGridPoint(block, key);
+
+  //     // Add grid points
+  //     addGridPoint(gridPoint);
+  //   }
+  // }
 }
 
 function addMultipleBlocks(blocks) {
@@ -68,17 +83,17 @@ function addGridPoint(gridPoint) {
   const y = gridPoint.y;
   const blockID = gridPoint.id;
   const key = helpers.positionToKey(x, y);
-
+  
   // If this grid point belongs to a block, delete pixel from that block
   if (typeof blockData.gridPoints[key] != 'undefined') {
     const id = blockData.gridPoints[key];
     const block = blockData.blocks[id];
     const position = blockModule.getPositionInBlock(block, x, y);
     const pixelKey = helpers.positionToKey(position.x, position.y);
-
+    
     // delete pixel from the block
     delete block.content[pixelKey];
-
+    
     // Check if block is empty
     let blockEmpty = true;
     for (const key in block.content) {
@@ -87,7 +102,7 @@ function addGridPoint(gridPoint) {
         break;
       }
     }
-
+    
     // Delete block if it has no content
     if (blockEmpty) {
       delete blockData.blocks[id];
@@ -95,11 +110,13 @@ function addGridPoint(gridPoint) {
       // find clear edges in that block
       blockModule.findClearEdges(block.content);
     }
-
+    
   }
-
+  
   // Add grid point
   blockData.gridPoints[key] = blockID;
+  console.log('gp', gridPoint);
+  console.log('blockData.gridPoints[key]', blockData.gridPoints[key]);
 }
 
 function deleteBlock(blockID) {

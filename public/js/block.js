@@ -51,6 +51,37 @@ function addToContainer(content, container) {
   container.content[content.id] = content;
 }
 
+function getGridPointsInContainer(container, gridPoints) {
+  for (const key in container.content) {
+    if (container.content.hasOwnProperty(key)) {
+      const element = container.content[key];
+      if (element.hasOwnProperty('content')) {
+        // This element has content.
+        // Send that content through this function again
+        getGridPointsInContainer(element, gridPoints);
+      }
+
+      else {
+        // This element is a pixel.
+        const pixel = helpers.copyObject(element);
+
+        pixel.x += container.x;
+        pixel.y += container.y;
+
+        const key = helpers.positionToKey(pixel.x, pixel.y);
+        const gridPoint = {
+          id: container.id,
+          x: pixel.x,
+          y: pixel.y,
+        }
+        gridPoints[key] = gridPoint;
+      }
+    }
+  }
+  
+  return gridPoints;
+}
+
 function createPixel(x, y, color) {
   return { x, y, color };
 }
@@ -211,6 +242,7 @@ export {
   createBlock_new,
   createContainer,
   addToContainer,
+  getGridPointsInContainer,
   createPixel,
   findClearEdges,
   setBlockPosition,
