@@ -164,6 +164,7 @@ export class ViewPort {
   }
 
   DrawContainer(container, options = {}) {
+    
     for (const key in container.content) {
       if (container.content.hasOwnProperty(key)) {
         const element = container.content[key];
@@ -177,6 +178,11 @@ export class ViewPort {
           options.offsetPosition.x += container.x;
           options.offsetPosition.y += container.y;
           this.DrawContainer(element, options);
+          
+          // Draw id
+          let x = options.offsetPosition.x;
+          let y = options.offsetPosition.y;
+          this.DrawText(container.id, x, y);
         }
 
         else {
@@ -240,16 +246,18 @@ export class ViewPort {
   }
 
   DrawBlocks(blocks, options = {}) {
+    
     let hiddenBlockIDs = {};
     if (options.hasOwnProperty('hiddenBlockIDs')) {
       hiddenBlockIDs = options.hiddenBlockIDs;
     }
-
+    
     for (const key in blocks) {
+      const options_copy = helpers.copyObject(options); // Fulhack
       if (blocks.hasOwnProperty(key)) {
         const block = blocks[key];
         if (!hiddenBlockIDs.hasOwnProperty(key)) {
-          this.DrawContainer(block, options);
+          this.DrawContainer(block, options_copy);
         } else {
           this.DrawContainer(block, { color: 'rgba(100,90,100,0.1' });
         }
