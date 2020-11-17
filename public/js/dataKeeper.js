@@ -41,7 +41,7 @@ function addBlock(block) {
   for (const key in gridPoints) {
     if (gridPoints.hasOwnProperty(key)) {
       const gridPoint = gridPoints[key];
-      addGridPoint(gridPoint);
+      addGridPoint_2(gridPoint);
     }
   }
   
@@ -76,6 +76,12 @@ function addBlockAndChildren(block) {
   if (block.hasOwnProperty('children')) {
     addMultipleBlocks(block.children);
   }
+}
+
+function addGridPoint_2(gridPoint) {
+    const key = helpers.positionToKey(gridPoint.x, gridPoint.y);
+    // Add grid point
+    blockData.gridPoints[key] = gridPoint.id;
 }
 
 function addGridPoint(gridPoint) {
@@ -167,6 +173,7 @@ export {
   addMultipleBlocks,
   addBlockAndChildren,
   addGridPoint,
+  addGridPoint_2,
   deleteBlock,
   deleteBlocks,
   deleteBlockGlobally,
