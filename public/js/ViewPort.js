@@ -62,8 +62,17 @@ export class ViewPort {
     width = position.toValueViewport(width, this);
     height = position.toValueViewport(height, this);
 
-
     this.context.fillRect(x, y, width, height);
+  }
+
+  DrawPixel_new(x, y, color, options = {}) {
+    let size = 1;
+    if (options.hasOwnProperty('size')) {
+      size = options.size;
+    }
+
+    // Draw Pixel
+    this.DrawRectangle(x, y, size, size, color, options);
   }
 
   DrawPixel(x, y, color, options = {}) {
@@ -161,6 +170,50 @@ export class ViewPort {
 
     // Stroke edges
     this.context.stroke();
+  }
+
+  DrawContainer_new(container, options = {}) {
+    
+    for (const key in container.content) {
+      if (container.content.hasOwnProperty(key)) {
+        const element = container.content[key];
+        if (element.hasOwnProperty('content')) {
+          // This element has content.
+          // Make a copy and shift its position with containers position
+          // Send that element through this function again
+          // until it's just a pixel.
+
+          const elementCopy = helpers.copyObject(element);
+          elementCopy.x += container.x;
+          elementCopy.y += container.y;
+
+          this.DrawContainer(elementCopy, options);
+          
+          // Draw id
+          this.DrawText(container.id, elementCopy.x, elementCopy.y);
+        }
+
+        else {
+          // This element is a pixel.
+          // Draw that pixel
+          const pixel = helpers.copyObject(element);
+
+          if (typeof options.color != 'undefined') {
+            pixel.color = options.color;
+          }
+
+          if (options.hasOwnProperty('alphaValue')) {
+            pixel.color = helpers.getAlphaColor(pixel.color, options.alphaValue);
+          }
+
+          pixel.x += container.x;
+          pixel.y += container.y;
+
+          this.DrawPixelP(pixel, options);
+          this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)', options);
+        }
+      }
+    }
   }
 
   DrawContainer(container, options = {}) {

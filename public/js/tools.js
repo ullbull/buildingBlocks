@@ -31,7 +31,7 @@ function Builder() {
     if (!this.hideMe) {
       // mouse.viewPort.DrawBlockContainer(this.block);
       // mouse.viewPort.DrawBlocks(this.blocks, { alphaValue });
-      mouse.viewPort.DrawContainer(this.block, { alphaValue });
+      mouse.viewPort.DrawContainer_new(this.block, { alphaValue });
     } else {
       mouse.viewPort.DrawContainer(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
     }

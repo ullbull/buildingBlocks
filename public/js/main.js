@@ -112,8 +112,7 @@ function animate() {
 
   if (appStatus.debug) {
     viewPort.DrawAllGridPoints();
-    viewPort.DrawGridPoints(toolManager.gridPoints, 'red');
-    console.log('cursor.id', cursor.id);
+    // viewPort.DrawGridPoints(toolManager.gridPoints, 'red');
   }
 }
 
@@ -222,7 +221,7 @@ function keyDown(event) {
   if (event.key == 'd') {
     appStatus.debug = !appStatus.debug;
     if (appStatus.debug) {
-      console.log('cursor:', cursor);
+      console.log('currentTool', toolManager.currentTool);
       console.log('selectedBlocks:', selector.getBlocks());
       console.log('appStatus', appStatus);
       console.log('blockData', dataKeeper.getBlockData());

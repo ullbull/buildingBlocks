@@ -64,6 +64,7 @@ function keyUp(event) {
 }
 
 export {
+  currentTool,
   drawTool,
   mouseDown,
   mouseUp,

@@ -78,6 +78,12 @@ function addBlockAndChildren(block) {
   }
 }
 
+function addGridPoint_3(pixel, belongsToId) {
+  const key = helpers.positionToKey(pixel.x, pixel.y);
+  // Add grid point
+  blockData.gridPoints[key] = belongsToId;
+}
+
 function addGridPoint_2(gridPoint) {
     const key = helpers.positionToKey(gridPoint.x, gridPoint.y);
     // Add grid point
