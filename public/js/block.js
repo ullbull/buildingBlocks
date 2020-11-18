@@ -51,7 +51,7 @@ function addToContainer(content, container) {
   container.content[content.id] = content;
 }
 
-function getWorldPixelsFromContainer(container, pixels) {
+function getWorldPixelsFromContainer(container, worldPixels) {
   for (const key in container.content) {
     if (container.content.hasOwnProperty(key)) {
       const element = container.content[key];
@@ -65,7 +65,7 @@ function getWorldPixelsFromContainer(container, pixels) {
         elementCopy.x += container.x;
         elementCopy.y += container.y;
 
-        getWorldPixelsFromContainer(elementCopy, pixels);
+        getWorldPixelsFromContainer(elementCopy, worldPixels);
       }
 
       else {
@@ -76,7 +76,7 @@ function getWorldPixelsFromContainer(container, pixels) {
         pixel_copy.y += container.y;
 
         const key = helpers.positionToKey(pixel_copy.x, pixel_copy.y);
-        pixels[key] = pixel_copy;
+        worldPixels[key] = pixel_copy;
         
         /* 
         const shouldLookLikeThis = {
@@ -93,11 +93,11 @@ function getWorldPixelsFromContainer(container, pixels) {
 
 function getGridPointsInContainer(container) {
   const gridPoints = {};
-  const pixels = {};
-  getWorldPixelsFromContainer(container, pixels);
-  for (const key in pixels) {
-    if (pixels.hasOwnProperty(key)) {
-      const pixel = pixels[key];
+  const worldPixels = {};
+  getWorldPixelsFromContainer(container, worldPixels);
+  for (const key in worldPixels) {
+    if (worldPixels.hasOwnProperty(key)) {
+      const pixel = worldPixels[key];
       gridPoints[key] = container.id;
       
       /* 
@@ -256,7 +256,6 @@ function blockPixelToGridKey(block, key) {
   return helpers.positionToKey(pixel.x, pixel.y);
 }
 
-
 function getPositionInBlock(block, x, y) {
   return {
     //   2 -   1     +       0             = 1
@@ -283,5 +282,6 @@ export {
   getGridPointKeysFromBlock,
   getGridPoint,
   blockPixelToGridKey,
+  
   getPositionInBlock
 };
