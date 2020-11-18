@@ -156,10 +156,16 @@ export class ViewPort {
             pixel.color = helpers.getAlphaColor(pixel.color, options.alphaValue);
           }
 
+          
           // Set pixel relative to block
           const position = blockModule.getGridPosition(block, key);
           pixel.x = position.x;
           pixel.y = position.y;
+          
+          if (options.hasOwnProperty('offsetPosition')) {
+            pixel.x += options.offsetPosition.x;
+            pixel.y += options.offsetPosition.y;
+          }
 
           this.DrawPixel(pixel);
           this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)');
@@ -217,7 +223,7 @@ export class ViewPort {
   }
 
   DrawAllGridPoints() {
-    this.DrawGridPoints(dataKeeper.blockData.gridPoints);
+    this.DrawGridPoints(dataKeeper.getBlockData().gridPoints);
   }
 
   SetCenterX(x) {

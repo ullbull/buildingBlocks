@@ -4,21 +4,28 @@ function getLinks() {
   return links;
 }
 
-function getChildren(parentID, data) {
-  const children = {};
-  if (links.hasOwnProperty(parentID)) {
-    for (const key in links[parentID]) {
-      if (links[parentID].hasOwnProperty(key)) {
-        const childID = links[parentID][key];
+// function getChildren(parentID, data) {
+//   const children = {};
+//   if (links.hasOwnProperty(parentID)) {
+//     for (const key in links[parentID]) {
+//       if (links[parentID].hasOwnProperty(key)) {
+//         const childID = links[parentID][key];
 
-        if (data.hasOwnProperty(childID)) {
-          children[childID] = data[childID];
-        } else { console.error(`ID"${childID}" not found in data ${data}`) }
-      } else { console.error('error in getChildren()') }
-    }
-  } else { console.error(`ID"${parentID}" has no children`) }
+//         if (data.hasOwnProperty(childID)) {
+//           children[childID] = data[childID];
+//         } else { console.error(`ID"${childID}" not found in data ${data}`) }
+//       } else { console.error('error in getChildren()') }
+//     }
+//   } else { console.error(`ID"${parentID}" has no children`) }
 
-  return children;
+//   return children;
+// }
+
+function getChildren(parent) {
+  const children = links[parent.id];
+  if (children) {
+    return children;
+  }
 }
 
 function ADD(parentID, childID) {
@@ -38,7 +45,7 @@ function ADD(parentID, childID) {
   links[parentID][childID] = childID;
 }
 
-function addLinkID(parentID, childID) {
+function addLinkI(parentID, childID) {
   try {
     ADD(parentID, childID);
   } catch (e) {
@@ -46,15 +53,15 @@ function addLinkID(parentID, childID) {
   }
 }
 
-function addLinkObject(parent, child) {
-  addLinkID(parent.id, child.id);
+function addLinkO(parent, child) {
+  addLinkI(parent.id, child.id);
 }
 
 function addChildrenToParent(parent, children) {
   for (const key in children) {
     if (children.hasOwnProperty(key)) {
       const child = children[key];
-      addLinkObject(parent, child);
+      addLinkO(parent, child);
     }
   }
 }
@@ -72,10 +79,11 @@ function removeParentID(parentID) {
 }
 
 export {
+  links,
   getLinks,
   getChildren,
-  addLinkID,
-  addLinkObject,
+  addLinkI,
+  addLinkO,
   addChildrenToParent,
   removeChildID,
   removeParentID

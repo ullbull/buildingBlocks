@@ -6,10 +6,18 @@ import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
+import * as linkKeeper from './linkKeeper.js';
 
 
 function Builder() {
   this.block = blockModule.createBlock(0, 0, 4, 2);
+  this.block2 = blockModule.createBlock(5, 5, 4, 2, 'blue');
+  this.blocks = {};
+  this.blocks[this.block.id] = this.block;
+  this.blocks[this.block2.id] = this.block2;
+  dataKeeper.addBlock(this.block);
+  dataKeeper.addBlock(this.block2);
+  linkKeeper.addLinkO(this.block, this.block2);
   this.hideMe = false;
   this.hoveredBlock = null;
   this.clickedBlock = null;
@@ -28,18 +36,29 @@ function Builder() {
     }
   }
 
-  this.build = function () {
-    // Add block
-    dataKeeper.addBlock(this.block);
+  this.build = function (method = 'build') {
+    // // Add block
+    // dataKeeper.addBlock(this.block);
+    // // Add children
+    // dataKeeper.addBlocks(linkKeeper.getChildren(this.block));
+    // Add blocks
+
+    const block = helpers.copyObject(this.block);
+
+    if (method == 'build') {
+      block.id = helpers.generateID()
+    }
+
+    dataKeeper.addBlock(block);
 
     // Send blocks to server
-    api.sendData('/api', this.block);
+    api.sendData('/api', block);
 
     // Delete hidden blocks
     dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
 
-    // Get new blockID
-    this.block.id = helpers.generateID();
+    // // Get new blockID
+    // this.block.id = helpers.generateID();
   }
 
   this.changeBlockToClickedBlock = function () {
@@ -228,7 +247,7 @@ function BoxSelection() {
       this.setHeight(0);
       this.x = mouse.wp.x;
       this.y = mouse.wp.y;
-      
+
       if (!(event.ctrlKey || event.altKey || mouse.rightButton)) {
         // Reset selected blocks
         selector.resetBlocks();

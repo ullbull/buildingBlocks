@@ -31,7 +31,11 @@ function addBlock(block) {
   }
 
   // Add the block
+  console.log('Adding block', blockCopy.id);
+
   blockData.blocks[blockCopy.id] = blockCopy;
+  console.log('data', blockData);
+
 
   // Add grid points
   for (const key in block.pixels) {
@@ -46,7 +50,7 @@ function addBlock(block) {
   }
 }
 
-function addMultipleBlocks(blocks) {
+function addBlocks(blocks) {
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)) {
       const block = blocks[key];
@@ -58,7 +62,7 @@ function addMultipleBlocks(blocks) {
 function addBlockAndChildren(block) {
   addBlock(block);
   if (block.hasOwnProperty('children')) {
-    addMultipleBlocks(block.children);
+    addBlocks(block.children);
   }
 }
 
@@ -146,7 +150,7 @@ export {
   initBlockData,
   setBlockData,
   addBlock,
-  addMultipleBlocks,
+  addBlocks,
   addBlockAndChildren,
   addGridPoint,
   deleteBlock,
