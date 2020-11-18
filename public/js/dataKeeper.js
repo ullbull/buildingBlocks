@@ -34,32 +34,15 @@ function addBlock(block) {
   blockData.blocks[blockCopy.id] = blockCopy;
 
   console.log('block', block);
+
   // Add grid points
-  const gridPoints = {};
-  blockModule.getGridPointsInContainer(blockCopy, gridPoints);
-  console.log('gpts',gridPoints);
+  const gridPoints = blockModule.getGridPointsInContainer(blockCopy);
+  console.log('gpts', gridPoints);
   for (const key in gridPoints) {
     if (gridPoints.hasOwnProperty(key)) {
-      const gridPoint = gridPoints[key];
-      addGridPoint_2(gridPoint);
+      blockData.gridPoints[key] = blockCopy.id;
     }
   }
-  
-  
-  
-  
-  
-  
-  // for (const key in block.content) {
-  //   if (block.content.hasOwnProperty(key)) {
-  //     console.log('key', key, ' value', block.content[key]);
-  //     // Get grid point
-  //     const gridPoint = blockModule.getGridPoint(block, key);
-
-  //     // Add grid points
-  //     addGridPoint(gridPoint);
-  //   }
-  // }
 }
 
 function addMultipleBlocks(blocks) {

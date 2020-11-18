@@ -51,59 +51,62 @@ function addToContainer(content, container) {
   container.content[content.id] = content;
 }
 
-function getPixelsInContainer(container, pixels) {
+function getWorldPixelsFromContainer(container, pixels) {
   for (const key in container.content) {
     if (container.content.hasOwnProperty(key)) {
       const element = container.content[key];
       if (element.hasOwnProperty('content')) {
         // This element has content.
-        // Send that content through this function again
-        getPixelsInContainer(element, pixels);
+        // Make a copy and shift its position with containers position
+        // Send that element through this function again
+        // until it's just a pixel.
+
+        const elementCopy = helpers.copyObject(element);
+        elementCopy.x += container.x;
+        elementCopy.y += container.y;
+
+        getWorldPixelsFromContainer(elementCopy, pixels);
       }
 
       else {
         // This element is a pixel.
-        const pixel = helpers.copyObject(element);
+        const pixel_copy = helpers.copyObject(element);
 
-        pixel.x += container.x;
-        pixel.y += container.y;
+        pixel_copy.x += container.x;
+        pixel_copy.y += container.y;
 
-        const key = helpers.positionToKey(pixel.x, pixel.y);
-
-        pixels[key] = pixel;
+        const key = helpers.positionToKey(pixel_copy.x, pixel_copy.y);
+        pixels[key] = pixel_copy;
+        
+        /* 
+        const shouldLookLikeThis = {
+          '1,2': {
+            x: 1,
+            y: 2
+          }
+        }
+        */
       }
     }
   }
 }
 
-function getGridPointsInContainer(container, gridPoints) {
-  for (const key in container.content) {
-    if (container.content.hasOwnProperty(key)) {
-      const element = container.content[key];
-      if (element.hasOwnProperty('content')) {
-        // This element has content.
-        // Send that content through this function again
-        getGridPointsInContainer(element, gridPoints);
+function getGridPointsInContainer(container) {
+  const gridPoints = {};
+  const pixels = {};
+  getWorldPixelsFromContainer(container, pixels);
+  for (const key in pixels) {
+    if (pixels.hasOwnProperty(key)) {
+      const pixel = pixels[key];
+      gridPoints[key] = container.id;
+      
+      /* 
+      const shouldLookLikeThis = {
+        '1,2': '12_123431224'
       }
-
-      else {
-        // This element is a pixel.
-        const pixel = helpers.copyObject(element);
-
-        pixel.x += container.x;
-        pixel.y += container.y;
-
-        const key = helpers.positionToKey(pixel.x, pixel.y);
-        const gridPoint = {
-          id: container.id,
-          x: pixel.x,
-          y: pixel.y,
-        }
-        gridPoints[key] = gridPoint;
-      }
+      */
     }
   }
-  
   return gridPoints;
 }
 
@@ -267,6 +270,7 @@ export {
   createBlock_new,
   createContainer,
   addToContainer,
+  getWorldPixelsFromContainer,
   getGridPointsInContainer,
   createPixel,
   findClearEdges,

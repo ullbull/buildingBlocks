@@ -50,11 +50,10 @@ export class ViewPort {
   }
 
   DrawRectangle(x, y, width, height, color, options = {}) {
-    if (!options.hasOwnProperty('offsetPosition')) {
-      options.offsetPosition = { x: 0, y: 0 };
+    if (options.hasOwnProperty('offsetPosition')) {
+      x += options.offsetPosition.x;
+      y += options.offsetPosition.y;
     }
-    x += options.offsetPosition.x;
-    y += options.offsetPosition.y;
 
     this.context.fillStyle = color;
     x = position.worldXToViewport(x, this);
@@ -173,7 +172,7 @@ export class ViewPort {
   }
 
   DrawContainer_new(container, options = {}) {
-    
+
     for (const key in container.content) {
       if (container.content.hasOwnProperty(key)) {
         const element = container.content[key];
@@ -188,7 +187,7 @@ export class ViewPort {
           elementCopy.y += container.y;
 
           this.DrawContainer(elementCopy, options);
-          
+
           // Draw id
           this.DrawText(container.id, elementCopy.x, elementCopy.y);
         }
@@ -196,28 +195,28 @@ export class ViewPort {
         else {
           // This element is a pixel.
           // Draw that pixel
-          const pixel = helpers.copyObject(element);
+          const pixel_copy = helpers.copyObject(element);
 
           if (typeof options.color != 'undefined') {
-            pixel.color = options.color;
+            pixel_copy.color = options.color;
           }
 
           if (options.hasOwnProperty('alphaValue')) {
-            pixel.color = helpers.getAlphaColor(pixel.color, options.alphaValue);
+            pixel_copy.color = helpers.getAlphaColor(pixel_copy.color, options.alphaValue);
           }
 
-          pixel.x += container.x;
-          pixel.y += container.y;
+          pixel_copy.x += container.x;
+          pixel_copy.y += container.y;
 
-          this.DrawPixelP(pixel, options);
-          this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)', options);
+          this.DrawPixel_new(pixel.x, pixel.y, pixel.color, options);
+          this.StrokePixel(pixel_copy, 0.2, 'rgba(50,50,70,1)', options);
         }
       }
     }
   }
 
   DrawContainer(container, options = {}) {
-    
+
     for (const key in container.content) {
       if (container.content.hasOwnProperty(key)) {
         const element = container.content[key];
@@ -231,7 +230,7 @@ export class ViewPort {
           options.offsetPosition.x += container.x;
           options.offsetPosition.y += container.y;
           this.DrawContainer(element, options);
-          
+
           // Draw id
           let x = options.offsetPosition.x;
           let y = options.offsetPosition.y;
@@ -299,12 +298,12 @@ export class ViewPort {
   }
 
   DrawBlocks(blocks, options = {}) {
-    
+
     let hiddenBlockIDs = {};
     if (options.hasOwnProperty('hiddenBlockIDs')) {
       hiddenBlockIDs = options.hiddenBlockIDs;
     }
-    
+
     for (const key in blocks) {
       const options_copy = helpers.copyObject(options); // Fulhack
       if (blocks.hasOwnProperty(key)) {
@@ -362,7 +361,7 @@ export class ViewPort {
   DrawGridPoint(gridPoint, color = 'blue') {
     const position = gridPoint.split(',');
     const pixel = blockModule.createPixel(position[0], position[1], color);
-    this.DrawPixel(pixel, { 'size': 0.25 });
+    this.DrawPixel_new(pixel.x, pixel.y, pixel.color, { 'size': 0.25 });
   }
 
   DrawGridPoints(gridPoints, color) {
