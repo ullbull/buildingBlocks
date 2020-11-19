@@ -177,6 +177,7 @@ export class ViewPort {
       }
 
       ///////DEBUGGING CODE/////////////
+      this.DrawText(block.id, block.x, block.y - 0.3);
       if (options.hasOwnProperty('drawAnchorPoint')) {
         this.DrawRectangle(block.x, block.y, 1, 1, 'pink');
         // this.DrawText('bx: ' + block.x + ' by: ' + block.y, block.x, block.y - 1);

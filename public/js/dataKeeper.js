@@ -31,11 +31,7 @@ function addBlock(block) {
   }
 
   // Add the block
-  console.log('Adding block', blockCopy.id);
-
   blockData.blocks[blockCopy.id] = blockCopy;
-  console.log('data', blockData);
-
 
   // Add grid points
   for (const key in block.pixels) {

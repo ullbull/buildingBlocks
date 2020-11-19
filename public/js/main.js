@@ -74,8 +74,8 @@ const appStatus = {
 };
 
 // Reload block data from server
-// dataKeeper.initBlockData();
-// setInterval(() => dataKeeper.initBlockData(), 2000);
+dataKeeper.initBlockData();
+setInterval(() => dataKeeper.initBlockData(), 500);
 
 // Reload workers from server
 setInterval(async () => workers = await api.getData('/workers'), 100);
@@ -209,7 +209,7 @@ function keyDown(event) {
   if (event.key == 'd') {
     appStatus.debug = !appStatus.debug;
     if (appStatus.debug) {
-      console.log('cursor:', cursor);
+      console.log('blockData:', dataKeeper.getBlockData());
       console.log('selectedBlocks:', selector.getBlocks());
       console.log('appStatus', appStatus);
     }

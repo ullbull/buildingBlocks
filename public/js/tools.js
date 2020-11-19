@@ -15,9 +15,9 @@ function Builder() {
   this.blocks = {};
   this.blocks[this.block.id] = this.block;
   this.blocks[this.block2.id] = this.block2;
-  dataKeeper.addBlock(this.block);
-  dataKeeper.addBlock(this.block2);
-  linkKeeper.addLinkO(this.block, this.block2);
+  // dataKeeper.addBlock(this.block);
+  // dataKeeper.addBlock(this.block2);
+  // linkKeeper.addLinkO(this.block, this.block2);
   this.hideMe = false;
   this.hoveredBlock = null;
   this.clickedBlock = null;
@@ -37,25 +37,32 @@ function Builder() {
   }
 
   this.build = function (method = 'build') {
-    // // Add block
+    // 'build' adds a adds a block with new id 
+
+    // 'move' adds a copy of the block.
+    // Id is the same meaning the block will just be moved
+
+    const block = helpers.copyObject(this.block);
+    if (method == 'build') {
+      block.id = helpers.generateID()
+    }
+
+    // Add block
+    dataKeeper.addBlock(block);
+
     // dataKeeper.addBlock(this.block);
     // // Add children
     // dataKeeper.addBlocks(linkKeeper.getChildren(this.block));
     // Add blocks
 
-    const block = helpers.copyObject(this.block);
-
-    if (method == 'build') {
-      block.id = helpers.generateID()
-    }
-
-    dataKeeper.addBlock(block);
-
-    // Send blocks to server
+    // Send block to server
     api.sendData('/api', block);
 
     // Delete hidden blocks
-    dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
+    // dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
+
+    // Reset hidden blocks
+    blockHider.resetHiddenBlockIDs();
 
     // // Get new blockID
     // this.block.id = helpers.generateID();
@@ -63,16 +70,18 @@ function Builder() {
 
   this.changeBlockToClickedBlock = function () {
     // Get clicked pixel
-    const clickedPixel = blockModule.getPositionInBlock(this.clickedBlock, this.block.x, this.block.y);
+    const clickedPixel = blockModule.getPositionInBlock(
+      this.clickedBlock, this.block.x, this.block.y);
 
     // Change this block to copy of clicked block
     this.block = helpers.copyObject(this.clickedBlock);
 
     // Set anchor point
-    blockModule.setBlockAnchorPointAutoShift(this.block, clickedPixel.x, clickedPixel.y);
+    blockModule.setBlockAnchorPointAutoShift(
+      this.block, clickedPixel.x, clickedPixel.y);
 
     // Get new blockID
-    this.block.id = helpers.generateID();
+    // this.block.id = helpers.generateID();
 
     // Hide clicked block
     blockHider.addHiddenBlockID(this.clickedBlock.id);
@@ -80,7 +89,8 @@ function Builder() {
 
   this.mouseDown = function (event) {
     if (event.button == 0) {  // Left button down
-      this.clickedBlock = helpers.getBlockByPosition(this.block.x, this.block.y, mouse.viewPort);
+      this.clickedBlock = helpers.getBlockByPosition(
+        this.block.x, this.block.y, mouse.viewPort);
 
       // Check if any block was clicked
       if (this.clickedBlock) {
@@ -94,24 +104,37 @@ function Builder() {
 
   this.mouseUp = function (event) {
     if (event.button == 0) {  // Left button up 
-      this.clickedBlock = null;
       this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20);
 
       if (this.insideFrame) {
-        this.build();
-      } else {
+        // Determine build method
+        let method = 'build';
+        if (this.clickedBlock) {
+          method = 'move';
+        }
+        
+        // Build
+        this.build(method);
+        
+      } 
+      else {
         // Delete block if dropped outside frame
         dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
       }
+            
+      this.clickedBlock = null;
     }
   }
 
   this.mouseMove = function (event) {
-    const worldPosition = position.canvasToWorldPosition(event.x, event.y, mouse.viewPort)
+    const worldPosition = position.canvasToWorldPosition(
+      event.x, event.y, mouse.viewPort);
     blockModule.setBlockPosition(this.block, worldPosition);
 
-    this.hoveredBlock = helpers.getBlockByPosition(worldPosition.x, worldPosition.y, mouse.viewPort);
-    this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20)
+    this.hoveredBlock = helpers.getBlockByPosition(
+      worldPosition.x, worldPosition.y, mouse.viewPort);
+    this.insideFrame = helpers.insideFrame(
+      event.x, event.y, window.innerWidth, window.innerHeight, 20);
 
     this.hideMe = (
       this.hoveredBlock &&
