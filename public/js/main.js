@@ -9,7 +9,7 @@ import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
-
+import { appStatus } from './appStatus.js'
 
 const canvas = document.querySelector('canvas');
 canvas.width = innerWidth - 1;
@@ -28,54 +28,10 @@ let workers = {};
 // let toolManager = new ToolManager();
 
 
-const appStatus = {
-  moveViewport: false,
-  moveBlock: false,
-  addBlock: false,
-  movedDistance: 0,
-  hideSelectionBox: true,
 
-  updateMouseOverBlock: function (mouse) {
-    // Check if mouse is over any pixel
-    const blockID = helpers.getBlockUnderMouse(mouse);
-    if (blockID) {
-      if (typeof mouse.viewport.blockData.blocks[blockID] != 'undefined') {
-        // Mouse is over a block
-        this.mouseOverBlock = true;
-        hoveredBlock = mouse.viewport.blockData.blocks[blockID];
-      } else {
-        console.log('Error at block ', blockID);
-      }
-    }
-    else {
-      // Mouse is not over a block
-      this.mouseOverBlock = false;
-      hoveredBlock = {};
-    }
-  },
-
-  updateMouseInsideFrame: function (event, canvas) {
-    // Check if mouse is inside frame
-    if (event.x <= canvas.width - margin && event.y <= canvas.height - margin &&
-      event.x >= margin && event.y >= margin) {
-      this.mouseInsideFrame = true;
-    } else {
-      this.mouseInsideFrame = false;
-    }
-  },
-
-  updateBlockClicked: function (event) {
-    this.blockClicked = (
-      event.type == 'mousedown' &&
-      event.buttons == 1 &&          // Left button
-      this.mouseOverBlock
-    );
-  }
-};
-
-// Reload block data from server
-dataKeeper.initBlockData();
-setInterval(() => dataKeeper.initBlockData(), 500);
+// // Reload block data from server
+// dataKeeper.initBlockData();
+// setInterval(() => dataKeeper.initBlockData(), 500);
 
 // Reload workers from server
 setInterval(async () => workers = await api.getData('/workers'), 100);
@@ -124,7 +80,7 @@ async function mouseMove(event) {
 
   //   lastGridPosition = mouse.GetGridPosition();
   // }
-  
+
   mouse.mouseMove(event);
   toolManager.mouseMove(event);
 }

@@ -6,6 +6,17 @@ function getBlocks() {
   return selectedBlocks;
 }
 
+function getBlocksArray() {
+  const blocks = [];
+  for (const key in selectedBlocks) {
+    if (selectedBlocks.hasOwnProperty(key)) {
+      const block = selectedBlocks[key];
+      blocks.push(block);
+    }
+  }
+  return blocks;
+}
+
 function resetBlocks() {
   selectedBlocks = {};
 }
@@ -44,6 +55,7 @@ function removeBlocksByGridPoints(gridPoints, viewport) {
 
 export {
   getBlocks,
+  getBlocksArray,
   resetBlocks,
   addBlock,
   removeBlock,

@@ -79,7 +79,13 @@ function findClearEdges(pixels) {
   }
 }
 
-function setBlockPosition(block, position) {
+function setBlockPosition(block, x, y) {
+  // Move block
+  block.x = x;
+  block.y = y;
+}
+
+function setBlockPosition_old(block, position) {
   const children = linkKeeper.getChildren(block);
   
   // Check if block has children
@@ -117,10 +123,10 @@ function setBlockPosition(block, position) {
   //     }
   //   }
   // }
-
-  // Move block
-  block.x = position.x;
-  block.y = position.y;
+  
+    // Move block
+    block.x = position.x;
+    block.y = position.y;
 }
 
 function moveBlock(block, position) {

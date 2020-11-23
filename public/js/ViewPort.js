@@ -2,6 +2,7 @@ import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as position from './positionTranslator.js';
+import { appStatus } from './appStatus.js'
 
 export class ViewPort {
   constructor(width, height, pixelSize, context) {
@@ -177,11 +178,10 @@ export class ViewPort {
       }
 
       ///////DEBUGGING CODE/////////////
-      this.DrawText(block.id, block.x, block.y - 0.3);
-      if (options.hasOwnProperty('drawAnchorPoint')) {
+      if (appStatus.debug) {
+
+        this.DrawText(block.id, block.x, block.y - 0.3);
         this.DrawRectangle(block.x, block.y, 1, 1, 'pink');
-        // this.DrawText('bx: ' + block.x + ' by: ' + block.y, block.x, block.y - 1);
-        // this.DrawText('ax: ' + block.anchorPoint.x + ' ay: ' + block.anchorPoint.y, block.x, block.y);
       }
     }
   }
@@ -202,6 +202,12 @@ export class ViewPort {
         }
       }
     }
+  }
+
+  DrawBlocksArray(blocks, options = {}) {
+    blocks.forEach(block => {
+      this.DrawBlock(block, options);
+    });
   }
 
   DrawAllBlocks(options) {

@@ -32,7 +32,7 @@ function addBlock(block) {
 
   // Add the block
   blockData.blocks[blockCopy.id] = blockCopy;
-
+// 
   // Add grid points
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
@@ -55,6 +55,12 @@ function addBlocks(blocks) {
   }
 }
 
+function addBlocksArray(blocks) {
+  blocks.forEach(block => {
+    addBlock(block);
+  });
+}
+ 
 function addBlockAndChildren(block) {
   addBlock(block);
   if (block.hasOwnProperty('children')) {
@@ -147,6 +153,7 @@ export {
   setBlockData,
   addBlock,
   addBlocks,
+  addBlocksArray,
   addBlockAndChildren,
   addGridPoint,
   deleteBlock,

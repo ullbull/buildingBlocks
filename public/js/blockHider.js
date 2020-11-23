@@ -4,6 +4,12 @@ function addHiddenBlockID(blockID) {
   hiddenBlockIDs[blockID] = blockID;
 }
 
+function addHiddenBlocks(blockArray) {
+  blockArray.forEach(block => {
+    addHiddenBlockID(block.id);
+  });
+}
+
 function removeHiddenBlockID(blockID) {
   if(hiddenBlockIDs.hasOwnProperty(blockID)) {
     delete hiddenBlockIDs[blockID];
@@ -32,6 +38,7 @@ function hasBlocks() {
 
 export {
   addHiddenBlockID,
+  addHiddenBlocks,
   removeHiddenBlockID,
   getHiddenBlockIDs,
   resetHiddenBlockIDs,

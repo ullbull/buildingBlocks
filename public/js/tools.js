@@ -10,14 +10,17 @@ import * as linkKeeper from './linkKeeper.js';
 
 
 function Builder() {
+  // this.id = helpers.generateID();
+  this.x = 0;
+  this.y = 0;
   this.block = blockModule.createBlock(0, 0, 4, 2);
-  this.block2 = blockModule.createBlock(5, 5, 4, 2, 'blue');
-  this.blocks = {};
-  this.blocks[this.block.id] = this.block;
-  this.blocks[this.block2.id] = this.block2;
+  this.block1 = blockModule.createBlock(5, 5, 4, 2, 'blue');
+  this.block2 = blockModule.createBlock(2, 2, 4, 2, 'red');
+  this.blocks = [];
+  this.blocks.push(this.block, this.block1, this.block2);
   // dataKeeper.addBlock(this.block);
-  // dataKeeper.addBlock(this.block2);
-  // linkKeeper.addLinkO(this.block, this.block2);
+  // dataKeeper.addBlock(this.blockToBuild);
+  // linkKeeper.addLinkO(this.block, this.blockToBuild);
   this.hideMe = false;
   this.hoveredBlock = null;
   this.clickedBlock = null;
@@ -30,72 +33,93 @@ function Builder() {
     ) ? 1 : 0.5;
 
     if (!this.hideMe) {
-      mouse.viewPort.DrawBlock(this.block, { alphaValue });
+      // mouse.viewPort.DrawPixel({x: this.x, y: this.y, color: 'green'});
+      mouse.viewPort.DrawBlocksArray(this.blocks, { alphaValue });
     } else {
       mouse.viewPort.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
     }
   }
 
   this.build = function (method = 'build') {
-    // 'build' adds a adds a block with new id 
+    // 'build' adds a block with new id       
+    // 'move' adds a block with same id
+    // which means the block will be moved
 
-    // 'move' adds a copy of the block.
-    // Id is the same meaning the block will just be moved
+    const blocks = this.copyBlocks(this.blocks);
 
-    const block = helpers.copyObject(this.block);
     if (method == 'build') {
-      block.id = helpers.generateID()
+      // Get new id for each block
+      blocks.forEach(block => {
+        block.id = helpers.generateID()
+      });
     }
 
-    // Add block
-    dataKeeper.addBlock(block);
-
-    // dataKeeper.addBlock(this.block);
-    // // Add children
-    // dataKeeper.addBlocks(linkKeeper.getChildren(this.block));
     // Add blocks
+    dataKeeper.addBlocksArray(blocks);
 
-    // Send block to server
-    api.sendData('/api', block);
-
-    // Delete hidden blocks
-    // dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
+    // Send blocks to server
+    api.sendData('/api', blocks[0]);
 
     // Reset hidden blocks
     blockHider.resetHiddenBlockIDs();
+  }
 
-    // // Get new blockID
-    // this.block.id = helpers.generateID();
+  this.setPosition = function (x, y) {
+    // Get move distance
+    const xd = x - this.x;
+    const yd = y - this.y;
+
+    this.x = x;
+    this.y = y;
+
+    this.blocks.forEach(block => {
+      blockModule.setBlockPosition(block, block.x + xd, block.y + yd)
+    });
+  }
+
+  this.copyBlocks = function (blockArray) {
+    const blocks = [];
+    blockArray.forEach(block => {
+      blocks.push(helpers.copyObject(block));
+    });
+    return blocks;
   }
 
   this.changeBlockToClickedBlock = function () {
     // Get clicked pixel
     const clickedPixel = blockModule.getPositionInBlock(
-      this.clickedBlock, this.block.x, this.block.y);
+      this.clickedBlock, this.x, this.y);
 
-    // Change this block to copy of clicked block
-    this.block = helpers.copyObject(this.clickedBlock);
+    // Change this blocks to copy of clicked block
+    this.blocks = [helpers.copyObject(this.clickedBlock)];
 
     // Set anchor point
     blockModule.setBlockAnchorPointAutoShift(
-      this.block, clickedPixel.x, clickedPixel.y);
-
-    // Get new blockID
-    // this.block.id = helpers.generateID();
+      this.blocks[0], clickedPixel.x, clickedPixel.y);
 
     // Hide clicked block
     blockHider.addHiddenBlockID(this.clickedBlock.id);
   }
 
+  this.applySelectedBlocks = function () {
+
+    this.blocks = (selector.getBlocks().hasOwnProperty(this.clickedBlock.id))
+      ? this.copyBlocks(selector.getBlocksArray())
+      : this.copyBlocks([this.clickedBlock]);
+
+    // Hide applied blocks
+    blockHider.addHiddenBlocks(this.blocks);
+  }
+
   this.mouseDown = function (event) {
     if (event.button == 0) {  // Left button down
+      // Set clicked block
       this.clickedBlock = helpers.getBlockByPosition(
-        this.block.x, this.block.y, mouse.viewPort);
+        this.x, this.y, mouse.viewPort);
 
       // Check if any block was clicked
       if (this.clickedBlock) {
-        // Change this.block to clicked block
-        this.changeBlockToClickedBlock();
+        this.applySelectedBlocks();
 
         this.hideMe = false;
       }
@@ -112,24 +136,28 @@ function Builder() {
         if (this.clickedBlock) {
           method = 'move';
         }
-        
+
         // Build
         this.build(method);
-        
-      } 
+
+      }
       else {
         // Delete block if dropped outside frame
         dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
       }
-            
+
       this.clickedBlock = null;
     }
   }
 
+
   this.mouseMove = function (event) {
+    // Should be able to use mouse.wp instead
     const worldPosition = position.canvasToWorldPosition(
       event.x, event.y, mouse.viewPort);
-    blockModule.setBlockPosition(this.block, worldPosition);
+
+    // Set position
+    this.setPosition(mouse.wp.x, mouse.wp.y);
 
     this.hoveredBlock = helpers.getBlockByPosition(
       worldPosition.x, worldPosition.y, mouse.viewPort);
