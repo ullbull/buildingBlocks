@@ -13,7 +13,8 @@ function Builder() {
   // this.id = helpers.generateID();
   this.x = 0;
   this.y = 0;
-  this.blocks = [blockModule.createBlock(0, 0, 4, 2)];
+  this.initialBlock = blockModule.createBlock(0, 0, 4, 2);
+  this.blocks = [this.initialBlock];
   // dataKeeper.addBlock(this.block);
   // dataKeeper.addBlock(this.blockToBuild);
   // linkKeeper.addLinkO(this.block, this.blockToBuild);
@@ -49,6 +50,9 @@ function Builder() {
         block.id = helpers.generateID()
       });
     }
+
+    selector.resetBlocks();
+    selector.addBlocksArray(blocks);
 
     // Add blocks
     dataKeeper.addBlocksArray(blocks);
@@ -138,8 +142,14 @@ function Builder() {
 
       }
       else {
-        // Delete block if dropped outside frame
+        // Block was dropped outside frame.
+        
+        // Delete block
         dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
+
+        // Change blocks to initial block
+        blockModule.setBlockPosition(this.initialBlock, mouse.wp.x, mouse.wp.y);
+        this.blocks = [this.initialBlock];
       }
 
       this.clickedBlock = null;

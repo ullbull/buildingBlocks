@@ -1,4 +1,5 @@
 import * as helpers from './helpers.js';
+import * as dataKeeper from './dataKeeper.js';
 
 let selectedBlocks = {};
 
@@ -29,6 +30,12 @@ function addBlock(block) {
   }
 }
 
+function addBlocksArray(blocksArray) {
+  blocksArray.forEach(block => {
+    addBlock(block);
+  });
+}
+
 function removeBlock(block) {
   if (typeof block != 'undefined') {
     if (block.hasOwnProperty('id')) {
@@ -53,12 +60,26 @@ function removeBlocksByGridPoints(gridPoints, viewport) {
   }
 }
 
+// function refresh() {
+//   const oldBlocks = helpers.copyObject(selectedBlocks);
+//   resetBlocks();
+//   for (const key in oldBlocks) {
+//     if (oldBlocks.hasOwnProperty(key)) {
+//       const oldBlock = oldBlocks[key];
+//       const updatedBlock = dataKeeper.getBlockData().blocks[oldBlock.id];
+//       addBlock(updatedBlock);
+//     }
+//   }
+// }
+
 export {
   getBlocks,
   getBlocksArray,
   resetBlocks,
   addBlock,
+  addBlocksArray,
   removeBlock,
   addBlocksByGridPoints,
-  removeBlocksByGridPoints
+  removeBlocksByGridPoints,
+  // refresh
 }
