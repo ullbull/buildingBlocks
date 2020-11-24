@@ -13,11 +13,7 @@ function Builder() {
   // this.id = helpers.generateID();
   this.x = 0;
   this.y = 0;
-  this.block = blockModule.createBlock(0, 0, 4, 2);
-  this.block1 = blockModule.createBlock(5, 5, 4, 2, 'blue');
-  this.block2 = blockModule.createBlock(2, 2, 4, 2, 'red');
-  this.blocks = [];
-  this.blocks.push(this.block, this.block1, this.block2);
+  this.blocks = [blockModule.createBlock(0, 0, 4, 2)];
   // dataKeeper.addBlock(this.block);
   // dataKeeper.addBlock(this.blockToBuild);
   // linkKeeper.addLinkO(this.block, this.blockToBuild);

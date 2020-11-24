@@ -23,8 +23,8 @@ function addBlock(block) {
   // If this block exist in block data
   const blockDouble = blockData.blocks[blockCopy.id];
   if (blockDouble) {
-    const gridPointKeys = blockModule.getGridPointKeysFromBlock(blockDouble);
     // Delete blocks grid points from block data
+    const gridPointKeys = blockModule.getGridPointKeysFromBlock(blockDouble);
     gridPointKeys.forEach(key => {
       delete blockData.gridPoints[key];
     });

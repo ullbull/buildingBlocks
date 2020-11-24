@@ -56,7 +56,6 @@ function animate() {
   if (appStatus.debug) {
     viewPort.DrawAllGridPoints();
     viewPort.DrawGridPoints(toolManager.gridPoints, 'red');
-    console.log('cursor.id', cursor.id);
   }
 }
 
