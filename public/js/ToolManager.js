@@ -77,6 +77,7 @@ function keyUp(event) {
 
 
 export {
+  builder,
   drawTool,
   mouseDown,
   mouseUp,

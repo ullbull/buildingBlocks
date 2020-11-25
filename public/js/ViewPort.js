@@ -3,6 +3,7 @@ import * as blockModule from './block.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as position from './positionTranslator.js';
 import { appStatus } from './appStatus.js'
+import * as toolManager from './toolManager.js';
 
 export class ViewPort {
   constructor(width, height, pixelSize, context) {
@@ -161,12 +162,12 @@ export class ViewPort {
             pixel.color = helpers.getAlphaColor(pixel.color, options.alphaValue);
           }
 
-          
+
           // Set pixel relative to block
           const position = blockModule.getGridPosition(block, key);
           pixel.x = position.x;
           pixel.y = position.y;
-          
+
           if (options.hasOwnProperty('offsetPosition')) {
             pixel.x += options.offsetPosition.x;
             pixel.y += options.offsetPosition.y;
@@ -178,10 +179,7 @@ export class ViewPort {
       }
 
       if (options.hasOwnProperty('name')) {
-        this.DrawText(options.name, block.x, block.y);
-      }
-      if (block.hasOwnProperty('name')) {
-        this.DrawText(block.name, block.x, block.y);
+        this.DrawText(options.name, block.x, block.y - 0.5);
       }
 
       ///////DEBUGGING CODE/////////////
@@ -205,7 +203,19 @@ export class ViewPort {
         if (!hiddenBlockIDs.hasOwnProperty(key)) {
           this.DrawBlock(block, options);
         } else {
-          this.DrawBlock(block, {color : 'rgba(100,90,100,0.1'});
+          this.DrawBlock(block, { color: 'rgba(100,90,100,0.1' });
+        }
+      }
+    }
+  }
+
+  DrawWorkers(workers, excluded, options = {}) {
+    for (const key in workers) {
+      if (workers.hasOwnProperty(key)) {
+        const worker = workers[key];
+        if(worker.id != excluded.id) {
+          options.name = worker.name;
+          this.DrawBlock(worker, options);
         }
       }
     }

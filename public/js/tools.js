@@ -11,7 +11,7 @@ import { appStatus } from './appStatus.js';
 
 
 function Builder() {
-  // this.id = helpers.generateID();
+  this.id = helpers.generateID();
   this.x = 0;
   this.y = 0;
   this.initialBlock = blockModule.createBlock(0, 0, 4, 2);

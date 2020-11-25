@@ -19,10 +19,7 @@ let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
 const viewPort = new ViewPort(canvas.width, canvas.height, 20, context);
 mouse.setViewPort(viewPort);
-const margin = 20;
-const workerID = helpers.generateID();
-const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
-let cursor = startBlock;
+const worker = blockModule.createBlock(0,0,4,2,'gray');
 let workers = {};
 
 
@@ -49,7 +46,7 @@ function animate() {
   toolManager.drawTool();
 
   // Draw workers
-  viewPort.DrawBlocks(workers);
+  viewPort.DrawWorkers(workers, worker);
 
   viewPort.DrawGrid();
 
@@ -71,10 +68,8 @@ async function mouseMove(event) {
   // Send this worker to server if mouse is moved one grid square
   // if ((gridPosition.x != lastGridPosition.x) || (gridPosition.y != lastGridPosition.y)) {
   if (true) {
-    const worker = helpers.copyObject(cursor);
-    worker.id = workerID;
+    blockModule.setBlockPosition(worker, mouse.wp.x, mouse.wp.y);
     worker.name = document.getElementById("playerName").value;
-
     await api.sendData('/workers', worker);
 
     // lastGridPosition = mouse.GetGridPosition();
