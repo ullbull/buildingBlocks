@@ -10,16 +10,27 @@ import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import { appStatus } from './appStatus.js'
 
-const canvas = document.querySelector('canvas');
-canvas.width = innerWidth - 1;
-canvas.height = innerHeight - 40;
-const context = canvas.getContext('2d');
+// const canvas = document.querySelector('canvas');
+const canvases = document.getElementsByTagName('canvas');
+for (let i = 0; i < canvases.length; i++) {
+  canvases[i].width = innerWidth - 1;
+  canvases[i].height = innerHeight - 40;
+}
+
+const background = canvases[0];
+const foreground = canvases[1];
+const cBackground = background.getContext('2d');
+const cForeground = foreground.getContext('2d');
+cForeground.fillStyle = 'black';
+cForeground.fillRect(10, 10, 50, 50);
+
+
 
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
-const viewport = new Viewport(canvas.width, canvas.height, 20, context);
+const viewport = new Viewport(background.width, background.height, 20, cForeground);
 mouse.setViewPort(viewport);
-const worker = blockModule.createBlock(0,0,4,2,'gray');
+const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
 let workers = {};
 
 
@@ -30,25 +41,31 @@ setInterval(() => dataKeeper.initBlockData(), 500);
 // Reload workers from server
 setInterval(async () => workers = await api.getData('/workers'), 100);
 
+setTimeout(function(){ 
+  // Draw blocks
+  viewport.DrawAllBlocks({ 
+    hiddenBlockIDs: blockHider.getHiddenBlockIDs(),
+    drawAnchorPoint: 1,
+    context: cBackground 
+  });
+}, 100);
+
 function animate() {
   requestAnimationFrame(animate);
 
   // Clear frame
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  cForeground.clearRect(0, 0, background.width, background.height);
 
-  // Draw blocks
-  viewport.DrawAllBlocks({ hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
+  // // Draw selected blocks
+  // viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
 
-  // Draw selected blocks
-  viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
+  // // Draw tool
+  // toolManager.drawTool();
 
-  // Draw tool
-  toolManager.drawTool();
+  // // Draw workers
+  // viewport.DrawWorkers(workers, worker);
 
-  // Draw workers
-  viewport.DrawWorkers(workers, worker);
-
-  viewport.DrawGrid();
+  // viewport.DrawGrid();
 
   if (appStatus.debug) {
     viewport.DrawAllGridPoints({ alphaValue: 0.5 });
@@ -116,8 +133,8 @@ function mouseWheel(event) {
 }
 
 function resize() {
-  canvas.width = innerWidth - 20;
-  canvas.height = innerHeight - 20;
+  background.width = innerWidth - 20;
+  background.height = innerHeight - 20;
 }
 
 function download(content, fileName, contentType) {

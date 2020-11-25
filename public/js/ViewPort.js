@@ -51,18 +51,24 @@ export class Viewport {
     this.context.stroke();
   }
 
-  DrawRectangle(x, y, width, height, color) {
-    this.context.fillStyle = color;
+  DrawRectangle(x, y, width, height, color , context = this.context) {
+    context.fillStyle = color;
     x = position.worldXToViewport(x, this);
     y = position.worldYToViewport(y, this);
     width = position.toValueViewport(width, this);
     height = position.toValueViewport(height, this);
 
-    this.context.fillRect(x, y, width, height);
+    context.fillRect(x, y, width, height);
   }
 
   DrawPixel(pixel, options = {}) {
+    let context = this.context;
     let size = 1;
+    
+    if (options.hasOwnProperty('context')) {
+      context = options.context;
+    }
+
     if (options.hasOwnProperty('size')) {
       size = options.size;
     }
@@ -72,7 +78,7 @@ export class Viewport {
     }
 
     // Draw Pixel
-    this.DrawRectangle(pixel.x, pixel.y, size, size, pixel.color);
+    this.DrawRectangle(pixel.x, pixel.y, size, size, pixel.color, context);
   }
 
   DrawText(text, x, y, size = 18, color = 'black', font = 'Arial') {
