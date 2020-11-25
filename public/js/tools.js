@@ -60,7 +60,7 @@ function Builder() {
     dataKeeper.addBlocksArray(blocksCopy);
 
     // Send blocks to server
-    api.sendData('/api', blocksCopy[0]);
+    api.sendData('/api', blocksCopy);
 
     // Reset hidden blocks
     blockHider.resetHiddenBlockIDs();
@@ -141,6 +141,9 @@ function Builder() {
 
         // Delete block
         dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
+
+        // Reset idle blocks
+        selector.resetBlocks('idle');
 
         // Change blocks to initial block
         blockModule.setBlockPosition(this.initialBlock, mouse.wp.x, mouse.wp.y);

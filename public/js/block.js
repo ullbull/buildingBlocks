@@ -1,5 +1,5 @@
 import * as helpers from './helpers.js';
-import * as linkKeeper from './linkKeeper.js';
+// import * as linkKeeper from './linkKeeper.js';
 import * as dataKeeper from './dataKeeper.js';
 
 function createBlock(x = 0, y = 0, width = 0, height = 0, color = 'gray', anchorPoint = { x: 0, y: 0 }) {

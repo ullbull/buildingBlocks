@@ -29,9 +29,9 @@ let workers = {};
 
 
 
-// // Reload block data from server
-// dataKeeper.initBlockData();
-// setInterval(() => dataKeeper.initBlockData(), 500);
+// Reload block data from server
+dataKeeper.initBlockData();
+setInterval(() => dataKeeper.initBlockData(), 500);
 
 // Reload workers from server
 setInterval(async () => workers = await api.getData('/workers'), 100);

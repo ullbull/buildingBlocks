@@ -23,8 +23,8 @@ function addBlock(block) {
   // If this block exist in block data
   const blockDouble = blockData.blocks[blockCopy.id];
   if (blockDouble) {
-    const gridPointKeys = blockModule.getGridPointKeysFromBlock(blockDouble);
     // Delete blocks grid points from block data
+    const gridPointKeys = blockModule.getGridPointKeysFromBlock(blockDouble);
     gridPointKeys.forEach(key => {
       delete blockData.gridPoints[key];
     });
@@ -32,7 +32,7 @@ function addBlock(block) {
 
   // Add the block
   blockData.blocks[blockCopy.id] = blockCopy;
-
+// 
   // Add grid points
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
@@ -46,7 +46,7 @@ function addBlock(block) {
   }
 }
 
-function addMultipleBlocks(blocks) {
+function addBlocks(blocks) {
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)) {
       const block = blocks[key];
@@ -55,10 +55,16 @@ function addMultipleBlocks(blocks) {
   }
 }
 
+function addBlocksArray(blocks) {
+  blocks.forEach(block => {
+    addBlock(block);
+  });
+}
+ 
 function addBlockAndChildren(block) {
   addBlock(block);
   if (block.hasOwnProperty('children')) {
-    addMultipleBlocks(block.children);
+    addBlocks(block.children);
   }
 }
 
@@ -146,7 +152,8 @@ module.exports = {
   initBlockData,
   setBlockData,
   addBlock,
-  addMultipleBlocks,
+  addBlocks,
+  addBlocksArray,
   addBlockAndChildren,
   addGridPoint,
   deleteBlock,

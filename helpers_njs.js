@@ -51,10 +51,27 @@ function getAlphaColor(color, alphaValue) {
 
 }
 
+function uniqueNumber() {
+  var date = Date.now();
+
+  // If created at same millisecond as previous
+  if (date <= uniqueNumber.previous) {
+      date = ++uniqueNumber.previous;
+  } else {
+      uniqueNumber.previous = date;
+  }
+
+  return date;
+}
+uniqueNumber.previous = 0;
+
+function uid(){
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
 function generateID() {
-  let number = Math.floor(Math.random() * 100);
-  let timestamp = Date.now();
-  return number + '_' + timestamp;
+  let randomString = Math.random().toString(16).slice(2)
+  return randomString + '_' + uniqueNumber();
 }
 
 function copyObject(object) {
@@ -66,15 +83,15 @@ function getBlockUnderMouse(mouse) {
   const key = this.positionToKey(mouse.GetXWorldPosition(), mouse.GetYWorldPosition());
 
   // Check if mouse is over any pixel
-  const blockID = mouse.dataKeeper.blockData.gridPoints[key];
+  const blockID = mouse.dataKeeper.getBlockData().gridPoints[key];
   return blockID;
 }
 
 function getBlockByKey(key, viewport) {
-  const blockID = dataKeeper.blockData.gridPoints[key];
+  const blockID = dataKeeper.getBlockData().gridPoints[key];
   let block;
   if (typeof blockID != 'undefined') {
-    block = dataKeeper.blockData.blocks[blockID];
+    block = dataKeeper.getBlockData().blocks[blockID];
   }
   return block;
 }

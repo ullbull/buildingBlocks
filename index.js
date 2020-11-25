@@ -33,24 +33,6 @@ cleanup.deleteBadGridpoints(dataKeeper.getBlockData());
 cleanup.deleteBadBlocks(dataKeeper.getBlockData());
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 app.get('/api', (request, response) => {
   response.json(dataKeeper.getBlockData());
 });
@@ -60,7 +42,7 @@ app.post('/api', (request, response) => {
   // Get the data from client
   const data = request.body;
 
-  dataKeeper.addBlock(data);
+  dataKeeper.addBlocksArray(data);
 
   // saveFile();
 
@@ -79,19 +61,6 @@ app.delete('/api', (request, response) => {
   // Send a response back to client
   response.json({ message: 'thanks' });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //////////////////////////////////////////
