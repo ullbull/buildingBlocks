@@ -25,8 +25,6 @@ const workerID = (Date.now() + Math.random()).toString();
 const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
 let cursor = startBlock;
 let workers = {};
-// let toolManager = new ToolManager();
-
 
 
 // Reload block data from server
@@ -135,13 +133,10 @@ function download(content, fileName, contentType) {
 
 function keyDown(event) {
   if (event.key == 'b') {
-    toolManager = new tools.Builder(viewPort);
   }
   if (event.key == 'm') {
-    toolManager = new tools.Mover(viewPort);
   }
   if (event.key == 's') {
-    toolManager = new tools.BoxSelection(viewPort);
   }
 
   if (event.key == 'ArrowUp') {
@@ -175,27 +170,13 @@ function keyDown(event) {
 
 function keyUp(event) {
   appStatus.spaceKeyDown = false;
-
-  if (event.key == 'Alt') {
-    hoveredBlockOptions = { color: highlightColor };
-  }
-
   toolManager.keyUp(event);
 }
 
-
-
-// window.onkeyup = function (event) {
-//   if (event.key == 'Alt') {
-//     hoveredBlockOptions = { color: highlightColor };
-//   }
-// }
-
-// window.onkeydown = function(e){
-//   if(e.altKey && e.keyCode == 83){
-//     e.preventDefault();
-//     alert("Shotcut Pressed")
-//   }
-// }
+window.onkeydown = function(e){
+  if(e.altKey){
+    e.preventDefault();
+  }
+}
 
 animate();

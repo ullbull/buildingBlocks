@@ -24,6 +24,7 @@ let currentTool = builder;
 
 function drawTool() {
   currentTool.draw();
+  boxSelection.draw()
 }
 
 function mouseDown(event) {
@@ -36,6 +37,10 @@ function mouseUp(event) {
 }
 
 function mouseMove(event) {
+  if (event.ctrlKey || event.altKey) {
+    boxSelection.mouseMove(event);
+  }
+
   const minMovement = mouse.getViewPort().pixelSize;
   if (mouse.dragDistance > minMovement) {
     
@@ -60,8 +65,16 @@ function keyDown(event) {
 }
 
 function keyUp(event) {
+  boxSelection.keyUp(event);
   currentTool.keyUp(event);
 }
+
+
+
+
+
+
+
 
 export {
   drawTool,
@@ -75,81 +88,26 @@ export {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function ToolManager() {
-//   builder = new tools.Builder();
-//   boxSelection = new tools.BoxSelection();
-//   mover = new tools.Mover();
-//   currentTool = builder;
-
-//   drawTool = function () {
-//     currentTool.draw();
-//   }
-
-//   mouseDown = function (event) {
-//     if (mouse.hoveredBlock) {
-//       currentTool = builder;
-//     }
-
-//     currentTool.mouseDown(event);
-//     boxSelection.mouseDown(event);
-//   }
-
-//   mouseUp = function (event) {
-//     currentTool.mouseUp(event);
-//   }
-
-//   mouseMove = function (event) {
-//     const minMovement = mouse.getViewPort().pixelSize;
-//     if (event.movementX >= minMovement ||
-//       event.movementY >= minMovement) {
-//     }
-
-//     switch (event.buttons) {
-//       case 0:     // No button down while moving
-//         currentTool = builder;
-//         break;
-
-//       case 1:     // Left button down while moving
-//       case 2:     // Right button down while moving
-//         if (!mouse.clickedBlock) {
-//           currentTool = boxSelection;
-//         }
-//         break;
-
-//       case 4:     // Middle button down while moving
-//         currentTool = mover;
-//         break;
-
-//       default:
-//         break;
-//     }
-
-//     currentTool.mouseMove(event);
-//   }
-
-//   keyDown = function (event) {
-//     currentTool.keyDown(event);
-//   }
-
-//   keyUp = function (event) {
-//     currentTool.keyUp(event);
-//   }
+// currentTool = boxSelection;
+// function mouseDown(event) {
+//   currentTool.mouseDown(event);
 // }
 
-// export {
-//   ToolManager
+// function mouseUp(event) {
+//   currentTool.mouseUp(event);
 // }
+
+// function mouseMove(event) {
+//   currentTool.mouseMove(event);
+// }
+
+// function keyDown(event) {
+//   currentTool.keyDown(event);
+// }
+
+// function keyUp(event) {
+//   currentTool.keyUp(event);
+// }
+
+
+

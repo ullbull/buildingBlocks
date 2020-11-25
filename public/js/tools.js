@@ -7,6 +7,7 @@ import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import * as linkKeeper from './linkKeeper.js';
+import { appStatus } from './appStatus.js';
 
 
 function Builder() {
@@ -267,8 +268,8 @@ function BoxSelection() {
   this.addGridPointsByMovement = function (event) {
     const movementPxX = Math.abs(event.movementX) / mouse.viewPort.pixelSize;
     const movementPxY = Math.abs(event.movementY) / mouse.viewPort.pixelSize;
-    let x = this.wp.x;
-    let y = this.wp.y;
+    let x = mouse.wp.x;
+    let y = mouse.wp.y;
 
     // for (let ix = 0; ix < movementPxX; ix++) {
     //   for (let iy = 0; iy < movementPxY; iy++) { 
@@ -299,10 +300,12 @@ function BoxSelection() {
   }
 
   this.draw = function () {
-    if (true) {
-      mouse.viewPort.DrawRectangle(
-        this.x, this.y, this.width, this.height, this.color
-      );
+    mouse.viewPort.DrawRectangle(
+      this.x, this.y, this.width, this.height, this.color
+    );
+
+    if (appStatus.debug) {
+      mouse.viewPort.DrawGridPoints(this.gridPoints, 'red');
     }
   }
 

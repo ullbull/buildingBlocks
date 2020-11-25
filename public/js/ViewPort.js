@@ -66,6 +66,10 @@ export class ViewPort {
       size = options.size;
     }
 
+    if (options.hasOwnProperty('alphaValue')) {
+      pixel.color = helpers.getAlphaColor(pixel.color, options.alphaValue);
+    }
+
     // Draw Pixel
     this.DrawRectangle(pixel.x, pixel.y, size, size, pixel.color);
   }
@@ -217,7 +221,7 @@ export class ViewPort {
   DrawGridPoint(gridPoint, color = 'blue') {
     const position = gridPoint.split(',');
     const pixel = blockModule.createPixel(position[0], position[1], color);
-    this.DrawPixel(pixel, { 'size': 0.25 });
+    this.DrawPixel(pixel, { 'size': 0.25, alphaValue: 0.5 });
   }
 
   DrawGridPoints(gridPoints, color) {
