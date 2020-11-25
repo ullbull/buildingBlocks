@@ -180,6 +180,9 @@ export class ViewPort {
       if (options.hasOwnProperty('name')) {
         this.DrawText(options.name, block.x, block.y);
       }
+      if (block.hasOwnProperty('name')) {
+        this.DrawText(block.name, block.x, block.y);
+      }
 
       ///////DEBUGGING CODE/////////////
       if (appStatus.debug) {

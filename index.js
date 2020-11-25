@@ -113,6 +113,7 @@ app.post('/workers', (request, response) => {
   // Get the data from client
   const worker = request.body;
 
+  console.log('got worker', worker);
   // Add timestamp
   worker.timestamp = Date.now();
 

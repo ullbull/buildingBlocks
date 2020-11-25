@@ -20,7 +20,7 @@ const highlightColor = 'rgba(170,70,50,0.5)';
 const viewPort = new ViewPort(canvas.width, canvas.height, 20, context);
 mouse.setViewPort(viewPort);
 const margin = 20;
-const workerID = (Date.now() + Math.random()).toString();
+const workerID = helpers.generateID();
 const startBlock = blockModule.createBlock(0, 0, 4, 2, fillColor, { x: 0, y: 0 });
 let cursor = startBlock;
 let workers = {};
@@ -48,6 +48,9 @@ function animate() {
   // Draw tool
   toolManager.drawTool();
 
+  // Draw workers
+  viewPort.DrawBlocks(workers);
+
   viewPort.DrawGrid();
 
   if (appStatus.debug) {
@@ -65,16 +68,17 @@ window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
 
 async function mouseMove(event) {
-  // // Send this worker to server if mouse is moved one grid square
+  // Send this worker to server if mouse is moved one grid square
   // if ((gridPosition.x != lastGridPosition.x) || (gridPosition.y != lastGridPosition.y)) {
-  //   const worker = helpers.copyObject(cursor);
-  //   worker.id = workerID;
-  //   worker.name = document.getElementById("playerName").value;
+  if (true) {
+    const worker = helpers.copyObject(cursor);
+    worker.id = workerID;
+    worker.name = document.getElementById("playerName").value;
 
-  //   await api.sendData('/workers', worker);
+    await api.sendData('/workers', worker);
 
-  //   lastGridPosition = mouse.GetGridPosition();
-  // }
+    // lastGridPosition = mouse.GetGridPosition();
+  }
 
   mouse.mouseMove(event);
   toolManager.mouseMove(event);
@@ -160,6 +164,7 @@ function keyDown(event) {
       console.log('blockData:', dataKeeper.getBlockData());
       console.log('selectedBlocks:', selector.getBlocks());
       console.log('appStatus', appStatus);
+      console.log('Workers', workers);
     }
   }
 
