@@ -52,8 +52,7 @@ function animate() {
   viewPort.DrawGrid();
 
   if (appStatus.debug) {
-    viewPort.DrawAllGridPoints();
-    viewPort.DrawGridPoints(toolManager.gridPoints, 'red');
+    viewPort.DrawAllGridPoints({ alphaValue: 0.5 });
   }
 }
 
@@ -173,8 +172,8 @@ function keyUp(event) {
   toolManager.keyUp(event);
 }
 
-window.onkeydown = function(e){
-  if(e.altKey){
+window.onkeydown = function (e) {
+  if (e.altKey) {
     e.preventDefault();
   }
 }

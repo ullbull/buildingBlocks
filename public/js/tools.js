@@ -305,7 +305,7 @@ function BoxSelection() {
     );
 
     if (appStatus.debug) {
-      mouse.viewPort.DrawGridPoints(this.gridPoints, 'red');
+      mouse.viewPort.DrawGridPoints(this.gridPoints, {color: 'red'});
     }
   }
 
@@ -351,7 +351,8 @@ function BoxSelection() {
         selector.addBlocksByGridPoints(this.gridPoints, mouse.viewPort)
       }
       if (deselect) {   // Right button down
-        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort);
+        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort, 'selected');
+        // selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort, 'idle');
       }
     }
     else if (event.ctrlKey || event.altKey) {
@@ -363,7 +364,8 @@ function BoxSelection() {
       if (event.ctrlKey) {
         selector.addBlocksByGridPoints(this.gridPoints, mouse.viewPort)
       } else if (event.altKey) {
-        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort);
+        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort, 'selected');
+        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort, 'idle');
       }
     }
   }

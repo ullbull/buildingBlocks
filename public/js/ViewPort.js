@@ -218,23 +218,30 @@ export class ViewPort {
     this.DrawBlocks(dataKeeper.getBlockData().blocks, options);
   }
 
-  DrawGridPoint(gridPoint, color = 'blue') {
+  DrawGridPoint(gridPoint, options = {}) {
+    if (!options.hasOwnProperty('color')) {
+      options.color = 'blue';
+    }
+    if (!options.hasOwnProperty('size')) {
+      options.size = 0.25;
+    }
+
     const position = gridPoint.split(',');
-    const pixel = blockModule.createPixel(position[0], position[1], color);
-    this.DrawPixel(pixel, { 'size': 0.25, alphaValue: 0.5 });
+    const pixel = blockModule.createPixel(position[0], position[1], options.color);
+    this.DrawPixel(pixel, options);
   }
 
-  DrawGridPoints(gridPoints, color) {
+  DrawGridPoints(gridPoints, options = {}) {
     for (const key in gridPoints) {
       if (gridPoints.hasOwnProperty(key)) {
         const gridPoint = gridPoints[key];
-        this.DrawGridPoint(key, color);
+        this.DrawGridPoint(key, options);
       }
     }
   }
 
-  DrawAllGridPoints() {
-    this.DrawGridPoints(dataKeeper.getBlockData().gridPoints);
+  DrawAllGridPoints(options = {}) {
+    this.DrawGridPoints(dataKeeper.getBlockData().gridPoints, options);
   }
 
   SetCenterX(x) {

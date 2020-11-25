@@ -61,26 +61,27 @@ function addBlocksArray(blocksArray, to = 'selected') {
   });
 }
 
-function removeBlock(block) {
+function removeBlock(block, from = 'selected') {
+  setBlocksToModify(from);
   if (typeof block != 'undefined') {
     if (block.hasOwnProperty('id')) {
-      delete selectedBlocks[block.id];
+      delete blocksToModify[block.id];
     }
   }
 }
 
-function addBlocksByGridPoints(gridPoints, viewport) {
+function addBlocksByGridPoints(gridPoints, viewport, to = 'selected') {
   for (const key in gridPoints) {
     if (gridPoints.hasOwnProperty(key)) {
-      addBlock(helpers.getBlockByKey(key, viewport));
+      addBlock(helpers.getBlockByKey(key, viewport), to);
     }
   }
 }
 
-function removeBlocksByGridPoints(gridPoints, viewport) {
+function removeBlocksByGridPoints(gridPoints, viewport, from = 'selected') {
   for (const key in gridPoints) {
     if (gridPoints.hasOwnProperty(key)) {
-      removeBlock(helpers.getBlockByKey(key, viewport));
+      removeBlock(helpers.getBlockByKey(key, viewport), from);
     }
   }
 }
