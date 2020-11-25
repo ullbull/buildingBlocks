@@ -1,6 +1,6 @@
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
-import { ViewPort } from './ViewPort.js';
+import { Viewport } from './Viewport.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as api from './api.js';
 import * as toolManager from './toolManager.js';
@@ -17,8 +17,8 @@ const context = canvas.getContext('2d');
 
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
-const viewPort = new ViewPort(canvas.width, canvas.height, 20, context);
-mouse.setViewPort(viewPort);
+const viewport = new Viewport(canvas.width, canvas.height, 20, context);
+mouse.setViewPort(viewport);
 const worker = blockModule.createBlock(0,0,4,2,'gray');
 let workers = {};
 
@@ -37,21 +37,21 @@ function animate() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw blocks
-  viewPort.DrawAllBlocks({ hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
+  viewport.DrawAllBlocks({ hiddenBlockIDs: blockHider.getHiddenBlockIDs(), drawAnchorPoint: 1 });
 
   // Draw selected blocks
-  viewPort.DrawBlocks(selector.getBlocks(), { color: highlightColor });
+  viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
 
   // Draw tool
   toolManager.drawTool();
 
   // Draw workers
-  viewPort.DrawWorkers(workers, worker);
+  viewport.DrawWorkers(workers, worker);
 
-  viewPort.DrawGrid();
+  viewport.DrawGrid();
 
   if (appStatus.debug) {
-    viewPort.DrawAllGridPoints({ alphaValue: 0.5 });
+    viewport.DrawAllGridPoints({ alphaValue: 0.5 });
   }
 }
 
@@ -91,18 +91,18 @@ function mouseUp(event) {
 
 function mouseWheel(event) {
   let zoomValue = event.deltaY / 100;
-  let newPixelSize = viewPort.pixelSize - zoomValue;
-  let oldPixelSize = viewPort.pixelSize;
+  let newPixelSize = viewport.pixelSize - zoomValue;
+  let oldPixelSize = viewport.pixelSize;
 
-  appStatus.hideGrid = (viewPort.pixelSize < 10);
+  appStatus.hideGrid = (viewport.pixelSize < 10);
 
   if (newPixelSize >= 1) {
     // Zoom in/out
-    viewPort.pixelSize = newPixelSize;
+    viewport.pixelSize = newPixelSize;
 
     // Get mouse grid position
-    let x = position.valueToGridValue(event.x, viewPort);
-    let y = position.valueToGridValue(event.y, viewPort);
+    let x = position.valueToGridValue(event.x, viewport);
+    let y = position.valueToGridValue(event.y, viewport);
 
     const anchorPoint = {
       x: (x / oldPixelSize) * newPixelSize,
@@ -110,8 +110,8 @@ function mouseWheel(event) {
     };
 
     // Move canvas to zoom in/out at cursor position
-    viewPort.SetXAtAnchorPoint(anchorPoint.x, x);
-    viewPort.SetYAtAnchorPoint(anchorPoint.y, y);
+    viewport.SetXAtAnchorPoint(anchorPoint.x, x);
+    viewport.SetYAtAnchorPoint(anchorPoint.y, y);
   }
 }
 
@@ -137,16 +137,16 @@ function keyDown(event) {
   }
 
   if (event.key == 'ArrowUp') {
-    viewPort.y--;
+    viewport.y--;
   }
   if (event.key == 'ArrowDown') {
-    viewPort.y++;
+    viewport.y++;
   }
   if (event.key == 'ArrowLeft') {
-    viewPort.x--;
+    viewport.x--;
   }
   if (event.key == 'ArrowRight') {
-    viewPort.x++;
+    viewport.x++;
   }
 
   if (event.code == 'Space') {

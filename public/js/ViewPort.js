@@ -5,7 +5,7 @@ import * as position from './positionTranslator.js';
 import { appStatus } from './appStatus.js'
 import * as toolManager from './toolManager.js';
 
-export class ViewPort {
+export class Viewport {
   constructor(width, height, pixelSize, context) {
     this.x = 0;
     this.y = 0;

@@ -2,7 +2,7 @@ import * as helpers from './helpers.js';
 import * as position from './positionTranslator.js';
 
 // Must call setViewPort() before use
-let viewPort;
+let viewport;
 let wp = { x: 0, y: 0 };    // World Position
 let hoveredBlock = null;
 let clickedBlock = null;
@@ -14,12 +14,12 @@ let rightButton = false;
 let middleButton = false;
 let dragDistance = 0;
 
-function setViewPort(viewPort_) {
-  viewPort = viewPort_;
+function setViewport(viewport_) {
+  viewport = viewport_;
 }
 
 function getViewPort() {
-  return viewPort;
+  return viewport;
 }
 
 function mouseDown(event) {
@@ -29,7 +29,7 @@ function mouseDown(event) {
   if (event.button == 0) {  // Left button down
     leftButton = true;
     clickedBlock = helpers.getBlockByPosition(
-      wp.x, wp.y, viewPort
+      wp.x, wp.y, viewport
     );
   }
   else if (event.button == 1) {  // Middle button down 
@@ -58,11 +58,11 @@ function mouseUp(event) {
 
 function mouseMove(event) {
   wp = position.canvasToWorldPosition(
-    event.x, event.y, viewPort
+    event.x, event.y, viewport
   );
 
   hoveredBlock = helpers.getBlockByPosition(
-    wp.x, wp.y, viewPort
+    wp.x, wp.y, viewport
   );
 
   insideFrame = helpers.insideFrame(
@@ -90,7 +90,7 @@ function keyUp(event) {
 }
 
 export {
-  viewPort,
+  viewport as viewPort,
   wp,
   hoveredBlock,
   clickedBlock,
@@ -101,7 +101,7 @@ export {
   rightButton,
   middleButton,
   dragDistance,
-  setViewPort,
+  setViewport as setViewPort,
   getViewPort,
   mouseDown,
   mouseUp,
