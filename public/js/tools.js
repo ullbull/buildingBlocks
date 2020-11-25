@@ -24,6 +24,7 @@ function Builder() {
   this.hoveredBlocks = [null];
   this.clickedBlock = null;
   this.insideFrame = false;
+  this.drawIdleBlocks = false;
 
   this.draw = function () {
     const alphaValue = (
@@ -31,7 +32,9 @@ function Builder() {
       this.insideFrame
     ) ? 1 : 0.5;
 
-    if (!this.hideMe) {
+    if(this.drawIdleBlocks) {
+      mouse.viewPort.DrawBlocksArray(selector.getBlocksArray('idle'), { color: 'rgba(100,30,60,0.5' });
+    } else if (!this.hideMe) {
       mouse.viewPort.DrawBlocksArray(this.blocks, { alphaValue });
     } else {
       mouse.viewPort.DrawBlocksArray(this.hoveredBlocks, { color: 'rgba(130,30,60,0.5' });
@@ -190,11 +193,14 @@ function Builder() {
   }
 
   this.keyDown = function (event) {
-
+    if (event.altKey) {
+      if(this.hoveredBlock)
+        this.drawIdleBlocks = true;
+    }
   }
 
   this.keyUp = function (event) {
-
+    this.drawIdleBlocks = false;
   }
 }
 

@@ -3,7 +3,6 @@ import * as blockModule from './block.js';
 import { ViewPort } from './ViewPort.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as api from './api.js';
-// import { ToolManager } from './toolManager.js';
 import * as toolManager from './toolManager.js';
 import * as selector from './selector.js';
 import * as blockHider from './blockHider.js';
