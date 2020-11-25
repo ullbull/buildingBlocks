@@ -84,7 +84,7 @@ function saveFile() {
   // Copy file
   fileStream.copyFileSync(filePath, path + fileName + '_' + (fileVersion) + fileExtension);
 
-  fileVersion = (++fileVersion > 20) ? 1 : fileVersion;
+  fileVersion = (++fileVersion > 2) ? 1 : fileVersion;
 
   // Save file
   fileStream.writeFileSync(filePath, dataString);
