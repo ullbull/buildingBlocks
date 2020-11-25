@@ -20,6 +20,7 @@ function Builder() {
   // linkKeeper.addLinkO(this.block, this.blockToBuild);
   this.hideMe = false;
   this.hoveredBlock = null;
+  this.hoveredBlocks = [null];
   this.clickedBlock = null;
   this.insideFrame = false;
 
@@ -30,35 +31,36 @@ function Builder() {
     ) ? 1 : 0.5;
 
     if (!this.hideMe) {
-      // mouse.viewPort.DrawPixel({x: this.x, y: this.y, color: 'green'});
       mouse.viewPort.DrawBlocksArray(this.blocks, { alphaValue });
     } else {
-      mouse.viewPort.DrawBlock(this.hoveredBlock, { color: 'rgba(130,30,60,0.5' });
+      mouse.viewPort.DrawBlocksArray(this.hoveredBlocks, { color: 'rgba(130,30,60,0.5' });
     }
   }
+
 
   this.build = function (method = 'build') {
     // 'build' adds a block with new id       
     // 'move' adds a block with same id
     // which means the block will be moved
 
-    const blocks = this.copyBlocks(this.blocks);
+    const blocksCopy = helpers.copyObject(this.blocks);
 
     if (method == 'build') {
       // Get new id for each block
-      blocks.forEach(block => {
+      blocksCopy.forEach(block => {
         block.id = helpers.generateID()
       });
     }
 
-    selector.resetBlocks();
-    selector.addBlocksArray(blocks);
+    // select the blocks as idle blocks
+    selector.resetBlocks('idle');
+    selector.addBlocksArray(blocksCopy, 'idle');
 
     // Add blocks
-    dataKeeper.addBlocksArray(blocks);
+    dataKeeper.addBlocksArray(blocksCopy);
 
     // Send blocks to server
-    api.sendData('/api', blocks[0]);
+    api.sendData('/api', blocksCopy[0]);
 
     // Reset hidden blocks
     blockHider.resetHiddenBlockIDs();
@@ -77,13 +79,13 @@ function Builder() {
     });
   }
 
-  this.copyBlocks = function (blockArray) {
-    const blocks = [];
-    blockArray.forEach(block => {
-      blocks.push(helpers.copyObject(block));
-    });
-    return blocks;
-  }
+  // this.copyBlocks = function (blockArray) {
+  //   const blocks = [];
+  //   blockArray.forEach(block => {
+  //     blocks.push(helpers.copyObject(block));
+  //   });
+  //   return blocks;
+  // }
 
   this.changeBlockToClickedBlock = function () {
     // Get clicked pixel
@@ -101,16 +103,6 @@ function Builder() {
     blockHider.addHiddenBlockID(this.clickedBlock.id);
   }
 
-  this.applySelectedBlocks = function () {
-
-    this.blocks = (selector.getBlocks().hasOwnProperty(this.clickedBlock.id))
-      ? this.copyBlocks(selector.getBlocksArray())
-      : this.copyBlocks([this.clickedBlock]);
-
-    // Hide applied blocks
-    blockHider.addHiddenBlocks(this.blocks);
-  }
-
   this.mouseDown = function (event) {
     if (event.button == 0) {  // Left button down
       // Set clicked block
@@ -119,7 +111,10 @@ function Builder() {
 
       // Check if any block was clicked
       if (this.clickedBlock) {
-        this.applySelectedBlocks();
+        // Apply hovered blocks to this.blocks
+        // and hide them from viewPort
+        this.blocks = helpers.copyObject(this.hoveredBlocks);
+        blockHider.addHiddenBlocks(this.blocks);
 
         this.hideMe = false;
       }
@@ -143,7 +138,7 @@ function Builder() {
       }
       else {
         // Block was dropped outside frame.
-        
+
         // Delete block
         dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
 
@@ -167,6 +162,18 @@ function Builder() {
 
     this.hoveredBlock = helpers.getBlockByPosition(
       worldPosition.x, worldPosition.y, mouse.viewPort);
+
+    this.hoveredBlocks = [this.hoveredBlock];
+    if (this.hoveredBlock) {
+      if (selector.selectedBlocks[this.hoveredBlock.id]) {
+        // Hovering selected blocks
+        this.hoveredBlocks = selector.getBlocksArray('selected');
+      } else if (selector.idleBlocks[this.hoveredBlock.id]) {
+        // Hovering idle blocks
+        this.hoveredBlocks = selector.getBlocksArray('idle');
+      }
+    }
+
     this.insideFrame = helpers.insideFrame(
       event.x, event.y, window.innerWidth, window.innerHeight, 20);
 

@@ -2,37 +2,62 @@ import * as helpers from './helpers.js';
 import * as dataKeeper from './dataKeeper.js';
 
 let selectedBlocks = {};
+let idleBlocks = {};
+let blocksToModify = selectedBlocks;
 
-function getBlocks() {
-  return selectedBlocks;
+function setBlocksToModify(name) {
+  switch (name) {
+    case 'selected':
+      blocksToModify = selectedBlocks;
+      break;
+
+    case 'idle':
+      blocksToModify = idleBlocks;
+      break;
+
+    default:
+      console.error(`Bad name '${name}'`);
+      break;
+  }
+
 }
 
-function getBlocksArray() {
+function getBlocks(blocksToGet = 'selected') {
+  setBlocksToModify(blocksToGet);
+  return blocksToModify;
+}
+
+function getBlocksArray(blocksToGet = 'selected') {
+  setBlocksToModify(blocksToGet);
+
   const blocks = [];
-  for (const key in selectedBlocks) {
-    if (selectedBlocks.hasOwnProperty(key)) {
-      const block = selectedBlocks[key];
+  for (const key in blocksToModify) {
+    if (blocksToModify.hasOwnProperty(key)) {
+      const block = blocksToModify[key];
       blocks.push(block);
     }
   }
   return blocks;
 }
 
-function resetBlocks() {
-  selectedBlocks = {};
+
+function resetBlocks(blocksToReset = 'selected') {
+  setBlocksToModify(blocksToReset)
+  for (const key in blocksToModify) delete blocksToModify[key];
 }
 
-function addBlock(block) {
+function addBlock(block, to = 'selected') {
   if (typeof block != 'undefined') {
     if (block.hasOwnProperty('id')) {
-      selectedBlocks[block.id] = block;
+      setBlocksToModify(to);
+      blocksToModify[block.id] = block;
     }
   }
 }
 
-function addBlocksArray(blocksArray) {
+function addBlocksArray(blocksArray, to = 'selected') {
   blocksArray.forEach(block => {
-    addBlock(block);
+    addBlock(block, to);
   });
 }
 
@@ -73,6 +98,8 @@ function removeBlocksByGridPoints(gridPoints, viewport) {
 // }
 
 export {
+  selectedBlocks,
+  idleBlocks,
   getBlocks,
   getBlocksArray,
   resetBlocks,
