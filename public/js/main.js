@@ -9,24 +9,16 @@ import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import { appStatus } from './appStatus.js'
+import * as layers from './layers.js';
 
 // const canvas = document.querySelector('canvas');
-const canvases = document.getElementsByTagName('canvas');
-for (let i = 0; i < canvases.length; i++) {
-  canvases[i].width = innerWidth - 1;
-  canvases[i].height = innerHeight - 40;
-}
-
-const background = canvases[0];
-const foreground = canvases[1];
-const cBackground = background.getContext('2d');
-const cForeground = foreground.getContext('2d');
 
 
-let fillColor = 'rgba(160,140,135,1)';
-const highlightColor = 'rgba(170,70,50,0.5)';
-const viewport = new Viewport(background.width, background.height, 20, cForeground);
+
+
+const viewport = new Viewport(innerWidth, innerHeight, 20, layers.background.context);
 mouse.setViewport(viewport);
+layers.setViewport(viewport);
 const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
 let workers = {};
 
@@ -35,87 +27,26 @@ let workers = {};
 dataKeeper.initBlockData();
 setInterval(() => dataKeeper.initBlockData(), 500);
 
-// Reload workers from server
-setInterval(async () => workers = await api.getData('/workers'), 100);
+// // Reload workers from server
+// setInterval(async () => workers = await api.getData('/workers'), 100);
 
 setTimeout(function () {
+  layers.background.refresh();
 }, 100);
 
 
 
 // viewport.AddLayer('foreground', cForeground);
 
-const layerBackground = {
-  context: cForeground,
-  update: function () {
-    // Clear frame
-    this.context.clearRect(0, 0, background.width, background.height);
 
-    // Draw blocks
-    viewport.DrawAllBlocks({
-      hiddenBlockIDs: blockHider.getHiddenBlockIDs(),
-      context: this.context
-    });
-
-    // Draw selected blocks
-    viewport.DrawBlocks(selector.getBlocks(), {
-      color: highlightColor,
-      context: this.context
-    });
-
-    // Draw tool
-    toolManager.drawTool({
-      context: this.context
-    });
-
-    // Draw workers
-    viewport.DrawWorkers(workers, worker, {
-      context: this.context
-    });
-
-    viewport.DrawGrid({
-      context: this.context
-    });
-
-    if (appStatus.debug) {
-      viewport.DrawAllGridPoints({
-        alphaValue: 0.5,
-        context: this.context
-      });
-    }
-
-  }
-}
-
+// setInterval(() => layers.background.refresh = true, 1000);
 
 function animate() {
   requestAnimationFrame(animate);
 
-  layerBackground.update();
+  layers.background.draw();
+  layers.foreground.draw(true);
 
-  // // Clear frame
-  // cForeground.clearRect(0, 0, background.width, background.height);
-
-  // // Draw blocks
-  // viewport.DrawAllBlocks({ 
-  //   hiddenBlockIDs: blockHider.getHiddenBlockIDs(),
-  //   drawAnchorPoint: 1
-  // });
-
-  // // Draw selected blocks
-  // viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
-
-  // // Draw tool
-  // toolManager.drawTool();
-
-  // // Draw workers
-  // viewport.DrawWorkers(workers, worker);
-
-  // viewport.DrawGrid();
-
-  // if (appStatus.debug) {
-  //   viewport.DrawAllGridPoints({ alphaValue: 0.5 });
-  // }
 }
 
 window.addEventListener('contextmenu', event => event.preventDefault());
@@ -128,15 +59,15 @@ window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
 
 async function mouseMove(event) {
-  // Send this worker to server if mouse is moved one grid square
-  // if ((gridPosition.x != lastGridPosition.x) || (gridPosition.y != lastGridPosition.y)) {
-  if (true) {
-    blockModule.setBlockPosition(worker, mouse.wp.x, mouse.wp.y);
-    worker.name = document.getElementById("playerName").value;
-    await api.sendData('/workers', worker);
+  // // Send this worker to server if mouse is moved one grid square
+  // // if ((gridPosition.x != lastGridPosition.x) || (gridPosition.y != lastGridPosition.y)) {
+  // if (true) {
+  //   blockModule.setBlockPosition(worker, mouse.wp.x, mouse.wp.y);
+  //   worker.name = document.getElementById("playerName").value;
+  //   await api.sendData('/workers', worker);
 
-    // lastGridPosition = mouse.GetGridPosition();
-  }
+  //   // lastGridPosition = mouse.GetGridPosition();
+  // }
 
   mouse.mouseMove(event);
   toolManager.mouseMove(event);
@@ -173,8 +104,7 @@ function mouseWheel(event) {
     };
 
     // Move canvas to zoom in/out at cursor position
-    viewport.SetXAtAnchorPoint(anchorPoint.x, x);
-    viewport.SetYAtAnchorPoint(anchorPoint.y, y);
+    viewport.SetPositionAtAnchorPoint(anchorPoint, { x, y })
   }
 }
 

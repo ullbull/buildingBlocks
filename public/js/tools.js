@@ -6,7 +6,7 @@ import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
-import * as linkKeeper from './linkKeeper.js';
+import * as layers from './layers.js';
 import { appStatus } from './appStatus.js';
 
 
@@ -121,6 +121,7 @@ function Builder() {
 
       // Check if any block was clicked
       if (this.clickedBlock) {
+        layers.background.refresh();
         // Apply hovered blocks to this.blocks
         // and hide them from viewPort
         this.blocks = helpers.copyObject(this.hoveredBlocks);
@@ -133,6 +134,7 @@ function Builder() {
 
   this.mouseUp = function (event) {
     if (event.button == 0) {  // Left button up 
+      layers.background.refresh();
       this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20);
 
       if (this.insideFrame) {
@@ -223,8 +225,10 @@ function Mover() {
   this.mouseMove = function (event) {
     if (event.buttons == 4) {
       // Middle button down
-      mouse.getViewport().x -= event.movementX / mouse.getViewport().pixelSize;
-      mouse.getViewport().y -= event.movementY / mouse.getViewport().pixelSize;
+      mouse.getViewport().SetPosition(
+        mouse.getViewport().x - event.movementX / mouse.getViewport().pixelSize,
+        mouse.getViewport().y - event.movementY / mouse.getViewport().pixelSize
+      );
     }
   }
 

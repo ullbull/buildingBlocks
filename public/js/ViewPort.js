@@ -3,7 +3,7 @@ import * as blockModule from './block.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as position from './positionTranslator.js';
 import { appStatus } from './appStatus.js'
-import * as toolManager from './toolManager.js';
+import * as layers from './layers.js';
 
 export class Viewport {
   constructor(width, height, pixelSize, context) {
@@ -12,7 +12,7 @@ export class Viewport {
     this.width = width;
     this.height = height;
     this.pixelSize = pixelSize;
-    this.layers = { 'background': context};
+    this.layers = { 'background': context };
     // this.anchorPoint = { x: 0, y: 0 };
     // this.pixels = {};
   }
@@ -220,7 +220,10 @@ export class Viewport {
         if (!hiddenBlockIDs.hasOwnProperty(key)) {
           this.DrawBlock(block, options);
         } else {
-          this.DrawBlock(block, { color: 'rgba(100,90,100,0.1' });
+          this.DrawBlock(block, {
+            color: 'rgba(100,90,100,0.2',
+            context: options.context
+          });
         }
       }
     }
@@ -274,25 +277,39 @@ export class Viewport {
     this.DrawGridPoints(dataKeeper.getBlockData().gridPoints, options);
   }
 
-  SetCenterX(x) {
-    this.x = x - this.width / 2;
+  SetPosition(x, y) {
+    this.x = x;
+    this.y = y;
+    layers.background.refresh();
   }
 
-  SetCenterY(y) {
-    this.y = y - this.height / 2;
+  SetPositionAtAnchorPoint(anchorPoint, position) {
+    this.SetPosition(
+      this.x + anchorPoint.x - position.x,
+      this.y + anchorPoint.y - position.y
+    )
   }
 
-  SetCenterPosition(x, y) {
-    this.SetCenterX(x);
-    this.SetCenterY(y);
-  }
+  // SetXAtAnchorPoint(xAnchorPoint, x) {
+  //   this.x += xAnchorPoint - x;
+  // }
 
-  SetXAtAnchorPoint(xAnchorPoint, x) {
-    this.x += xAnchorPoint - x;
-  }
+  // SetYAtAnchorPoint(yAnchorPoint, y) {
+  //   this.y += yAnchorPoint - y;
+  // }
 
-  SetYAtAnchorPoint(yAnchorPoint, y) {
-    this.y += yAnchorPoint - y;
-  }
+  // SetCenterX(x) {
+  //   this.x = x - this.width / 2;
+  // }
+
+  // SetCenterY(y) {
+  //   this.y = y - this.height / 2;
+  // }
+
+  // SetCenterPosition(x, y) {
+  //   this.SetCenterX(x);
+  //   this.SetCenterY(y);
+  // }
+
 
 }
