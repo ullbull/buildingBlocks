@@ -17,6 +17,14 @@ export class Viewport {
     // this.pixels = {};
   }
 
+  getWorldWidth() {
+    return this.width / this.pixelSize;
+  }
+
+  getWorldHeight() {
+    return this.height / this.pixelSize;
+  }
+
   AddLayer(layerName, context) {
     if (this.layers.hasOwnProperty(layerName)) {
       console.error(`The layer "${layerName}" already exists!`);

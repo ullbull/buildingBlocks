@@ -10,6 +10,7 @@ import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import { appStatus } from './appStatus.js'
 import * as layers from './layers.js';
+import * as scanner from './scanner.js';
 
 // const canvas = document.querySelector('canvas');
 
@@ -64,7 +65,6 @@ async function mouseMove(event) {
     blockModule.setBlockPosition(dataKeeper.worker, mouse.wp.x, mouse.wp.y);
     dataKeeper.worker.name = document.getElementById("playerName").value;
     await api.sendData('/workers', dataKeeper.worker);
-    console.log(dataKeeper.worker);
     
     lastWp = mouse.wp;
   }
@@ -126,9 +126,6 @@ function keyDown(event) {
   }
   if (event.key == 'm') {
   }
-  if (event.key == 's') {
-  }
-
   if (event.key == 'ArrowUp') {
     viewport.y--;
   }
@@ -152,7 +149,7 @@ function keyDown(event) {
       console.log('blockData:', dataKeeper.getBlockData());
       console.log('selectedBlocks:', selector.getBlocks());
       console.log('appStatus', appStatus);
-      console.log('Workers', workers);
+      console.log('Workers', dataKeeper.workers);
     }
   }
 
@@ -162,6 +159,12 @@ function keyDown(event) {
 function keyUp(event) {
   appStatus.spaceKeyDown = false;
   toolManager.keyUp(event);
+
+  if (event.key == 's') {
+    scanner.defineArea(viewport.getWorldWidth(), viewport.getWorldHeight());
+    let scannedBlocks = scanner.scan();
+    console.log('scannedBlocks', scannedBlocks);
+  }
 }
 
 window.onkeydown = function (e) {

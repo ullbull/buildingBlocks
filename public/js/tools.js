@@ -200,8 +200,6 @@ function Builder() {
     // Set position
     this.setPosition(mouse.wp.x, mouse.wp.y);
 
-
-
     this.refreshHoveredBlocks();
 
     this.insideFrame = helpers.insideFrame(

@@ -87,7 +87,7 @@ function getBlockUnderMouse(mouse) {
   return blockID;
 }
 
-function getBlockByKey(key, viewport) {
+function getBlockByKey(key) {
   const blockID = dataKeeper.getBlockData().gridPoints[key];
   let block;
   if (typeof blockID != 'undefined') {
