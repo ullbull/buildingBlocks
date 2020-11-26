@@ -79,6 +79,11 @@ export class Viewport {
     height = position.toValueViewport(height, this);
 
     context.fillRect(x, y, width, height);
+
+    if(options.hasOwnProperty('stroke')) {
+      context.lineWidth = options.stroke;
+      context.strokeRect(x,y,width,height);
+    }
   }
 
   DrawPixel(pixel, options = {}) {

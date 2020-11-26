@@ -34,16 +34,16 @@ function Builder() {
 
     if (this.drawIdleBlocks) {
       options.color = 'rgba(100,30,60,0.5';
-      mouse.viewPort.DrawBlocksArray(selector.getBlocksArray('idle'), options);
+      mouse.viewport.DrawBlocksArray(selector.getBlocksArray('idle'), options);
     }
     else if (!this.hideMe) {
       delete options.color;
       options.alphaValue = alphaValue;
-      mouse.viewPort.DrawBlocksArray(this.blocks, options);
+      mouse.viewport.DrawBlocksArray(this.blocks, options);
     }
     else {
       options.color = 'rgba(130,30,60,0.5';
-      mouse.viewPort.DrawBlocksArray(this.hoveredBlocks, options);
+      mouse.viewport.DrawBlocksArray(this.hoveredBlocks, options);
     }
   }
 
@@ -117,7 +117,7 @@ function Builder() {
     if (event.button == 0) {  // Left button down
       // Set clicked block
       this.clickedBlock = helpers.getBlockByPosition(
-        this.x, this.y, mouse.viewPort);
+        this.x, this.y, mouse.viewport);
 
       // Check if any block was clicked
       if (this.clickedBlock) {
@@ -170,13 +170,13 @@ function Builder() {
   this.mouseMove = function (event) {
     // Should be able to use mouse.wp instead
     const worldPosition = position.canvasToWorldPosition(
-      event.x, event.y, mouse.viewPort);
+      event.x, event.y, mouse.viewport);
 
     // Set position
     this.setPosition(mouse.wp.x, mouse.wp.y);
 
     this.hoveredBlock = helpers.getBlockByPosition(
-      worldPosition.x, worldPosition.y, mouse.viewPort);
+      worldPosition.x, worldPosition.y, mouse.viewport);
 
     this.hoveredBlocks = [this.hoveredBlock];
     if (this.hoveredBlock) {
@@ -244,9 +244,9 @@ function BoxSelection() {
   this.y = 0;
   this.width = 0;
   this.height = 0;
-  this.color = 'rgba(200,200,255,0.5)';
+  this.color = 'rgba(200,200,255,0.1)';
+  this.strokeWidth = 1;
   this.gridPoints = {};
-  // this.hideMe = true;
 
   this.initGridPoints = function () {
     this.clearGridPoints();
@@ -282,8 +282,8 @@ function BoxSelection() {
   }
 
   this.addGridPointsByMovement = function (event) {
-    const movementPxX = Math.abs(event.movementX) / mouse.viewPort.pixelSize;
-    const movementPxY = Math.abs(event.movementY) / mouse.viewPort.pixelSize;
+    const movementPxX = Math.abs(event.movementX) / mouse.viewport.pixelSize;
+    const movementPxY = Math.abs(event.movementY) / mouse.viewport.pixelSize;
     let x = mouse.wp.x;
     let y = mouse.wp.y;
 
@@ -316,11 +316,12 @@ function BoxSelection() {
   }
 
   this.draw = function (options = {}) {
-    mouse.viewPort.DrawRectangle(
+    options.stroke = this.strokeWidth;
+    mouse.viewport.DrawRectangle(
       this.x, this.y, this.width, this.height, this.color, options);
 
     if (appStatus.debug) {
-      mouse.viewPort.DrawGridPoints(this.gridPoints, { color: 'red' });
+      mouse.viewport.DrawGridPoints(this.gridPoints, { color: 'red' });
     }
   }
 
@@ -363,11 +364,11 @@ function BoxSelection() {
       this.setHeight(mouse.wp.y - this.y);
 
       if (select) {   // Left button down
-        selector.addBlocksByGridPoints(this.gridPoints, mouse.viewPort)
+        selector.addBlocksByGridPoints(this.gridPoints, mouse.viewport)
       }
       if (deselect) {   // Right button down
-        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort, 'selected');
-        // selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort, 'idle');
+        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewport, 'selected');
+        // selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewport, 'idle');
       }
     }
     else if (event.ctrlKey || event.altKey) {
@@ -377,10 +378,10 @@ function BoxSelection() {
       this.addGridPointsByMovement(event);
 
       if (event.ctrlKey) {
-        selector.addBlocksByGridPoints(this.gridPoints, mouse.viewPort)
+        selector.addBlocksByGridPoints(this.gridPoints, mouse.viewport)
       } else if (event.altKey) {
-        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort, 'selected');
-        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewPort, 'idle');
+        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewport, 'selected');
+        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewport, 'idle');
       }
     }
   }
@@ -388,7 +389,7 @@ function BoxSelection() {
   this.keyDown = function (event) {
     if (event.ctrlKey || event.altKey) {
       const hoveredBlock = helpers.getBlockByPosition(
-        mouse.wp.x, mouse.wp.y, mouse.viewPort
+        mouse.wp.x, mouse.wp.y, mouse.viewport
       );
 
       if (event.ctrlKey) {

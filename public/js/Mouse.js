@@ -3,6 +3,8 @@ import * as position from './positionTranslator.js';
 
 // Must call setViewPort() before use
 let viewport;
+let x = 0;
+let y = 0;
 let wp = { x: 0, y: 0 };    // World Position
 let hoveredBlock = null;
 let clickedBlock = null;
@@ -57,6 +59,9 @@ function mouseUp(event) {
 }
 
 function mouseMove(event) {
+  x = event.x;
+  y = event.y;
+
   wp = position.canvasToWorldPosition(
     event.x, event.y, viewport
   );
@@ -90,7 +95,9 @@ function keyUp(event) {
 }
 
 export {
-  viewport as viewPort,
+  x,
+  y,
+  viewport,
   wp,
   hoveredBlock,
   clickedBlock,
