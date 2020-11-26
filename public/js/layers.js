@@ -8,6 +8,7 @@ import * as blockHider from './blockHider.js';
 import * as selector from './selector.js';
 import * as toolManager from './toolManager.js';
 import { appStatus } from './appStatus.js';
+import * as dataKeeper from './dataKeeper.js';
 
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
@@ -25,6 +26,40 @@ const cForeground = canvases[1].getContext('2d');
 let viewport;
 function setViewport(viewport_) {
   viewport = viewport_
+}
+
+const foreground = {
+  context: cForeground,
+  changed: false,
+  refresh: function () {
+    this.changed = true;
+  },
+  draw: function (forceRefresh = false) {
+    if (forceRefresh) { this.changed = true; }
+    if (this.changed) {
+      this.changed = false;
+
+      // Clear frame
+      this.context.clearRect(0, 0, viewport.width, viewport.height);
+
+      // Draw tool
+      toolManager.drawTool({
+        context: this.context
+      });
+
+      // Draw selected blocks
+      viewport.DrawBlocks(selector.getBlocks(), {
+        color: highlightColor,
+        context: this.context
+      });
+
+      // Draw workers
+      viewport.DrawWorkers(dataKeeper.workers, dataKeeper.worker, {
+        context: this.context
+      });
+
+    }
+  }
 }
 
 const background = {
@@ -61,42 +96,10 @@ const background = {
   }
 }
 
-const foreground = {
-  context: cForeground,
-  changed: false,
-  refresh: function () {
-    this.changed = true;
-  },
-  draw: function (forceRefresh = false) {
-    if (forceRefresh) { this.changed = true; }
-    if (this.changed) {
-      this.changed = false;
 
-      // Clear frame
-      this.context.clearRect(0, 0, viewport.width, viewport.height);
-
-      // Draw tool
-      toolManager.drawTool({
-        context: this.context
-      });
-
-      // Draw selected blocks
-      viewport.DrawBlocks(selector.getBlocks(), {
-        color: highlightColor,
-        context: this.context
-      });
-
-      // // Draw workers
-      // viewport.DrawWorkers(workers, worker, {
-      //   context: this.context
-      // });
-
-    }
-  }
-}
 
 export {
   setViewport,
+  foreground,
   background,
-  foreground
 }

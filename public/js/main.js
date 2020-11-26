@@ -19,16 +19,15 @@ import * as layers from './layers.js';
 const viewport = new Viewport(innerWidth, innerHeight, 20, layers.background.context);
 mouse.setViewport(viewport);
 layers.setViewport(viewport);
-const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
-let workers = {};
+
 
 
 // Reload block data from server
 dataKeeper.initBlockData();
 setInterval(() => dataKeeper.initBlockData(), 5000);
 
-// // Reload workers from server
-// setInterval(async () => workers = await api.getData('/workers'), 100);
+// Reload workers from server
+setInterval(async () => dataKeeper.initWorkers(), 100);
 
 setTimeout(function () {
   layers.background.refresh();
@@ -58,16 +57,17 @@ window.addEventListener('mousewheel', mouseWheel);
 window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
 
+let lastWp = mouse.wp;
 async function mouseMove(event) {
-  // // Send this worker to server if mouse is moved one grid square
-  // // if ((gridPosition.x != lastGridPosition.x) || (gridPosition.y != lastGridPosition.y)) {
-  // if (true) {
-  //   blockModule.setBlockPosition(worker, mouse.wp.x, mouse.wp.y);
-  //   worker.name = document.getElementById("playerName").value;
-  //   await api.sendData('/workers', worker);
-
-  //   // lastGridPosition = mouse.GetGridPosition();
-  // }
+  // Send this worker to server if mouse is moved one grid square
+  if ((mouse.wp.x != lastWp.x) || (mouse.wp.y != lastWp.y)) {
+    blockModule.setBlockPosition(dataKeeper.worker, mouse.wp.x, mouse.wp.y);
+    dataKeeper.worker.name = document.getElementById("playerName").value;
+    await api.sendData('/workers', dataKeeper.worker);
+    console.log(dataKeeper.worker);
+    
+    lastWp = mouse.wp;
+  }
 
   mouse.mouseMove(event);
   toolManager.mouseMove(event);

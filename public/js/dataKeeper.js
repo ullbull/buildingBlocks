@@ -3,10 +3,16 @@ import * as blockModule from './block.js';
 import * as api from './api.js';
 
 let blockData = { blocks: {}, gridPoints: {} };
+const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
+let workers = {};
 
 async function initBlockData() {
   const blockData = await api.getData('/api');
   setBlockData(blockData);
+}
+
+async function initWorkers() {
+  workers = await api.getData('/workers');
 }
 
 function getBlockData() {
@@ -156,8 +162,11 @@ function deleteGridPoint(x, y) {
 }
 
 export {
+  worker,
+  workers,
   getBlockData,
   initBlockData,
+  initWorkers,
   setBlockData,
   addBlock,
   addBlocks,

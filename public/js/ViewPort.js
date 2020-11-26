@@ -98,12 +98,17 @@ export class Viewport {
     this.DrawRectangle(pixel.x, pixel.y, size, size, pixel.color, options);
   }
 
-  DrawText(text, x, y, size = 18, color = 'black', font = 'Arial') {
-    this.layers.background.font = '' + size + 'px ' + font;
-    this.layers.background.fillStyle = color;
+  DrawText(text, x, y, size = 18, color = 'black', font = 'Arial', options = {}) {
+    let context = this.layers.background;
+    if('context' in options) {
+      context = options.context;
+    }
+
+    context.font = '' + size + 'px ' + font;
+    context.fillStyle = color;
     x = position.worldXToViewport(x, this);
     y = position.worldYToViewport(y, this);
-    this.layers.background.fillText(text, x, y);
+    context.fillText(text, x, y);
   }
 
   StrokePixel(pixel, lineWidth, color, options) {
@@ -201,7 +206,7 @@ export class Viewport {
       }
 
       if (options.hasOwnProperty('name')) {
-        this.DrawText(options.name, block.x, block.y - 0.5);
+        this.DrawText(options.name, block.x, block.y - 0.5, 18, 'black', 'Arial', options);
       }
 
       ///////DEBUGGING CODE/////////////
