@@ -23,8 +23,13 @@ const mover = new tools.Mover();
 let currentTool = builder;
 
 function drawTool(options = {}) {
-  currentTool.draw(options);
-  boxSelection.draw(options)
+  try {
+    currentTool.draw(options);
+    boxSelection.draw(options)
+  }
+  catch(error) {
+    console.error(error);
+  }
 }
 
 function mouseDown(event) {

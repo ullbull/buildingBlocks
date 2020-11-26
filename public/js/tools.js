@@ -74,6 +74,8 @@ function Builder() {
 
     // Reset hidden blocks
     blockHider.resetHiddenBlockIDs();
+
+    this.refreshHoveredBlocks();
   }
 
   this.setPosition = function (x, y) {
@@ -113,8 +115,25 @@ function Builder() {
     blockHider.addHiddenBlockID(this.clickedBlock.id);
   }
 
+  this.refreshHoveredBlocks = function () {
+    this.hoveredBlock = helpers.getBlockByPosition(
+      mouse.wp.x, mouse.wp.y, mouse.viewport);
+
+    this.hoveredBlocks = [this.hoveredBlock];
+    if (this.hoveredBlock) {
+      if (selector.selectedBlocks[this.hoveredBlock.id]) {
+        // Hovering selected blocks
+        this.hoveredBlocks = selector.getBlocksArray('selected');
+      } else if (selector.idleBlocks[this.hoveredBlock.id]) {
+        // Hovering idle blocks
+        this.hoveredBlocks = selector.getBlocksArray('idle');
+      }
+    }
+  }
+
   this.mouseDown = function (event) {
     if (event.button == 0) {  // Left button down
+
       // Set clicked block
       this.clickedBlock = helpers.getBlockByPosition(
         this.x, this.y, mouse.viewport);
@@ -125,7 +144,13 @@ function Builder() {
         // Apply hovered blocks to this.blocks
         // and hide them from viewPort
         this.blocks = helpers.copyObject(this.hoveredBlocks);
-        blockHider.addHiddenBlocks(this.blocks);
+
+        try {
+          blockHider.addHiddenBlocks(this.blocks);
+        }
+        catch (error) {
+          console.error(error);
+        }
 
         this.hideMe = false;
       }
@@ -135,6 +160,7 @@ function Builder() {
   this.mouseUp = function (event) {
     if (event.button == 0) {  // Left button up 
       layers.background.refresh();
+
       this.insideFrame = helpers.insideFrame(event.x, event.y, window.innerWidth, window.innerHeight, 20);
 
       if (this.insideFrame) {
@@ -175,19 +201,9 @@ function Builder() {
     // Set position
     this.setPosition(mouse.wp.x, mouse.wp.y);
 
-    this.hoveredBlock = helpers.getBlockByPosition(
-      worldPosition.x, worldPosition.y, mouse.viewport);
 
-    this.hoveredBlocks = [this.hoveredBlock];
-    if (this.hoveredBlock) {
-      if (selector.selectedBlocks[this.hoveredBlock.id]) {
-        // Hovering selected blocks
-        this.hoveredBlocks = selector.getBlocksArray('selected');
-      } else if (selector.idleBlocks[this.hoveredBlock.id]) {
-        // Hovering idle blocks
-        this.hoveredBlocks = selector.getBlocksArray('idle');
-      }
-    }
+
+    this.refreshHoveredBlocks();
 
     this.insideFrame = helpers.insideFrame(
       event.x, event.y, window.innerWidth, window.innerHeight, 20);

@@ -5,6 +5,9 @@ function addHiddenBlockID(blockID) {
 }
 
 function addHiddenBlocks(blockArray) {
+  // if (!blockArray[0]) {
+  //   return;
+  // }
   blockArray.forEach(block => {
     addHiddenBlockID(block.id);
   });
