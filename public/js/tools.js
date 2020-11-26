@@ -26,18 +26,24 @@ function Builder() {
   this.insideFrame = false;
   this.drawIdleBlocks = false;
 
-  this.draw = function () {
+  this.draw = function (options = {}) {
     const alphaValue = (
       this.clickedBlock &&
       this.insideFrame
     ) ? 1 : 0.5;
 
-    if(this.drawIdleBlocks) {
-      mouse.viewPort.DrawBlocksArray(selector.getBlocksArray('idle'), { color: 'rgba(100,30,60,0.5' });
-    } else if (!this.hideMe) {
-      mouse.viewPort.DrawBlocksArray(this.blocks, { alphaValue });
-    } else {
-      mouse.viewPort.DrawBlocksArray(this.hoveredBlocks, { color: 'rgba(130,30,60,0.5' });
+    if (this.drawIdleBlocks) {
+      options.color = 'rgba(100,30,60,0.5';
+      mouse.viewPort.DrawBlocksArray(selector.getBlocksArray('idle'), options);
+    }
+    else if (!this.hideMe) {
+      delete options.color;
+      options.alphaValue = alphaValue;
+      mouse.viewPort.DrawBlocksArray(this.blocks, options);
+    }
+    else {
+      options.color = 'rgba(130,30,60,0.5';
+      mouse.viewPort.DrawBlocksArray(this.hoveredBlocks, options);
     }
   }
 
@@ -194,7 +200,7 @@ function Builder() {
 
   this.keyDown = function (event) {
     if (event.altKey) {
-      if(this.hoveredBlock)
+      if (this.hoveredBlock)
         this.drawIdleBlocks = true;
     }
   }
@@ -305,13 +311,12 @@ function BoxSelection() {
     this.initGridPoints();
   }
 
-  this.draw = function () {
+  this.draw = function (options = {}) {
     mouse.viewPort.DrawRectangle(
-      this.x, this.y, this.width, this.height, this.color
-    );
+      this.x, this.y, this.width, this.height, this.color, options);
 
     if (appStatus.debug) {
-      mouse.viewPort.DrawGridPoints(this.gridPoints, {color: 'red'});
+      mouse.viewPort.DrawGridPoints(this.gridPoints, { color: 'red' });
     }
   }
 

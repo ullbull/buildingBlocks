@@ -21,9 +21,6 @@ const background = canvases[0];
 const foreground = canvases[1];
 const cBackground = background.getContext('2d');
 const cForeground = foreground.getContext('2d');
-cForeground.fillStyle = 'black';
-cForeground.fillRect(10, 10, 50, 50);
-
 
 
 let fillColor = 'rgba(160,140,135,1)';
@@ -41,35 +38,84 @@ setInterval(() => dataKeeper.initBlockData(), 500);
 // Reload workers from server
 setInterval(async () => workers = await api.getData('/workers'), 100);
 
-setTimeout(function(){ 
+setTimeout(function () {
 }, 100);
+
+
+
+// viewport.AddLayer('foreground', cForeground);
+
+const layerBackground = {
+  context: cForeground,
+  update: function () {
+    // Clear frame
+    this.context.clearRect(0, 0, background.width, background.height);
+
+    // Draw blocks
+    viewport.DrawAllBlocks({
+      hiddenBlockIDs: blockHider.getHiddenBlockIDs(),
+      context: this.context
+    });
+
+    // Draw selected blocks
+    viewport.DrawBlocks(selector.getBlocks(), {
+      color: highlightColor,
+      context: this.context
+    });
+
+    // Draw tool
+    toolManager.drawTool({
+      context: this.context
+    });
+
+    // Draw workers
+    viewport.DrawWorkers(workers, worker, {
+      context: this.context
+    });
+
+    viewport.DrawGrid({
+      context: this.context
+    });
+
+    if (appStatus.debug) {
+      viewport.DrawAllGridPoints({
+        alphaValue: 0.5,
+        context: this.context
+      });
+    }
+
+  }
+}
+
 
 function animate() {
   requestAnimationFrame(animate);
-  
-  // Clear frame
-  cForeground.clearRect(0, 0, background.width, background.height);
-  
-  // Draw blocks
-  viewport.DrawAllBlocks({ 
-    hiddenBlockIDs: blockHider.getHiddenBlockIDs(),
-    drawAnchorPoint: 1
-  });
 
-  // Draw selected blocks
-  viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
+  layerBackground.update();
 
-  // Draw tool
-  toolManager.drawTool();
+  // // Clear frame
+  // cForeground.clearRect(0, 0, background.width, background.height);
 
-  // Draw workers
-  viewport.DrawWorkers(workers, worker);
+  // // Draw blocks
+  // viewport.DrawAllBlocks({ 
+  //   hiddenBlockIDs: blockHider.getHiddenBlockIDs(),
+  //   drawAnchorPoint: 1
+  // });
 
-  viewport.DrawGrid();
+  // // Draw selected blocks
+  // viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
 
-  if (appStatus.debug) {
-    viewport.DrawAllGridPoints({ alphaValue: 0.5 });
-  }
+  // // Draw tool
+  // toolManager.drawTool();
+
+  // // Draw workers
+  // viewport.DrawWorkers(workers, worker);
+
+  // viewport.DrawGrid();
+
+  // if (appStatus.debug) {
+  //   viewport.DrawAllGridPoints({ alphaValue: 0.5 });
+  // }
 }
 
 window.addEventListener('contextmenu', event => event.preventDefault());

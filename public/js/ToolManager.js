@@ -22,9 +22,9 @@ const boxSelection = new tools.BoxSelection();
 const mover = new tools.Mover();
 let currentTool = builder;
 
-function drawTool() {
-  currentTool.draw();
-  boxSelection.draw()
+function drawTool(options = {}) {
+  currentTool.draw(options);
+  boxSelection.draw(options)
 }
 
 function mouseDown(event) {

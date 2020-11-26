@@ -50,7 +50,7 @@ function addBlock(block, to = 'selected') {
   if (typeof block != 'undefined') {
     if (block.hasOwnProperty('id')) {
       setBlocksToModify(to);
-      blocksToModify[block.id] = block;
+      blocksToModify[block.id] = helpers.copyObject(block);
     }
   }
 }

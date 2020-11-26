@@ -12,18 +12,31 @@ export class Viewport {
     this.width = width;
     this.height = height;
     this.pixelSize = pixelSize;
-    this.context = context;
+    this.layers = { 'background': context};
     // this.anchorPoint = { x: 0, y: 0 };
     // this.pixels = {};
   }
 
-  DrawGrid() {
+  AddLayer(layerName, context) {
+    if (this.layers.hasOwnProperty(layerName)) {
+      console.error(`The layer "${layerName}" already exists!`);
+    } else {
+      this.layers[layerName] = context;
+    }
+  }
+
+  DrawGrid(options = {}) {
+    let context = this.layers.background
+    if (options.hasOwnProperty('context')) {
+      context = options.context;
+    }
+
     // Don't draw grid if pixelSize is too small
     if (this.pixelSize < 5) return;
 
-    this.context.lineWidth = 1;
-    this.context.strokeStyle = 'rgba(0,0,0,' + (this.pixelSize / 150) + ')';
-    this.context.beginPath();
+    context.lineWidth = 1;
+    context.strokeStyle = 'rgba(0,0,0,' + (this.pixelSize / 150) + ')';
+    context.beginPath();
     let x;
     let y;
 
@@ -31,26 +44,26 @@ export class Viewport {
     for (let row = 0; row < this.height; row += this.pixelSize) {
       x = 0;
       y = -((this.y * this.pixelSize) % this.pixelSize) + row;
-      this.context.moveTo(x, y);
+      context.moveTo(x, y);
 
       x = this.width;
-      this.context.lineTo(x, y);
+      context.lineTo(x, y);
     }
 
     // Draw columns
     for (let column = 0; column < this.width; column += this.pixelSize) {
       x = -((this.x * this.pixelSize) % this.pixelSize) + column;
       y = 0;
-      this.context.moveTo(x, y);
+      context.moveTo(x, y);
 
       y = this.height;
-      this.context.lineTo(x, y);
+      context.lineTo(x, y);
     }
-    this.context.stroke();
+    context.stroke();
   }
 
   DrawRectangle(x, y, width, height, color, options = {}) {
-    let context = this.context;
+    let context = this.layers.background;
     if (options.hasOwnProperty('context')) {
       context = options.context;
     }
@@ -69,7 +82,7 @@ export class Viewport {
   }
 
   DrawPixel(pixel, options = {}) {
-    let context = this.context;
+    let context = this.layers.background;
     let size = 1;
 
     if (options.hasOwnProperty('size')) {
@@ -81,15 +94,15 @@ export class Viewport {
   }
 
   DrawText(text, x, y, size = 18, color = 'black', font = 'Arial') {
-    this.context.font = '' + size + 'px ' + font;
-    this.context.fillStyle = color;
+    this.layers.background.font = '' + size + 'px ' + font;
+    this.layers.background.fillStyle = color;
     x = position.worldXToViewport(x, this);
     y = position.worldYToViewport(y, this);
-    this.context.fillText(text, x, y);
+    this.layers.background.fillText(text, x, y);
   }
 
   StrokePixel(pixel, lineWidth, color, options) {
-    let context = this.context;
+    let context = this.layers.background;
     if (options.hasOwnProperty('context')) {
       context = options.context;
     }
