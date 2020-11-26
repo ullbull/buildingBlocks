@@ -1,5 +1,6 @@
 import * as tools from './tools.js';
 import * as mouse from './mouse.js';
+import * as layers from './layers.js';
 
 /*
 tool move =
@@ -72,6 +73,7 @@ function keyDown(event) {
 function keyUp(event) {
   boxSelection.keyUp(event);
   currentTool.keyUp(event);
+  layers.background.refresh();
 }
 
 

@@ -44,7 +44,7 @@ setTimeout(function () {
 function animate() {
   requestAnimationFrame(animate);
 
-  layers.background.draw();
+  layers.background.draw(appStatus.debug);
   layers.foreground.draw(true);
 
 }

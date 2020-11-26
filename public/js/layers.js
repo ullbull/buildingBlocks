@@ -7,7 +7,7 @@
 import * as blockHider from './blockHider.js';
 import * as selector from './selector.js';
 import * as toolManager from './toolManager.js';
-import * as appStatus from './appStatus.js';
+import { appStatus } from './appStatus.js';
 
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';

@@ -40,10 +40,25 @@ function getBlocksArray(blocksToGet = 'selected') {
   return blocks;
 }
 
+function getBlockIDs(blocksToGet = 'selected') {
+  setBlocksToModify(blocksToGet);
 
+  const blockIDs = {};
+  for (const key in blocksToModify) {
+    if (blocksToModify.hasOwnProperty(key)) {
+      const block = blocksToModify[key];
+      blockIDs[block.id] = block.id;
+    }
+  }
+  return blockIDs;
+}
+
+// Reset blocks and return blockIDs
 function resetBlocks(blocksToReset = 'selected') {
   setBlocksToModify(blocksToReset)
+  const blockIDs = getBlockIDs(blocksToReset);
   for (const key in blocksToModify) delete blocksToModify[key];
+  return blockIDs;
 }
 
 function addBlock(block, to = 'selected') {
@@ -86,6 +101,16 @@ function removeBlocksByGridPoints(gridPoints, viewport, from = 'selected') {
   }
 }
 
+function isEmpty(blocksToCheck = 'selected') {
+  setBlocksToModify(blocksToCheck);
+  for (const key in blocksToModify) {
+    if (blocksToModify.hasOwnProperty(key)) {
+      return false;      
+    }
+  }
+  return true;
+}
+
 // function refresh() {
 //   const oldBlocks = helpers.copyObject(selectedBlocks);
 //   resetBlocks();
@@ -103,11 +128,13 @@ export {
   idleBlocks,
   getBlocks,
   getBlocksArray,
+  getBlockIDs,
   resetBlocks,
   addBlock,
   addBlocksArray,
   removeBlock,
   addBlocksByGridPoints,
   removeBlocksByGridPoints,
+  isEmpty
   // refresh
 }

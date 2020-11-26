@@ -121,6 +121,15 @@ function insideFrame(x, y, width, height, margin = 0) {
   );
 }
 
+function isObjectEmpty(object) {
+  for (const key in object) {
+    if (object.hasOwnProperty(key)) {
+      return false;      
+    }
+  }
+  return true;
+}
+
 export {
   positionToKey,
   colorValues,
@@ -133,5 +142,6 @@ export {
   getXGrid,
   getYGrid,
   getGridPosition,
-  insideFrame
+  insideFrame,
+  isObjectEmpty
 };

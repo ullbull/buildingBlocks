@@ -32,7 +32,7 @@ function addBlock(block) {
 
   // Add the block
   blockData.blocks[blockCopy.id] = blockCopy;
-// 
+  // 
   // Add grid points
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
@@ -60,7 +60,7 @@ function addBlocksArray(blocks) {
     addBlock(block);
   });
 }
- 
+
 function addBlockAndChildren(block) {
   addBlock(block);
   if (block.hasOwnProperty('children')) {
@@ -142,6 +142,14 @@ function deleteBlocksGlobally(blockIDs) {
   api.deleteBlocksFromServer(blockIDs);
 }
 
+function deleteBlocksGloballyArray(blockArray) {
+  const blockIDs = {};
+  blockArray.forEach(block => {
+    blockIDs[block.id] = block.id;
+  });
+  deleteBlocksGlobally(blockIDs);
+}
+
 function deleteGridPoint(x, y) {
   const key = helpers.positionToKey(x, y);
   delete blockData.gridPoints[key];
@@ -160,5 +168,6 @@ export {
   deleteBlocks,
   deleteBlockGlobally,
   deleteBlocksGlobally,
+  deleteBlocksGloballyArray,
   deleteGridPoint
 };

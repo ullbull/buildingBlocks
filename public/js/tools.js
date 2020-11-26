@@ -192,7 +192,6 @@ function Builder() {
     }
   }
 
-
   this.mouseMove = function (event) {
     // Should be able to use mouse.wp instead
     const worldPosition = position.canvasToWorldPosition(
@@ -225,6 +224,36 @@ function Builder() {
 
   this.keyUp = function (event) {
     this.drawIdleBlocks = false;
+
+    if (event.key == 'Delete') {
+      // Delete hovered blocks if any blocks are hovered
+      if (this.hoveredBlocks[0]) {
+        let hoveredSelected = (selector.getBlocks('selected')[this.hoveredBlock.id]);
+        dataKeeper.deleteBlocksGloballyArray(this.hoveredBlocks);
+
+        // Reset hovered blocks
+        this.hoveredBlocks = [];
+
+        if (hoveredSelected) {
+          // Reset selected blocks
+          selector.resetBlocks('selected')
+
+          // Change blocks to initial block
+          blockModule.setBlockPosition(this.initialBlock, mouse.wp.x, mouse.wp.y);
+          this.blocks = [this.initialBlock];
+        }
+      }
+      // Delete selected blocks if no block is hovered
+      else if (!helpers.isObjectEmpty(selector.selectedBlocks)) {
+        dataKeeper.deleteBlocksGlobally(selector.resetBlocks('selected'));
+
+        // Change blocks to initial block
+        blockModule.setBlockPosition(this.initialBlock, mouse.wp.x, mouse.wp.y);
+        this.blocks = [this.initialBlock];
+      }
+
+
+    }
   }
 }
 
@@ -252,6 +281,7 @@ function Mover() {
   }
 
   this.keyUp = function (event) {
+
   }
 }
 
