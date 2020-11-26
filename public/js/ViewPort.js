@@ -13,10 +13,8 @@ export class Viewport {
     this.height = height;
     this.pixelSize = pixelSize;
     this.context = context;
-    // this.actualWidth = width * pixelSize;
-    // this.actualHeight = height * pixelSize;
-    this.pixels = {};
-    this.anchorPoint = { x: 0, y: 0 };
+    // this.anchorPoint = { x: 0, y: 0 };
+    // this.pixels = {};
   }
 
   DrawGrid() {
@@ -51,7 +49,16 @@ export class Viewport {
     this.context.stroke();
   }
 
-  DrawRectangle(x, y, width, height, color , context = this.context) {
+  DrawRectangle(x, y, width, height, color, options = {}) {
+    let context = this.context;
+    if (options.hasOwnProperty('context')) {
+      context = options.context;
+    }
+
+    if (options.hasOwnProperty('alphaValue')) {
+      color = helpers.getAlphaColor(color, options.alphaValue);
+    }
+
     context.fillStyle = color;
     x = position.worldXToViewport(x, this);
     y = position.worldYToViewport(y, this);
@@ -64,21 +71,13 @@ export class Viewport {
   DrawPixel(pixel, options = {}) {
     let context = this.context;
     let size = 1;
-    
-    if (options.hasOwnProperty('context')) {
-      context = options.context;
-    }
 
     if (options.hasOwnProperty('size')) {
       size = options.size;
     }
 
-    if (options.hasOwnProperty('alphaValue')) {
-      pixel.color = helpers.getAlphaColor(pixel.color, options.alphaValue);
-    }
-
     // Draw Pixel
-    this.DrawRectangle(pixel.x, pixel.y, size, size, pixel.color, context);
+    this.DrawRectangle(pixel.x, pixel.y, size, size, pixel.color, options);
   }
 
   DrawText(text, x, y, size = 18, color = 'black', font = 'Arial') {
@@ -89,16 +88,20 @@ export class Viewport {
     this.context.fillText(text, x, y);
   }
 
-  StrokePixel(pixel, lineWidth, color) {
+  StrokePixel(pixel, lineWidth, color, options) {
+    let context = this.context;
+    if (options.hasOwnProperty('context')) {
+      context = options.context;
+    }
+
     let x = position.worldXToViewport(pixel.x, this);
     let y = position.worldYToViewport(pixel.y, this);
     let pixelSize = 1;
     pixelSize = position.toValueViewport(pixelSize, this);
 
-    // let edges = ['right'];
-    this.context.lineWidth = position.toValueViewport(lineWidth, this);
-    this.context.strokeStyle = color;
-    this.context.beginPath();
+    context.lineWidth = position.toValueViewport(lineWidth, this);
+    context.strokeStyle = color;
+    context.beginPath();
 
     pixel.clearEdges.forEach(edge => {
       let xStart;
@@ -113,8 +116,8 @@ export class Viewport {
           xEnd = xStart + pixelSize;
           yEnd = yStart;
 
-          this.context.moveTo(xStart, yStart);
-          this.context.lineTo(xEnd, yEnd);
+          context.moveTo(xStart, yStart);
+          context.lineTo(xEnd, yEnd);
           break;
         case 'bottom':
           xStart = x;
@@ -122,8 +125,8 @@ export class Viewport {
           xEnd = xStart + pixelSize;
           yEnd = yStart;
 
-          this.context.moveTo(xStart, yStart);
-          this.context.lineTo(xEnd, yEnd);
+          context.moveTo(xStart, yStart);
+          context.lineTo(xEnd, yEnd);
           break;
         case 'left':
           xStart = x;
@@ -131,8 +134,8 @@ export class Viewport {
           xEnd = xStart;
           yEnd = yStart + pixelSize;
 
-          this.context.moveTo(xStart, yStart);
-          this.context.lineTo(xEnd, yEnd);
+          context.moveTo(xStart, yStart);
+          context.lineTo(xEnd, yEnd);
           break;
         case 'right':
           xStart = x + pixelSize;
@@ -140,8 +143,8 @@ export class Viewport {
           xEnd = xStart;
           yEnd = yStart + pixelSize;
 
-          this.context.moveTo(xStart, yStart);
-          this.context.lineTo(xEnd, yEnd);
+          context.moveTo(xStart, yStart);
+          context.lineTo(xEnd, yEnd);
           break;
         default:
           console.log('Invalid value for edge: ', edge);
@@ -151,7 +154,7 @@ export class Viewport {
     });
 
     // Stroke edges
-    this.context.stroke();
+    context.stroke();
   }
 
   DrawBlock(block, options = {}) {
@@ -164,11 +167,6 @@ export class Viewport {
             pixel.color = options.color;
           }
 
-          if (options.hasOwnProperty('alphaValue')) {
-            pixel.color = helpers.getAlphaColor(pixel.color, options.alphaValue);
-          }
-
-
           // Set pixel relative to block
           const position = blockModule.getGridPosition(block, key);
           pixel.x = position.x;
@@ -179,8 +177,8 @@ export class Viewport {
             pixel.y += options.offsetPosition.y;
           }
 
-          this.DrawPixel(pixel);
-          this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)');
+          this.DrawPixel(pixel, options);
+          this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)', options);
         }
       }
 
@@ -219,7 +217,7 @@ export class Viewport {
     for (const key in workers) {
       if (workers.hasOwnProperty(key)) {
         const worker = workers[key];
-        if(worker.id != excluded.id) {
+        if (worker.id != excluded.id) {
           options.name = worker.name;
           this.DrawBlock(worker, options);
         }
@@ -284,19 +282,4 @@ export class Viewport {
     this.y += yAnchorPoint - y;
   }
 
-  // Move(mouseEvent) {
-  //   if (mouse.empty && mouseEvent.buttons == 1) {
-  //     mouse.movedDistance += Math.abs(mouse.x - mouse.lastX) + Math.abs(mouse.y - mouse.lastY);
-
-  //     if (mouse.movedDistance > 100) {
-  //       // Move viewPort
-  //       this.x -= mouse.x - mouse.lastX;
-  //       this.y -= mouse.y - mouse.lastY;
-  //       mouse.movingViewport = true;
-  //     }
-  //   }
-  // }
 }
-
-// module.exports = ViewPort;
-

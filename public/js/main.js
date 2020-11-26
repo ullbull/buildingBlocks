@@ -29,7 +29,7 @@ cForeground.fillRect(10, 10, 50, 50);
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
 const viewport = new Viewport(background.width, background.height, 20, cForeground);
-mouse.setViewPort(viewport);
+mouse.setViewport(viewport);
 const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
 let workers = {};
 
@@ -42,30 +42,30 @@ setInterval(() => dataKeeper.initBlockData(), 500);
 setInterval(async () => workers = await api.getData('/workers'), 100);
 
 setTimeout(function(){ 
-  // Draw blocks
-  viewport.DrawAllBlocks({ 
-    hiddenBlockIDs: blockHider.getHiddenBlockIDs(),
-    drawAnchorPoint: 1,
-    context: cBackground 
-  });
 }, 100);
 
 function animate() {
   requestAnimationFrame(animate);
-
+  
   // Clear frame
   cForeground.clearRect(0, 0, background.width, background.height);
+  
+  // Draw blocks
+  viewport.DrawAllBlocks({ 
+    hiddenBlockIDs: blockHider.getHiddenBlockIDs(),
+    drawAnchorPoint: 1
+  });
 
-  // // Draw selected blocks
-  // viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
+  // Draw selected blocks
+  viewport.DrawBlocks(selector.getBlocks(), { color: highlightColor });
 
-  // // Draw tool
-  // toolManager.drawTool();
+  // Draw tool
+  toolManager.drawTool();
 
-  // // Draw workers
-  // viewport.DrawWorkers(workers, worker);
+  // Draw workers
+  viewport.DrawWorkers(workers, worker);
 
-  // viewport.DrawGrid();
+  viewport.DrawGrid();
 
   if (appStatus.debug) {
     viewport.DrawAllGridPoints({ alphaValue: 0.5 });

@@ -41,7 +41,7 @@ function mouseMove(event) {
     boxSelection.mouseMove(event);
   }
 
-  const minMovement = mouse.getViewPort().pixelSize;
+  const minMovement = mouse.getViewport().pixelSize;
   if (mouse.dragDistance > minMovement) {
     
     if (event.buttons == 0) {      // No buttons down

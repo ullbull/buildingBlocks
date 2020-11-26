@@ -217,8 +217,8 @@ function Mover() {
   this.mouseMove = function (event) {
     if (event.buttons == 4) {
       // Middle button down
-      mouse.getViewPort().x -= event.movementX / mouse.getViewPort().pixelSize;
-      mouse.getViewPort().y -= event.movementY / mouse.getViewPort().pixelSize;
+      mouse.getViewport().x -= event.movementX / mouse.getViewport().pixelSize;
+      mouse.getViewport().y -= event.movementY / mouse.getViewport().pixelSize;
     }
   }
 

@@ -18,7 +18,7 @@ function setViewport(viewport_) {
   viewport = viewport_;
 }
 
-function getViewPort() {
+function getViewport() {
   return viewport;
 }
 
@@ -101,8 +101,8 @@ export {
   rightButton,
   middleButton,
   dragDistance,
-  setViewport as setViewPort,
-  getViewPort,
+  setViewport,
+  getViewport,
   mouseDown,
   mouseUp,
   mouseMove,
