@@ -1,11 +1,46 @@
 'use strict';
+
 const express = require('express');
+
+const PORT = 3000;
+const WS_PORT = 8082;
+
+// Create the app
+const app = express();
+
+// Set up the server
+const server = app.listen(PORT, () => {
+  console.log('Listening at', PORT);
+});
+
+app.use(express.static('public'));
+
+const WebSocket = require('ws');
+const wsServer = new WebSocket.Server({ port: WS_PORT });
+
+wsServer.on('connection', webSocket => {
+  console.log("New client connected!");
+
+  webSocket.on('message', data => {
+    const msg = JSON.parse(data);
+    console.log('Client has sent us:', msg);
+
+    webSocket.send(JSON.stringify(msg));
+  })
+
+  webSocket.on('close', () => {
+    console.log('Client has disconnected!');
+  });
+});
+
+
+
+/* 
 const fileStream = require('fs');
 const dataKeeper = require('./dataKeeper_njs.js');
 const blockModule = require('./block_njs.js');
 const cleanup = require("./cleanup.js");
 
-const app = express();
 
 let fileVersion = 1;
 const path = './blockData/';
@@ -22,7 +57,7 @@ console.log(dataKeeper.getBlockData());
 const workers = {};
 exports.workers = workers;
 
-app.listen(3000, () => console.log('listening at 3000'));
+app.listen(PORT, () => console.log('listening at', PORT));
 app.use(express.static('public'));
 app.use(express.json({ limit: '1mb' }));
 
@@ -125,3 +160,4 @@ app.post('/workers', (request, response) => {
 });
 
 ////////////////////////////////////////////////////
+ */

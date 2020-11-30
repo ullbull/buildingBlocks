@@ -18,10 +18,37 @@
   <div>
     <h5>Enter your name:
       <input class="nameInput" type="text" id="playerName" value="Anonymous worker">
+      <button onclick="sendMessage()">Send</button>
     </h5>
   </div>
   <!-- <script src="js/buildingBlocksBundle.js"></script> -->
   <script type="module" src="js/main.js"></script>
+
+  <script>
+    const webSocket = new WebSocket('ws://localhost:8082');
+
+    const msg = {
+      id: 123,
+      message: 'No message'
+    }
+
+    webSocket.addEventListener('open', () => {
+      console.log('We are connected!');
+    
+    });
+    webSocket.addEventListener('message', receiveMessage);
+    
+    function receiveMessage(event) {
+      const msg = JSON.parse(event.data);
+      console.log(msg);
+    }
+    
+    function sendMessage() {
+      msg.message = document.getElementById("playerName").value;
+      webSocket.send(JSON.stringify(msg));
+      console.log(msg);
+    }
+  </script>
 </body>
 
 </html>
