@@ -15,6 +15,43 @@ import * as scanner from './scanner.js';
 // const canvas = document.querySelector('canvas');
 
 
+/////////////////////////////////////////////
+
+const webSocket = new WebSocket('ws://localhost:8082');
+
+const msg = {
+  id: 123,
+  message: 'No message'
+}
+
+webSocket.addEventListener('open', () => {
+  console.log('We are connected!');
+
+});
+webSocket.addEventListener('message', receiveMessage);
+
+function receiveMessage(event) {
+  const msg = JSON.parse(event.data);
+  console.log(msg);
+  dataKeeper.setWorkers(msg);
+}
+
+function sendSocket() {
+  msg.message = document.getElementById("playerName").value;
+  webSocket.send(JSON.stringify(msg));
+  console.log(msg);
+}
+
+function sendWorker(worker) {
+  webSocket.send(JSON.stringify(worker));
+}
+
+//////////////////////////////////////////////
+
+
+
+
+
 
 
 const viewport = new Viewport(innerWidth, innerHeight, 20, layers.background.context);
@@ -27,8 +64,8 @@ layers.setViewport(viewport);
 dataKeeper.initBlockData();
 setInterval(() => dataKeeper.initBlockData(), 5000);
 
-// Reload workers from server
-setInterval(async () => dataKeeper.initWorkers(), 100);
+// // Reload workers from server
+// setInterval(async () => dataKeeper.initWorkers(), 100);
 
 setTimeout(function () {
   layers.background.refresh();
@@ -64,8 +101,8 @@ async function mouseMove(event) {
   if ((mouse.wp.x != lastWp.x) || (mouse.wp.y != lastWp.y)) {
     blockModule.setBlockPosition(dataKeeper.worker, mouse.wp.x, mouse.wp.y);
     dataKeeper.worker.name = document.getElementById("playerName").value;
-    await api.sendData('/workers', dataKeeper.worker);
-    
+    // await api.sendData('/workers', dataKeeper.worker);
+    webSocket.send(JSON.stringify(dataKeeper.worker));
     lastWp = mouse.wp;
   }
 
