@@ -2,6 +2,16 @@ import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import * as api from './api.js';
 
+
+
+
+
+
+
+
+
+
+
 let blockData = { blocks: {}, gridPoints: {} };
 const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
 let workers = {};

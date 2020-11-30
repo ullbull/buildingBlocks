@@ -51,6 +51,11 @@ wsServer.on('connection', webSocket => {
     webSocket.send(JSON.stringify(msg));
   })
 
+  setInterval(() => {
+    webSocket.send(JSON.stringify(workers));
+  }, 5000);
+
+
   webSocket.on('close', () => {
     console.log('Client has disconnected!');
   });
@@ -73,11 +78,11 @@ app.post('/api', (request, response) => {
   console.log('Receiving data!');
   // Get the data from client
   const data = request.body;
-  
+
   dataKeeper.addBlocksArray(data);
-  
+
   // saveFile();
-  
+
   // Send a response back to client
   response.json({ message: 'thanks' });
 });
