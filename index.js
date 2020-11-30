@@ -48,12 +48,32 @@ wsServer.on('connection', webSocket => {
     const msg = JSON.parse(data);
     console.log('Client has sent us:', msg);
 
-    webSocket.send(JSON.stringify(msg));
+
+
+    // Get the data from client
+    const worker = msg;
+
+    console.log('got worker', worker.id);
+    // Add timestamp
+    worker.timestamp = Date.now();
+
+    // Store worker
+    workers[worker.id] = worker;
+
+    // Send to all clients except this I think
+    wsServer.clients.forEach(function each(client) {
+      if (client !== webSocket && client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(workers));
+      }
+    })
+
+    // // Send a response back to client
+    // webSocket.send(JSON.stringify(workers));
   })
 
-  setInterval(() => {
-    webSocket.send(JSON.stringify(workers));
-  }, 5000);
+  // setInterval(() => {
+  //   webSocket.send(JSON.stringify(workers));
+  // }, 100);
 
 
   webSocket.on('close', () => {

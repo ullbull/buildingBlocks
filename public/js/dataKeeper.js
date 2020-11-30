@@ -25,6 +25,10 @@ async function initWorkers() {
   workers = await api.getData('/workers');
 }
 
+function setWorkers(wkrs) {
+  workers = wkrs;
+}
+
 function getBlockData() {
   return blockData;
 }
@@ -188,5 +192,6 @@ export {
   deleteBlockGlobally,
   deleteBlocksGlobally,
   deleteBlocksGloballyArray,
-  deleteGridPoint
+  deleteGridPoint,
+  setWorkers
 };
