@@ -1,12 +1,7 @@
 'use strict';
 
-const express = require('express');
 
-const PORT = 3000;
-const WS_PORT = 8082;
 
-// Create the app
-const app = express();
 
 const fileStream = require('fs');
 const dataKeeper = require('./dataKeeper_njs.js');
@@ -29,6 +24,12 @@ console.log(dataKeeper.getBlockData());
 const workers = {};
 exports.workers = workers;
 
+
+const PORT = 3000;
+const WS_PORT = 8082;
+const express = require('express');
+// Create the app
+const app = express();
 app.listen(PORT, () => console.log('listening at', PORT));
 app.use(express.static('public'));
 // app.use(express.json({ limit: '1mb' }));
@@ -51,6 +52,26 @@ app.use(express.static('public'));
 //   });
 // });
 
+const WebSocket = require('ws');
+const wsServer = new WebSocket.Server({ port: WS_PORT });
+
+wsServer.on('connection', webSocket => {
+  console.log("New client connected!");
+
+  webSocket.on('message', data => {
+    const msg = JSON.parse(data);
+    console.log('Client has sent us:', msg);
+
+    webSocket.send(JSON.stringify(msg));
+  })
+
+  webSocket.on('close', () => {
+    console.log('Client has disconnected!');
+  });
+});
+
+
+
 setInterval(() => deleteOldWorkers(), 1000);
 
 // Cleanup if block data is corrupt
@@ -66,11 +87,11 @@ app.post('/api', (request, response) => {
   console.log('Receiving data!');
   // Get the data from client
   const data = request.body;
-
+  
   dataKeeper.addBlocksArray(data);
-
+  
   // saveFile();
-
+  
   // Send a response back to client
   response.json({ message: 'thanks' });
 });
