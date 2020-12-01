@@ -58,6 +58,9 @@ const foreground = {
         context: this.context
       });
 
+      // viewport.DrawWorkers(dataKeeper.workers, { id: 'apa' }, {
+      //   context: this.context
+      // });
     }
   }
 }

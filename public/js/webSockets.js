@@ -13,9 +13,10 @@ webSocket.addEventListener('open', () => {
 });
 webSocket.addEventListener('message', receiveMessage);
 
+// Receiving all workers
 function receiveMessage(event) {
   const msg = JSON.parse(event.data);
-  console.log(msg);
+  // console.log(msg);
   dataKeeper.setWorkers(msg);
 }
 

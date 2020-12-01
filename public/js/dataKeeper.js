@@ -2,19 +2,9 @@ import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import * as api from './api.js';
 
-
-
-
-
-
-
-
-
-
-
 let blockData = { blocks: {}, gridPoints: {} };
 const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
-let workers = {};
+let workers = {test: 'apa'};
 
 async function initBlockData() {
   const blockData = await api.getData('/api');
@@ -35,6 +25,22 @@ function getBlockData() {
 
 function setBlockData(data) {
   blockData = data;
+}
+
+function add(data, to) {
+  try {
+    to[data.id] = data;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function addData(data, to) {
+  if(to == 'workers') {
+    add(data, workers);
+  } else {
+    console.error(`The variable ${data} doesn't exist!`);
+  }
 }
 
 function addBlock(block) {
@@ -178,6 +184,8 @@ function deleteGridPoint(x, y) {
 export {
   worker,
   workers,
+  setWorkers,
+  addData,
   getBlockData,
   initBlockData,
   initWorkers,
@@ -193,5 +201,4 @@ export {
   deleteBlocksGlobally,
   deleteBlocksGloballyArray,
   deleteGridPoint,
-  setWorkers
 };
