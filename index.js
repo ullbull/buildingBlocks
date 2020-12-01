@@ -1,13 +1,8 @@
 'use strict';
-
-
-
-
 const fileStream = require('fs');
 const dataKeeper = require('./dataKeeper_njs.js');
 const blockModule = require('./block_njs.js');
 const cleanup = require("./cleanup.js");
-
 
 let fileVersion = 1;
 const path = './blockData/';
@@ -24,33 +19,14 @@ console.log(dataKeeper.getBlockData());
 const workers = {};
 exports.workers = workers;
 
-
 const PORT = 3000;
 const WS_PORT = 8082;
 const express = require('express');
+
 // Create the app
 const app = express();
 app.listen(PORT, () => console.log('listening at', PORT));
 app.use(express.static('public'));
-// app.use(express.json({ limit: '1mb' }));
-
-// const WebSocket = require('ws');
-// const wsServer = new WebSocket.Server({ port: WS_PORT });
-
-// wsServer.on('connection', webSocket => {
-//   console.log("New client connected!");
-
-//   webSocket.on('message', data => {
-//     const msg = JSON.parse(data);
-//     console.log('Client has sent us:', msg);
-
-//     webSocket.send(JSON.stringify(msg));
-//   })
-
-//   webSocket.on('close', () => {
-//     console.log('Client has disconnected!');
-//   });
-// });
 
 const WebSocket = require('ws');
 const wsServer = new WebSocket.Server({ port: WS_PORT });
@@ -58,12 +34,38 @@ const wsServer = new WebSocket.Server({ port: WS_PORT });
 wsServer.on('connection', webSocket => {
   console.log("New client connected!");
 
+  // Incoming message
   webSocket.on('message', data => {
     const dataJSON = JSON.parse(data);
     const type = dataJSON.type;
 
     switch (type) {
-      case 'worker':
+      case 'blockDataRequest': {
+        const data = formatMessage('blockData', dataKeeper.getBlockData());
+        webSocket.send(JSON.stringify(data));
+        break;      
+      }
+
+      case 'blocksArray': {
+        const blocksArray = dataJSON.payload;
+        console.log('Received blocks!', blocksArray);
+
+        dataKeeper.addBlocksArray(blocksArray);
+
+        // saveFile();
+
+        const data = formatMessage('blockData', dataKeeper.getBlockData());
+
+        // Send to all clients except this I think
+        wsServer.clients.forEach(function each(client) {
+          if (client !== webSocket && client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(data));
+          }
+        })
+        break;      
+      }
+
+      case 'worker': {
         const worker = dataJSON.payload;
         console.log('Received worker!', worker.id);
         // Add timestamp
@@ -72,64 +74,54 @@ wsServer.on('connection', webSocket => {
         // Store worker
         workers[worker.id] = worker;
 
-        let Data = {
-          type: 'workers',
-          payload: workers
-        }
+        const data = formatMessage('workers', workers);
 
         // Send to all clients except this I think
         wsServer.clients.forEach(function each(client) {
           if (client !== webSocket && client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(Data));
+            client.send(JSON.stringify(data));
           }
         })
 
         break;
+      }
 
-      case 'blocksArray':
-        const blocksArray = dataJSON.payload;
-        console.log('Received blocks!', blocksArray);
+      case 'deleteBlocks': {
 
-        dataKeeper.addBlocksArray(blocksArray);
-      
+        // Get the data from client
+        const blockIDs = dataJSON.payload;
+
+        dataKeeper.deleteBlocks(blockIDs)
+
         // saveFile();
 
-        let DAta = {
-          type: 'blockData',
-          payload: dataKeeper.getBlockData()
-        }
+        const data = formatMessage('blockData', dataKeeper.getBlockData());
 
         // Send to all clients except this I think
         wsServer.clients.forEach(function each(client) {
-          client.send(JSON.stringify(DAta));
           if (client !== webSocket && client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(data));
           }
         })
         break;
+      }
 
-      default:
+      default: {
         console.error(dataJSON)
         console.error('Invalid type!', dataJSON.type)
         break;
+      }
     }
-
-
-
-    // // Send a response back to client
-    // webSocket.send(JSON.stringify(workers));
   })
-
-  // setInterval(() => {
-  //   webSocket.send(JSON.stringify(workers));
-  // }, 100);
-
 
   webSocket.on('close', () => {
     console.log('Client has disconnected!');
   });
 });
 
-
+function formatMessage(type, payload) {
+  return { type, payload };
+}
 
 setInterval(() => deleteOldWorkers(), 1000);
 

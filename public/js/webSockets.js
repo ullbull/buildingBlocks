@@ -5,7 +5,7 @@ const webSocket = new WebSocket('ws://localhost:8082');
 
 webSocket.addEventListener('open', () => {
   console.log('We are connected!');
-
+  sendData('blockDataRequest');
 });
 
 webSocket.addEventListener('message', (event) => {
@@ -31,7 +31,7 @@ webSocket.addEventListener('message', (event) => {
   }
 });
 
-function sendData(type, payload) {
+function sendData(type, payload = {}) {
   const data = {
     type,
     payload
@@ -40,6 +40,11 @@ function sendData(type, payload) {
   webSocket.send(JSON.stringify(data));
 }
 
+function deleteBlocksFromServer(blockIDs) {
+  sendData('deleteBlocks', blockIDs);
+}
+
 export {
   sendData,
+  deleteBlocksFromServer,
 }

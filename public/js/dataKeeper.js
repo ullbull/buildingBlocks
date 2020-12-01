@@ -1,6 +1,7 @@
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import * as api from './api.js';
+import * as webSockets from './webSockets.js';
 
 let blockData = { blocks: {}, gridPoints: {} };
 const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
@@ -165,7 +166,7 @@ function deleteBlockGlobally(blockID) {
 
 function deleteBlocksGlobally(blockIDs) {
   deleteBlocks(blockIDs);
-  api.deleteBlocksFromServer(blockIDs);
+  webSockets.deleteBlocksFromServer(blockIDs);
 }
 
 function deleteBlocksGloballyArray(blockArray) {

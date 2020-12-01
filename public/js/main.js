@@ -20,7 +20,7 @@ mouse.setViewport(viewport);
 layers.setViewport(viewport);
 
 // Reload block data from server
-dataKeeper.initBlockData();
+// dataKeeper.initBlockData();
 // setInterval(() => dataKeeper.initBlockData(), 5000);
 
 // // Reload workers from server
