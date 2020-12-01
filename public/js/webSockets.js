@@ -1,38 +1,45 @@
 import * as dataKeeper from './dataKeeper.js';
+import * as layers from './layers.js';
 
 const webSocket = new WebSocket('ws://localhost:8082');
-
-const msg = {
-  id: 123,
-  message: 'No message'
-}
 
 webSocket.addEventListener('open', () => {
   console.log('We are connected!');
 
 });
-webSocket.addEventListener('message', receiveMessage);
 
-// Receiving all workers
-function receiveMessage(event) {
-  const msg = JSON.parse(event.data);
-  // console.log(msg);
-  dataKeeper.setWorkers(msg);
-}
+webSocket.addEventListener('message', (event) => {
+  const dataJSON = JSON.parse(event.data);
+  const type = dataJSON.type;
 
-function sendSocket() {
-  msg.message = document.getElementById("playerName").value;
-  webSocket.send(JSON.stringify(msg));
-  console.log(msg);
-}
+  switch (type) {
+    case 'workers':
+      const workers = dataJSON.payload;
+      dataKeeper.setWorkers(workers);
+      break;
 
-function sendWorker(worker) {
-  webSocket.send(JSON.stringify(worker));
+    case 'blockData':
+      const blockData = dataJSON.payload;
+      dataKeeper.setBlockData(blockData);
+      layers.background.refresh();
+      break;
+
+    default:
+      console.error(dataJSON)
+      console.error('Invalid type!', dataJSON.type)
+      break;
+  }
+});
+
+function sendData(type, payload) {
+  const data = {
+    type,
+    payload
+  };
+
+  webSocket.send(JSON.stringify(data));
 }
 
 export {
-  webSocket,
-  receiveMessage,
-  sendSocket,
-  sendWorker
+  sendData,
 }

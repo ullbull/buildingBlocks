@@ -21,7 +21,7 @@ layers.setViewport(viewport);
 
 // Reload block data from server
 dataKeeper.initBlockData();
-setInterval(() => dataKeeper.initBlockData(), 5000);
+// setInterval(() => dataKeeper.initBlockData(), 5000);
 
 // // Reload workers from server
 // setInterval(async () => dataKeeper.initWorkers(), 100);
@@ -60,7 +60,7 @@ async function mouseMove(event) {
     blockModule.setBlockPosition(dataKeeper.worker, mouse.wp.x, mouse.wp.y);
     dataKeeper.worker.name = document.getElementById("playerName").value;
     // await api.sendData('/workers', dataKeeper.worker);
-    webSockets.sendWorker(dataKeeper.worker);
+    webSockets.sendData('worker', dataKeeper.worker);
     lastWp = mouse.wp;
   }
 

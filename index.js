@@ -59,27 +59,61 @@ wsServer.on('connection', webSocket => {
   console.log("New client connected!");
 
   webSocket.on('message', data => {
-    const msg = JSON.parse(data);
-    console.log('Client has sent us:', msg);
+    const dataJSON = JSON.parse(data);
+    const type = dataJSON.type;
+
+    switch (type) {
+      case 'worker':
+        const worker = dataJSON.payload;
+        console.log('Received worker!', worker.id);
+        // Add timestamp
+        worker.timestamp = Date.now();
+
+        // Store worker
+        workers[worker.id] = worker;
+
+        let Data = {
+          type: 'workers',
+          payload: workers
+        }
+
+        // Send to all clients except this I think
+        wsServer.clients.forEach(function each(client) {
+          if (client !== webSocket && client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(Data));
+          }
+        })
+
+        break;
+
+      case 'blocksArray':
+        const blocksArray = dataJSON.payload;
+        console.log('Received blocks!', blocksArray);
+
+        dataKeeper.addBlocksArray(blocksArray);
+      
+        // saveFile();
+
+        let DAta = {
+          type: 'blockData',
+          payload: dataKeeper.getBlockData()
+        }
+
+        // Send to all clients except this I think
+        wsServer.clients.forEach(function each(client) {
+          client.send(JSON.stringify(DAta));
+          if (client !== webSocket && client.readyState === WebSocket.OPEN) {
+          }
+        })
+        break;
+
+      default:
+        console.error(dataJSON)
+        console.error('Invalid type!', dataJSON.type)
+        break;
+    }
 
 
-
-    // Get the data from client
-    const worker = msg;
-
-    console.log('got worker', worker.id);
-    // Add timestamp
-    worker.timestamp = Date.now();
-
-    // Store worker
-    workers[worker.id] = worker;
-
-    // Send to all clients except this I think
-    wsServer.clients.forEach(function each(client) {
-      if (client !== webSocket && client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(workers));
-      }
-    })
 
     // // Send a response back to client
     // webSocket.send(JSON.stringify(workers));
@@ -169,30 +203,30 @@ function saveFile() {
 
 /////////////////WORKERS////////////////////////////
 
-app.get('/workers', (request, response) => {
-  response.json(workers);
-});
+// app.get('/workers', (request, response) => {
+//   response.json(workers);
+// });
 
-let wkr = {
-  id: '1602103196440.9812',
-  name: 'Anonymous worker',
-  position: { x: 10, y: 55 },
-  block: {}
-};
+// let wkr = {
+//   id: '1602103196440.9812',
+//   name: 'Anonymous worker',
+//   position: { x: 10, y: 55 },
+//   block: {}
+// };
 
-app.post('/workers', (request, response) => {
-  // Get the data from client
-  const worker = request.body;
+// app.post('/workers', (request, response) => {
+//   // Get the data from client
+//   const worker = request.body;
 
-  console.log('got worker', worker);
-  // Add timestamp
-  worker.timestamp = Date.now();
+//   console.log('got worker', worker);
+//   // Add timestamp
+//   worker.timestamp = Date.now();
 
-  // Store worker
-  workers[worker.id] = worker;
+//   // Store worker
+//   workers[worker.id] = worker;
 
-  // Send a response back to client
-  response.json(workers);
-});
+//   // Send a response back to client
+//   response.json(workers);
+// });
 
 ////////////////////////////////////////////////////*/

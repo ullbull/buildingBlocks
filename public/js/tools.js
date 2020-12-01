@@ -8,6 +8,7 @@ import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import * as layers from './layers.js';
 import { appStatus } from './appStatus.js';
+import * as webSockets from './webSockets.js';
 
 
 function Builder() {
@@ -70,7 +71,8 @@ function Builder() {
     dataKeeper.addBlocksArray(blocksCopy);
 
     // Send blocks to server
-    api.sendData('/api', blocksCopy);
+    webSockets.sendData('blocksArray', blocksCopy);
+    // api.sendData('/api', blocksCopy);
 
     // Reset hidden blocks
     blockHider.resetHiddenBlockIDs();
