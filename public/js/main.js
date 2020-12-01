@@ -11,54 +11,13 @@ import * as mouse from './mouse.js';
 import { appStatus } from './appStatus.js'
 import * as layers from './layers.js';
 import * as scanner from './scanner.js';
+import * as webSockets from './webSockets.js';
 
 // const canvas = document.querySelector('canvas');
-
-
-/////////////////////////////////////////////
-
-const webSocket = new WebSocket('ws://localhost:8082');
-
-const msg = {
-  id: 123,
-  message: 'No message'
-}
-
-webSocket.addEventListener('open', () => {
-  console.log('We are connected!');
-
-});
-webSocket.addEventListener('message', receiveMessage);
-
-function receiveMessage(event) {
-  const msg = JSON.parse(event.data);
-  console.log(msg);
-  dataKeeper.setWorkers(msg);
-}
-
-function sendSocket() {
-  msg.message = document.getElementById("playerName").value;
-  webSocket.send(JSON.stringify(msg));
-  console.log(msg);
-}
-
-function sendWorker(worker) {
-  webSocket.send(JSON.stringify(worker));
-}
-
-//////////////////////////////////////////////
-
-
-
-
-
-
 
 const viewport = new Viewport(innerWidth, innerHeight, 20, layers.background.context);
 mouse.setViewport(viewport);
 layers.setViewport(viewport);
-
-
 
 // Reload block data from server
 dataKeeper.initBlockData();
@@ -70,7 +29,6 @@ setInterval(() => dataKeeper.initBlockData(), 5000);
 setTimeout(function () {
   layers.background.refresh();
 }, 100);
-
 
 
 // viewport.AddLayer('foreground', cForeground);
@@ -102,7 +60,7 @@ async function mouseMove(event) {
     blockModule.setBlockPosition(dataKeeper.worker, mouse.wp.x, mouse.wp.y);
     dataKeeper.worker.name = document.getElementById("playerName").value;
     // await api.sendData('/workers', dataKeeper.worker);
-    webSocket.send(JSON.stringify(dataKeeper.worker));
+    webSockets.sendWorker(dataKeeper.worker);
     lastWp = mouse.wp;
   }
 
