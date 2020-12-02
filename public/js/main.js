@@ -9,6 +9,9 @@ import { appStatus } from './appStatus.js'
 import * as layers from './layers.js';
 import * as scanner from './scanner.js';
 import * as sc from './serverCommunication.js';
+import * as workerManager from './workerManager.js';
+
+const worker = workerManager.getWorker();
 
 // const canvas = document.querySelector('canvas');
 
@@ -44,9 +47,9 @@ let lastWp = mouse.wp;
 async function mouseMove(event) {
   // Send this worker to server if mouse is moved one grid square
   if ((mouse.wp.x != lastWp.x) || (mouse.wp.y != lastWp.y)) {
-    blockModule.setBlockPosition(dataKeeper.worker, mouse.wp.x, mouse.wp.y);
-    dataKeeper.worker.name = document.getElementById("playerName").value;
-    sc.sendData('worker', dataKeeper.worker);
+    blockModule.setBlockPosition(worker, mouse.wp.x, mouse.wp.y);
+    worker.name = document.getElementById("playerName").value;
+    sc.sendData('worker', worker);
     lastWp = mouse.wp;
   }
 

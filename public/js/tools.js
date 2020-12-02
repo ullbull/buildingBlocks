@@ -66,9 +66,6 @@ function Builder() {
     selector.resetBlocks('idle');
     selector.addBlocksArray(blocksCopy, 'idle');
 
-    // Add blocks
-    dataKeeper.addBlocksArray(blocksCopy);
-
     // Send blocks to server
     sc.sendData('blocksArray', blocksCopy);
 
@@ -175,10 +172,10 @@ function Builder() {
 
       }
       else {
-        // Block was dropped outside frame.
+        // Blocks was dropped outside frame.
 
-        // Delete block
-        sc.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
+        // Delete blocks
+        sc.deleteBlocks(blockHider.resetHiddenBlockIDs());
 
         // Reset idle blocks
         selector.resetBlocks('idle');

@@ -4,6 +4,10 @@ function addHiddenBlockID(blockID) {
   hiddenBlockIDs[blockID] = blockID;
 }
 
+function addHiddenBlockIDs(blockIDs) {
+  
+}
+
 function addHiddenBlocks(blockArray) {
   // if (!blockArray[0]) {
   //   return;

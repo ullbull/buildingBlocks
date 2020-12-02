@@ -8,11 +8,10 @@ import * as blockHider from './blockHider.js';
 import * as selector from './selector.js';
 import * as toolManager from './toolManager.js';
 import { appStatus } from './appStatus.js';
-import * as dataKeeper from './dataKeeper.js';
+import * as workerManager from './workerManager.js';
 
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
-
 
 const canvases = document.getElementsByTagName('canvas');
 for (let i = 0; i < canvases.length; i++) {
@@ -54,13 +53,9 @@ const foreground = {
       });
 
       // Draw workers
-      viewport.DrawWorkers(dataKeeper.workers, dataKeeper.worker, {
+      viewport.DrawWorkers(workerManager.getWorkers(), {
         context: this.context
       });
-
-      // viewport.DrawWorkers(dataKeeper.workers, { id: 'apa' }, {
-      //   context: this.context
-      // });
     }
   }
 }

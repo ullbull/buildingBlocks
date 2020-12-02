@@ -29,6 +29,7 @@ io.on('connection', socket => {
   socket.on('blocksArray', data => { receiveBlocksArray(socket, data) });
   socket.on('worker', data => { receiveWorker(socket, data) });
   socket.on('deleteBlocks', data => { deleteBlocks(socket, data) });
+  socket.on('hideBlocks', data => { hideBlocks(socket, data) });
 
   // Runs when client disconnects
   socket.on('disconnect', () => {
@@ -62,12 +63,23 @@ function receiveWorker(socket, worker) {
 }
 
 function deleteBlocks(socket, blockIDs) {
+  // Delete blocks
   dataKeeper.deleteBlocks(blockIDs)
 
   saveFile();
 
-  // Alert clients that blocks are deleted
-  socket.broadcast.emit('deleteBlocks', blockIDs);
+  // Alert all clients that blocks are deleted
+  io.emit('deleteBlocks', blockIDs);
+}
+
+function hideBlocks(socket, blockIDs) {
+  // Hide blocks
+  // blockHider.addHiddenBlockID(this.clickedBlock.id);
+
+  saveFile();
+
+  // Alert all clients that blocks are deleted
+  io.emit('deleteBlocks', blockIDs);
 }
 
 /* 

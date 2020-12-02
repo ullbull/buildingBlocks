@@ -88,9 +88,9 @@ export class Viewport {
 
     context.fillRect(x, y, width, height);
 
-    if(options.hasOwnProperty('stroke')) {
+    if (options.hasOwnProperty('stroke')) {
       context.lineWidth = options.stroke;
-      context.strokeRect(x,y,width,height);
+      context.strokeRect(x, y, width, height);
     }
   }
 
@@ -108,7 +108,7 @@ export class Viewport {
 
   DrawText(text, x, y, size = 18, color = 'black', font = 'Arial', options = {}) {
     let context = this.layers.background;
-    if('context' in options) {
+    if ('context' in options) {
       context = options.context;
     }
 
@@ -247,17 +247,27 @@ export class Viewport {
     }
   }
 
-  DrawWorkers(workers, excluded, options = {}) {
+  DrawWorkers(workers, options = {}) {
     for (const key in workers) {
       if (workers.hasOwnProperty(key)) {
         const worker = workers[key];
-        if (worker.id != excluded.id) {
-          options.name = worker.name;
-          this.DrawBlock(worker, options);
-        }
+        options.name = worker.name;
+        this.DrawBlock(worker, options);
       }
     }
   }
+
+  // DrawWorkers(workers, excluded, options = {}) {
+  //   for (const key in workers) {
+  //     if (workers.hasOwnProperty(key)) {
+  //       const worker = workers[key];
+  //       if (worker.id != excluded.id) {
+  //         options.name = worker.name;
+  //         this.DrawBlock(worker, options);
+  //       }
+  //     }
+  //   }
+  // }
 
   DrawBlocksArray(blocks, options = {}) {
     blocks.forEach(block => {
