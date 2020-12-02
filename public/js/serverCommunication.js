@@ -1,6 +1,7 @@
 import * as dataKeeper from './dataKeeper.js';
 import * as layers from './layers.js';
 import * as workerManager from './workerManager.js';
+import * as toolManager from './toolManager.js';
 
 const socket = io();
 
@@ -15,6 +16,7 @@ socket.on('blockData', blockData => {
 
 socket.on('blocksArray', blocksArray => {
   dataKeeper.addBlocksArray(blocksArray)
+  toolManager.builder.refreshHoveredBlocks();
   layers.background.refresh();
 })
 

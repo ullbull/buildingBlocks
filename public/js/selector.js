@@ -62,10 +62,19 @@ function resetBlocks(blocksToReset = 'selected') {
 }
 
 function addBlock(block, to = 'selected') {
-  if (typeof block != 'undefined') {
+  if (block) {
     if (block.hasOwnProperty('id')) {
       setBlocksToModify(to);
       blocksToModify[block.id] = helpers.copyObject(block);
+    }
+  }
+}
+
+function addBlocks(blocks, to = 'selected') {
+  for (const key in blocks) {
+    if (blocks.hasOwnProperty(key)) {
+      const block = blocks[key];
+      addBlock(block, to);
     }
   }
 }
@@ -85,27 +94,47 @@ function removeBlock(block, from = 'selected') {
   }
 }
 
-function addBlocksByGridPoints(gridPoints, viewport, to = 'selected') {
-  for (const key in gridPoints) {
-    if (gridPoints.hasOwnProperty(key)) {
-      addBlock(helpers.getBlockByKey(key, viewport), to);
+function removeBlocks(blocks, from = 'selected') {
+  for (const key in blocks) {
+    if (blocks.hasOwnProperty(key)) {
+      const block = blocks[key];
+      removeBlock(block, to);
     }
   }
 }
 
-function removeBlocksByGridPoints(gridPoints, viewport, from = 'selected') {
+function addBlocksByGridPoints(gridPoints, viewport, to = 'selected') {
+  const blocks = {};
   for (const key in gridPoints) {
     if (gridPoints.hasOwnProperty(key)) {
-      removeBlock(helpers.getBlockByKey(key, viewport), from);
+      const block = helpers.getBlockByKey(key, viewport);
+      if (block) {
+        blocks[block.id] = block;
+      }
     }
   }
+  addBlocks(blocks, to);
 }
+
+function removeBlocksByGridPoints(gridPoints, viewport, from = 'selected') {
+  const blocks = {};
+  for (const key in gridPoints) {
+    if (gridPoints.hasOwnProperty(key)) {
+      const block = helpers.getBlockByKey(key, viewport);
+      if (block) {
+        blocks[block.id] = block;
+      }
+    }
+  }
+  removeBlocks(blocks, from);
+}
+
 
 function isEmpty(blocksToCheck = 'selected') {
   setBlocksToModify(blocksToCheck);
   for (const key in blocksToModify) {
     if (blocksToModify.hasOwnProperty(key)) {
-      return false;      
+      return false;
     }
   }
   return true;
@@ -131,8 +160,10 @@ export {
   getBlockIDs,
   resetBlocks,
   addBlock,
+  addBlocks,
   addBlocksArray,
   removeBlock,
+  removeBlocks,
   addBlocksByGridPoints,
   removeBlocksByGridPoints,
   isEmpty

@@ -71,8 +71,6 @@ function Builder() {
 
     // Reset hidden blocks
     blockHider.resetHiddenBlockIDs();
-
-    this.refreshHoveredBlocks();
   }
 
   this.setPosition = function (x, y) {
@@ -97,6 +95,10 @@ function Builder() {
   // }
 
   this.changeBlockToClickedBlock = function () {
+    if (!this.clickedBlock) {
+      console.error('no clicked block');
+      return;
+    }
     // Get clicked pixel
     const clickedPixel = blockModule.getPositionInBlock(
       this.clickedBlock, this.x, this.y);
