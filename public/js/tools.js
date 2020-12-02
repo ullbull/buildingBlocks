@@ -242,7 +242,7 @@ function Builder() {
       }
       // Delete selected blocks if no block is hovered
       else if (!helpers.isObjectEmpty(selector.selectedBlocks)) {
-        dataKeeper.deleteBlocksGlobally(selector.resetBlocks('selected'));
+        sc.deleteBlocks(selector.resetBlocks('selected'));
 
         // Change blocks to initial block
         blockModule.setBlockPosition(this.initialBlock, mouse.wp.x, mouse.wp.y);
