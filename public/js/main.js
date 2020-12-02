@@ -11,7 +11,6 @@ import * as mouse from './mouse.js';
 import { appStatus } from './appStatus.js'
 import * as layers from './layers.js';
 import * as scanner from './scanner.js';
-import * as webSockets from './webSockets.js';
 import * as sc from './serverCommunication.js';
 
 // const canvas = document.querySelector('canvas');

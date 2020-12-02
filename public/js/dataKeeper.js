@@ -1,7 +1,6 @@
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import * as api from './api.js';
-import * as webSockets from './webSockets.js';
 import * as sc from './serverCommunication.js';
 
 let blockData = { blocks: {}, gridPoints: {} };

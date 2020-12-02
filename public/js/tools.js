@@ -2,13 +2,11 @@ import * as helpers from './helpers.js';
 import * as selector from './selector.js';
 import * as blockModule from './block.js';
 import * as dataKeeper from './dataKeeper.js';
-import * as api from './api.js';
 import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import * as layers from './layers.js';
 import { appStatus } from './appStatus.js';
-import * as webSockets from './webSockets.js';
 import * as sc from './serverCommunication.js';
 
 
