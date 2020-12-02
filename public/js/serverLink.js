@@ -37,9 +37,16 @@ function sendData(type, payload) {
 function deleteBlocks(blockIDs) {
   sendData('deleteBlocks', blockIDs);
 }
-
+function deleteBlocksA(blockArray) {
+  const blockIDs = {};
+  blockArray.forEach(block => {
+    blockIDs[block.id] = block.id;
+  });
+  sendData('deleteBlocks', blockIDs);
+}
 export {
   socket,
   sendData,
   deleteBlocks,
+  deleteBlocksA
 }

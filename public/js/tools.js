@@ -226,7 +226,7 @@ function Builder() {
       // Delete hovered blocks if any blocks are hovered
       if (this.hoveredBlocks[0]) {
         let hoveredSelected = (selector.getBlocks('selected')[this.hoveredBlock.id]);
-        dataKeeper.deleteBlocksGloballyArray(this.hoveredBlocks);
+        serverLink.deleteBlocksA(this.hoveredBlocks)
 
         // Reset hovered blocks
         this.hoveredBlocks = [];

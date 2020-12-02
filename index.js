@@ -3,6 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
+const users = require('./users.js');
 
 const PORT = process.env.PORT || 3000;
 const WS_PORT = 8082;
@@ -25,11 +26,70 @@ io.on('connection', socket => {
   socket.emit('blockData', dataKeeper.getBlockData());
 
   // Listen for data from client
-  socket.on('message', data => { receiveMessage(socket, data) });
-  socket.on('blocksArray', data => { receiveBlocksArray(socket, data) });
-  socket.on('worker', data => { receiveWorker(socket, data) });
-  socket.on('deleteBlocks', data => { deleteBlocks(socket, data) });
-  socket.on('hideBlocks', data => { hideBlocks(socket, data) });
+  socket.on('joinRoom', room => {
+    const user = users.userJoin(socket.id, room);
+
+    socket.join(user.room);
+    console.log('user joined', user);
+
+    // Welcome current user
+    socket.emit('message', `Welcome to room ${room}`);
+
+    // Broadcast when a user connects
+    socket.broadcast
+      .to(user.room)
+      .emit(
+        'message',
+        `${user.id} has joined us`
+      );
+
+    // // Send users and room info
+    // io.to(user.room).emit('roomUsers', {
+    //   room: user.room,
+    //   users: getRoomUsers(user.room)
+    // }); 
+  });
+
+  socket.on('message', message => {
+    console.log(`Incoming message from ${socket.id}: ${message}`);
+    socket.emit('message', `Hey, I'm your server. Thanks for your message! You sent me this: ${message}`);
+
+  });
+
+  socket.on('blocksArray', blocksArray => {
+    console.log(`Incoming blocksArray from ${socket.id}: ${blocksArray}`);
+
+    // Add incoming blocks
+    dataKeeper.addBlocksArray(blocksArray);
+
+    // Send incoming blocks to all clients
+    io.emit('blocksArray', blocksArray);
+
+    saveFile();
+  });
+
+  socket.on('worker', worker => {
+    console.log(`Incoming worker from ${socket.id}: ${worker}`);
+
+    // Send incoming worker to all clients except this one
+    socket.broadcast.emit('worker', worker);
+  });
+
+  socket.on('deleteBlocks', blockIDs => {
+    // Delete blocks
+    dataKeeper.deleteBlocks(blockIDs)
+
+    saveFile();
+
+    // Alert all clients that blocks are deleted
+    io.emit('deleteBlocks', blockIDs);
+  });
+
+  socket.on('hiddenBlockIDs', blockIDs => {
+    
+  });
+
+
 
   // Runs when client disconnects
   socket.on('disconnect', () => {
@@ -38,49 +98,6 @@ io.on('connection', socket => {
 });
 
 
-function receiveMessage(socket, message) {
-  console.log(`Incoming message from ${socket.id}: ${message}`);
-  socket.emit('message', `Hey, I'm your server. Thanks for your message! You sent me this: ${message}`);
-}
-
-function receiveBlocksArray(socket, blocksArray) {
-  console.log(`Incoming blocksArray from ${socket.id}: ${blocksArray}`);
-
-  // Add incoming blocks
-  dataKeeper.addBlocksArray(blocksArray);
-
-  // Send incoming blocks to all clients
-  io.emit('blocksArray', blocksArray);
-
-  saveFile();
-}
-
-function receiveWorker(socket, worker) {
-  console.log(`Incoming worker from ${socket.id}: ${worker}`);
-
-  // Send incoming worker to all clients except this one
-  socket.broadcast.emit('worker', worker);
-}
-
-function deleteBlocks(socket, blockIDs) {
-  // Delete blocks
-  dataKeeper.deleteBlocks(blockIDs)
-
-  saveFile();
-
-  // Alert all clients that blocks are deleted
-  io.emit('deleteBlocks', blockIDs);
-}
-
-function hideBlocks(socket, blockIDs) {
-  // Hide blocks
-  // blockHider.addHiddenBlockID(this.clickedBlock.id);
-
-  saveFile();
-
-  // Alert all clients that blocks are deleted
-  io.emit('deleteBlocks', blockIDs);
-}
 
 /* 
 // Send to this client

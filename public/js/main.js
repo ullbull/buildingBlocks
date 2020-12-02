@@ -12,6 +12,8 @@ import * as serverLink from './serverLink.js';
 import * as workerManager from './workerManager.js';
 
 const worker = workerManager.getWorker();
+const room = '0,0';
+serverLink.sendData('joinRoom', room);
 
 // const canvas = document.querySelector('canvas');
 
