@@ -1,20 +1,10 @@
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
-import * as api from './api.js';
 import * as sc from './serverCommunication.js';
 
 let blockData = { blocks: {}, gridPoints: {} };
 const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
 let workers = {};
-
-async function initBlockData() {
-  const blockData = await api.getData('/api');
-  setBlockData(blockData);
-}
-
-async function initWorkers() {
-  workers = await api.getData('/workers');
-}
 
 function addWorker(worker) {
   workers[worker.id] = worker;
@@ -165,7 +155,7 @@ function deleteBlocks(blockIDs) {
 
 function deleteBlockGlobally(blockID) {
   deleteBlock(blockID);
-  api.deleteBlocksFromServer({ blockID });
+  sc.deleteBlocksFromServer({ blockID });
 }
 
 function deleteBlocksGlobally(blockIDs) {
@@ -193,8 +183,6 @@ export {
   setWorkers,
   addData,
   getBlockData,
-  initBlockData,
-  initWorkers,
   setBlockData,
   addBlock,
   addBlocks,

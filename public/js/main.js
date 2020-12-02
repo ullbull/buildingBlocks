@@ -1,11 +1,8 @@
-import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import { Viewport } from './Viewport.js';
 import * as dataKeeper from './dataKeeper.js';
-import * as api from './api.js';
 import * as toolManager from './toolManager.js';
 import * as selector from './selector.js';
-import * as blockHider from './blockHider.js';
 import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import { appStatus } from './appStatus.js'
@@ -19,20 +16,11 @@ const viewport = new Viewport(innerWidth, innerHeight, 20, layers.background.con
 mouse.setViewport(viewport);
 layers.setViewport(viewport);
 
-// Reload block data from server
-// dataKeeper.initBlockData();
-// setInterval(() => dataKeeper.initBlockData(), 5000);
-
-// // Reload workers from server
-// setInterval(async () => dataKeeper.initWorkers(), 100);
-
 setTimeout(function () {
   layers.background.refresh();
 }, 100);
 
-
 // viewport.AddLayer('foreground', cForeground);
-
 
 // setInterval(() => layers.background.refresh = true, 1000);
 
@@ -41,7 +29,6 @@ function animate() {
 
   layers.background.draw(appStatus.debug);
   layers.foreground.draw(true);
-
 }
 
 window.addEventListener('contextmenu', event => event.preventDefault());

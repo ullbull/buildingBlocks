@@ -37,12 +37,12 @@ io.on('connection', socket => {
 });
 
 
-async function receiveMessage(socket, message) {
+function receiveMessage(socket, message) {
   console.log(`Incoming message from ${socket.id}: ${message}`);
   socket.emit('message', `Hey, I'm your server. Thanks for your message! You sent me this: ${message}`);
 }
 
-async function receiveBlocksArray(socket, blocksArray) {
+function receiveBlocksArray(socket, blocksArray) {
   console.log(`Incoming blocksArray from ${socket.id}: ${blocksArray}`);
 
   // Add incoming blocks
@@ -54,14 +54,14 @@ async function receiveBlocksArray(socket, blocksArray) {
   saveFile();
 }
 
-async function receiveWorker(socket, worker) {
+function receiveWorker(socket, worker) {
   console.log(`Incoming worker from ${socket.id}: ${worker}`);
 
   // Send incoming worker to all clients except this one
   socket.broadcast.emit('worker', worker);
 }
 
-async function deleteBlocks(socket, blockIDs) {
+function deleteBlocks(socket, blockIDs) {
   dataKeeper.deleteBlocks(blockIDs)
 
   saveFile();
@@ -98,20 +98,29 @@ const cleanup = require("./cleanup.js");
 cleanup.deleteBadGridpoints(dataKeeper.getBlockData());
 cleanup.deleteBadBlocks(dataKeeper.getBlockData());
 
-async function saveFile() {
+function saveFile() {
   let dataString = JSON.stringify(dataKeeper.getBlockData());
   // let dataString = JSON.stringify(blockData, null, 2);
-  
-  // Copy file
-  fileStream.copyFileSync(filePath, dirPath + fileName + '_' + (fileVersion) + fileExtension);
-  
+
   fileVersion = (++fileVersion > 2) ? 1 : fileVersion;
-  
-  // Save file
-  fileStream.writeFileSync(filePath, dataString);
-  
-  fileStream.writeFile(filePath, dataString, (err) => {
-    if (err) throw err;
-    console.log(`write to file 0,0.json successful!`);
+  const tempFilePath = dirPath + fileName + '_' + (fileVersion) + fileExtension
+
+  // Save temporary file
+  fileStream.writeFile(tempFilePath, dataString, (err) => {
+    if (err) {
+      console.error('Error in write file: ', err);
+      return;
+    }
+    console.log(`write to temp file ${tempFilePath} successful!`);
+
+    // Save was successful! Now rename the temporary file
+    fileStream.copyFile(tempFilePath, filePath, (err) => {
+      if (err) {
+        console.error(`Error when trying to rename ${tempFilePath} to ${filePath}:\n`, err);
+        return;
+      }
+      console.log(`Rename file ${tempFilePath} to ${filePath} successful!`);
+      // console.log(`Save file ${filePath} successful!`);
+    });
   });
 }
