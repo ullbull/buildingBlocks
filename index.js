@@ -1,14 +1,59 @@
 'use strict';
+'use strict';
+const path = require('path');
+const http = require('http');
+const express = require('express');
+const socketio = require('socket.io');
+
+const PORT = process.env.PORT || 3000;
+const WS_PORT = 8082;
+
+// Create the app
+const app = express();
+// Create the server
+const server = http.createServer(app);
+
+const io = socketio(server);
+
+// Set static folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.listen(3001, () => console.log('listening at', 3001));
+app.use(express.static('public'));
+// // Run when client connects
+// io.on('connection', socket => {
+//   console.log('User connected', socket.id);
+//   io.emit('message', `Welcome ${socket.id}`);
+
+//   // Listen for message
+//   socket.on('message', msg => {
+//     console.log(msg);
+//     socket.emit('message', 'hej');
+//   });
+
+//   // Runs when client disconnects
+//   socket.on('disconnect', () => {
+//     console.log('User disconnected');
+//   });
+// });
+
+
+
+
+
+
 const fileStream = require('fs');
 const dataKeeper = require('./dataKeeper_njs.js');
 const blockModule = require('./block_njs.js');
 const cleanup = require("./cleanup.js");
 
 let fileVersion = 1;
-const path = './blockData/';
+const dirPath = './blockData/';
 const fileName = '0,0';
 const fileExtension = '.json'
-const filePath = path + fileName + fileExtension;
+const filePath = dirPath + fileName + fileExtension;
 
 // let rawData = fileStream.readFileSync(fileName + '_1' + fileExtension);
 
@@ -19,14 +64,13 @@ console.log(dataKeeper.getBlockData());
 const workers = {};
 exports.workers = workers;
 
-const PORT = 3000;
-const WS_PORT = 8082;
-const express = require('express');
+// const PORT = 3000;
+// const WS_PORT = 8082;
 
-// Create the app
-const app = express();
-app.listen(PORT, () => console.log('listening at', PORT));
-app.use(express.static('public'));
+// // Create the app
+// app.listen(PORT, () => console.log('listening at', PORT));
+// app.use(express.static('public'));
+// const app = express();
 
 const WebSocket = require('ws');
 const wsServer = new WebSocket.Server({ port: WS_PORT });
@@ -179,7 +223,7 @@ function saveFile() {
   // let dataString = JSON.stringify(blockData, null, 2);
 
   // Copy file
-  fileStream.copyFileSync(filePath, path + fileName + '_' + (fileVersion) + fileExtension);
+  fileStream.copyFileSync(filePath, dirPath + fileName + '_' + (fileVersion) + fileExtension);
 
   fileVersion = (++fileVersion > 2) ? 1 : fileVersion;
 
