@@ -5,7 +5,7 @@ const webSocket = new WebSocket('ws://localhost:8082');
 
 webSocket.addEventListener('open', () => {
   console.log('We are connected!');
-  sendData('blockDataRequest');
+  // sendData('blockDataRequest');
 });
 
 webSocket.addEventListener('message', (event) => {

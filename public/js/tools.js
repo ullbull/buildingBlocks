@@ -9,6 +9,7 @@ import * as mouse from './mouse.js';
 import * as layers from './layers.js';
 import { appStatus } from './appStatus.js';
 import * as webSockets from './webSockets.js';
+import * as sc from './serverCommunication.js';
 
 
 function Builder() {
@@ -71,8 +72,7 @@ function Builder() {
     dataKeeper.addBlocksArray(blocksCopy);
 
     // Send blocks to server
-    webSockets.sendData('blocksArray', blocksCopy);
-    // api.sendData('/api', blocksCopy);
+    sc.sendData('blocksArray', blocksCopy);
 
     // Reset hidden blocks
     blockHider.resetHiddenBlockIDs();

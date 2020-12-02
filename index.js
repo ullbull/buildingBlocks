@@ -8,11 +8,8 @@ const socketio = require('socket.io');
 const PORT = process.env.PORT || 3000;
 const WS_PORT = 8082;
 
-// Create the app
 const app = express();
-// Create the server
 const server = http.createServer(app);
-
 const io = socketio(server);
 
 // Set static folder
@@ -20,29 +17,73 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
+// Run when client connects
+io.on('connection', socket => {
+  console.log('User connected', socket.id);
+  socket.emit('message', `Welcome ${socket.id}`);
+
+  // Send block data when a new client connects
+  socket.emit('blockData', dataKeeper.getBlockData());
+
+  // Listen for data from client
+  socket.on('message', data => { receiveMessage(socket, data) });
+  socket.on('blocksArray', data => { receiveBlocksArray(socket, data) });
+  socket.on('worker', data => { receiveWorker(socket, data) });
+  socket.on('deleteBlocks', data => { deleteBlocks(socket, data) });
+
+  // Runs when client disconnects
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
+
+function receiveMessage(socket, message) {
+  console.log(`Incoming message from ${socket.id}: ${message}`);
+  socket.emit('message', `Hey, I'm your server. Thanks for your message! You sent me this: ${message}`);
+}
+
+function receiveBlocksArray(socket, blocksArray) {
+  console.log(`Incoming blocksArray from ${socket.id}: ${blocksArray}`);
+
+  // Add incoming blocks
+  dataKeeper.addBlocksArray(blocksArray);
+
+  // Send incoming blocks to all clients
+  io.emit('blocksArray', blocksArray);
+}
+
+function receiveWorker(socket, worker) {
+  console.log(`Incoming worker from ${socket.id}: ${worker}`);
+
+  // Send incoming worker to all clients except this one
+  socket.broadcast.emit('worker', worker);
+}
+
+function deleteBlocks(socket, blockIDs) {
+  dataKeeper.deleteBlocks(blockIDs)
+
+  // saveFile();
+
+  // Alert clients that blocks are deleted
+  socket.broadcast.emit('deleteBlocks', blockIDs);
+}
+
+
+/* 
+// Send to this client
+socket.emit();
+
+// Send to all clients except this one
+socket.broadcast.emit();
+
+// Send to all clients
+io.emit();
+*/
+
+
 app.listen(3001, () => console.log('listening at', 3001));
 app.use(express.static('public'));
-// // Run when client connects
-// io.on('connection', socket => {
-//   console.log('User connected', socket.id);
-//   io.emit('message', `Welcome ${socket.id}`);
-
-//   // Listen for message
-//   socket.on('message', msg => {
-//     console.log(msg);
-//     socket.emit('message', 'hej');
-//   });
-
-//   // Runs when client disconnects
-//   socket.on('disconnect', () => {
-//     console.log('User disconnected');
-//   });
-// });
-
-
-
-
-
 
 const fileStream = require('fs');
 const dataKeeper = require('./dataKeeper_njs.js');
@@ -87,7 +128,7 @@ wsServer.on('connection', webSocket => {
       case 'blockDataRequest': {
         const data = formatMessage('blockData', dataKeeper.getBlockData());
         webSocket.send(JSON.stringify(data));
-        break;      
+        break;
       }
 
       case 'blocksArray': {
@@ -106,7 +147,7 @@ wsServer.on('connection', webSocket => {
             client.send(JSON.stringify(data));
           }
         })
-        break;      
+        break;
       }
 
       case 'worker': {

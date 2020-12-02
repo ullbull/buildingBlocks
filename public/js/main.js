@@ -12,6 +12,7 @@ import { appStatus } from './appStatus.js'
 import * as layers from './layers.js';
 import * as scanner from './scanner.js';
 import * as webSockets from './webSockets.js';
+import * as sc from './serverCommunication.js';
 
 // const canvas = document.querySelector('canvas');
 
@@ -59,8 +60,7 @@ async function mouseMove(event) {
   if ((mouse.wp.x != lastWp.x) || (mouse.wp.y != lastWp.y)) {
     blockModule.setBlockPosition(dataKeeper.worker, mouse.wp.x, mouse.wp.y);
     dataKeeper.worker.name = document.getElementById("playerName").value;
-    // await api.sendData('/workers', dataKeeper.worker);
-    webSockets.sendData('worker', dataKeeper.worker);
+    sc.sendData('worker', dataKeeper.worker);
     lastWp = mouse.wp;
   }
 

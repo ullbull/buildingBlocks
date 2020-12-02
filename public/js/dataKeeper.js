@@ -2,10 +2,11 @@ import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
 import * as api from './api.js';
 import * as webSockets from './webSockets.js';
+import * as sc from './serverCommunication.js';
 
 let blockData = { blocks: {}, gridPoints: {} };
 const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
-let workers = {test: 'apa'};
+let workers = {};
 
 async function initBlockData() {
   const blockData = await api.getData('/api');
@@ -14,6 +15,10 @@ async function initBlockData() {
 
 async function initWorkers() {
   workers = await api.getData('/workers');
+}
+
+function addWorker(worker) {
+  workers[worker.id] = worker;
 }
 
 function setWorkers(wkrs) {
@@ -166,7 +171,7 @@ function deleteBlockGlobally(blockID) {
 
 function deleteBlocksGlobally(blockIDs) {
   deleteBlocks(blockIDs);
-  webSockets.deleteBlocksFromServer(blockIDs);
+  sc.deleteBlocksFromServer(blockIDs);
 }
 
 function deleteBlocksGloballyArray(blockArray) {
@@ -185,6 +190,7 @@ function deleteGridPoint(x, y) {
 export {
   worker,
   workers,
+  addWorker,
   setWorkers,
   addData,
   getBlockData,

@@ -21,33 +21,15 @@
       <button onclick="sendMessage()">Send</button>
     </h5>
   </div>
-  <!-- <script src="js/buildingBlocksBundle.js"></script> -->
+  <script src="/socket.io/socket.io.js"></script>
   <script type="module" src="js/main.js"></script>
 
   <!-- <script>
-    const webSocket = new WebSocket('ws://localhost:8082');
+    const socket = io();
 
-    const msg = {
-      id: 123,
-      message: 'No message'
-    }
-
-    webSocket.addEventListener('open', () => {
-      console.log('We are connected!');
-    
-    });
-    webSocket.addEventListener('message', receiveMessage);
-    
-    function receiveMessage(event) {
-      const msg = JSON.parse(event.data);
-      console.log(msg);
-    }
-    
-    function sendMessage() {
-      msg.message = document.getElementById("playerName").value;
-      webSocket.send(JSON.stringify(msg));
-      console.log(msg);
-    }
+    socket.on('message', message => {
+      console.log(message);
+    })
   </script> -->
 </body>
 
