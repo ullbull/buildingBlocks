@@ -8,7 +8,7 @@ import * as mouse from './mouse.js';
 import { appStatus } from './appStatus.js'
 import * as layers from './layers.js';
 import * as scanner from './scanner.js';
-import * as sc from './serverCommunication.js';
+import * as serverLink from './serverLink.js';
 import * as workerManager from './workerManager.js';
 
 const worker = workerManager.getWorker();
@@ -49,7 +49,7 @@ async function mouseMove(event) {
   if ((mouse.wp.x != lastWp.x) || (mouse.wp.y != lastWp.y)) {
     blockModule.setBlockPosition(worker, mouse.wp.x, mouse.wp.y);
     worker.name = document.getElementById("playerName").value;
-    sc.sendData('worker', worker);
+    serverLink.sendData('worker', worker);
     lastWp = mouse.wp;
   }
 

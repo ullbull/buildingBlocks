@@ -98,7 +98,7 @@ function removeBlocks(blocks, from = 'selected') {
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)) {
       const block = blocks[key];
-      removeBlock(block, to);
+      removeBlock(block, from);
     }
   }
 }

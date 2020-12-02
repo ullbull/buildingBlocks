@@ -7,7 +7,7 @@ import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import * as layers from './layers.js';
 import { appStatus } from './appStatus.js';
-import * as sc from './serverCommunication.js';
+import * as serverLink from './serverLink.js';
 
 
 function Builder() {
@@ -67,7 +67,7 @@ function Builder() {
     selector.addBlocksArray(blocksCopy, 'idle');
 
     // Send blocks to server
-    sc.sendData('blocksArray', blocksCopy);
+    serverLink.sendData('blocksArray', blocksCopy);
 
     // Reset hidden blocks
     blockHider.resetHiddenBlockIDs();
@@ -177,7 +177,7 @@ function Builder() {
         // Blocks was dropped outside frame.
 
         // Delete blocks
-        sc.deleteBlocks(blockHider.resetHiddenBlockIDs());
+        serverLink.deleteBlocks(blockHider.resetHiddenBlockIDs());
 
         // Reset idle blocks
         selector.resetBlocks('idle');
@@ -242,7 +242,7 @@ function Builder() {
       }
       // Delete selected blocks if no block is hovered
       else if (!helpers.isObjectEmpty(selector.selectedBlocks)) {
-        sc.deleteBlocks(selector.resetBlocks('selected'));
+        serverLink.deleteBlocks(selector.resetBlocks('selected'));
 
         // Change blocks to initial block
         blockModule.setBlockPosition(this.initialBlock, mouse.wp.x, mouse.wp.y);
