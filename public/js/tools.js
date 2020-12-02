@@ -178,7 +178,7 @@ function Builder() {
         // Block was dropped outside frame.
 
         // Delete block
-        dataKeeper.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
+        sc.deleteBlocksGlobally(blockHider.resetHiddenBlockIDs());
 
         // Reset idle blocks
         selector.resetBlocks('idle');

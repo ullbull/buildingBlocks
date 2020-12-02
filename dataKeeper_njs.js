@@ -1,12 +1,16 @@
 const helpers = require('./helpers_njs.js');
 const blockModule = require('./block_njs.js');
-const api = require('./api_njs.js');
 
 let blockData = { blocks: {}, gridPoints: {} };
+const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
+let workers = {};
 
-async function initBlockData() {
-  const blockData = await api.getData('/api');
-  setBlockData(blockData);
+function addWorker(worker) {
+  workers[worker.id] = worker;
+}
+
+function setWorkers(wkrs) {
+  workers = wkrs;
 }
 
 function getBlockData() {
@@ -15,6 +19,22 @@ function getBlockData() {
 
 function setBlockData(data) {
   blockData = data;
+}
+
+function add(data, to) {
+  try {
+    to[data.id] = data;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function addData(data, to) {
+  if(to == 'workers') {
+    add(data, workers);
+  } else {
+    console.error(`The variable ${data} doesn't exist!`);
+  }
 }
 
 function addBlock(block) {
@@ -32,7 +52,7 @@ function addBlock(block) {
 
   // Add the block
   blockData.blocks[blockCopy.id] = blockCopy;
-// 
+  // 
   // Add grid points
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
@@ -60,7 +80,7 @@ function addBlocksArray(blocks) {
     addBlock(block);
   });
 }
- 
+
 function addBlockAndChildren(block) {
   addBlock(block);
   if (block.hasOwnProperty('children')) {
@@ -132,15 +152,9 @@ function deleteBlocks(blockIDs) {
   }
 }
 
-function deleteBlockGlobally(blockID) {
-  deleteBlock(blockID);
-  api.deleteBlocksFromServer({ blockID });
-}
 
-function deleteBlocksGlobally(blockIDs) {
-  deleteBlocks(blockIDs);
-  api.deleteBlocksFromServer(blockIDs);
-}
+
+
 
 function deleteGridPoint(x, y) {
   const key = helpers.positionToKey(x, y);
@@ -148,8 +162,12 @@ function deleteGridPoint(x, y) {
 }
 
 module.exports = {
+  worker,
+  workers,
+  addWorker,
+  setWorkers,
+  addData,
   getBlockData,
-  initBlockData,
   setBlockData,
   addBlock,
   addBlocks,
@@ -158,7 +176,5 @@ module.exports = {
   addGridPoint,
   deleteBlock,
   deleteBlocks,
-  deleteBlockGlobally,
-  deleteBlocksGlobally,
-  deleteGridPoint
+  deleteGridPoint,
 };

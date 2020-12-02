@@ -1,6 +1,5 @@
 import * as helpers from './helpers.js';
 import * as blockModule from './block.js';
-import * as sc from './serverCommunication.js';
 
 let blockData = { blocks: {}, gridPoints: {} };
 const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
@@ -153,23 +152,9 @@ function deleteBlocks(blockIDs) {
   }
 }
 
-function deleteBlockGlobally(blockID) {
-  deleteBlock(blockID);
-  sc.deleteBlocksFromServer({ blockID });
-}
 
-function deleteBlocksGlobally(blockIDs) {
-  deleteBlocks(blockIDs);
-  sc.deleteBlocksFromServer(blockIDs);
-}
 
-function deleteBlocksGloballyArray(blockArray) {
-  const blockIDs = {};
-  blockArray.forEach(block => {
-    blockIDs[block.id] = block.id;
-  });
-  deleteBlocksGlobally(blockIDs);
-}
+
 
 function deleteGridPoint(x, y) {
   const key = helpers.positionToKey(x, y);
@@ -191,8 +176,5 @@ export {
   addGridPoint,
   deleteBlock,
   deleteBlocks,
-  deleteBlockGlobally,
-  deleteBlocksGlobally,
-  deleteBlocksGloballyArray,
   deleteGridPoint,
 };

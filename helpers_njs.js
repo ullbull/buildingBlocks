@@ -87,7 +87,7 @@ function getBlockUnderMouse(mouse) {
   return blockID;
 }
 
-function getBlockByKey(key, viewport) {
+function getBlockByKey(key) {
   const blockID = dataKeeper.getBlockData().gridPoints[key];
   let block;
   if (typeof blockID != 'undefined') {
@@ -121,6 +121,15 @@ function insideFrame(x, y, width, height, margin = 0) {
   );
 }
 
+function isObjectEmpty(object) {
+  for (const key in object) {
+    if (object.hasOwnProperty(key)) {
+      return false;      
+    }
+  }
+  return true;
+}
+
 module.exports = {
   positionToKey,
   colorValues,
@@ -133,5 +142,6 @@ module.exports = {
   getXGrid,
   getYGrid,
   getGridPosition,
-  insideFrame
+  insideFrame,
+  isObjectEmpty
 };

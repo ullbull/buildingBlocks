@@ -38,8 +38,29 @@ function deleteBlocksFromServer(blockIDs) {
   sendData('deleteBlocks', blockIDs);
 }
 
+function deleteBlockGlobally(blockID) {
+  dataKeeper.deleteBlock(blockID);
+  deleteBlocksFromServer({ blockID });
+}
+
+function deleteBlocksGlobally(blockIDs) {
+  dataKeeper.deleteBlocks(blockIDs);
+  deleteBlocksFromServer(blockIDs);
+}
+
+function deleteBlocksGloballyArray(blockArray) {
+  const blockIDs = {};
+  blockArray.forEach(block => {
+    blockIDs[block.id] = block.id;
+  });
+  deleteBlocksGlobally(blockIDs);
+}
+
 export {
   socket,
   sendData,
-  deleteBlocksFromServer
+  deleteBlocksFromServer,
+  deleteBlockGlobally,
+  deleteBlocksGlobally,
+  deleteBlocksGloballyArray
 }
