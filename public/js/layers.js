@@ -1,9 +1,3 @@
-// class Layer {
-//   constructor(context) {
-//     this.context = context;
-//   }
-// }
-
 import * as blockHider from './blockHider.js';
 import * as new_blockHider from './blockHider.js';
 import * as selector from './selector.js';
@@ -13,19 +7,33 @@ import * as workerManager from './workerManager.js';
 
 let fillColor = 'rgba(160,140,135,1)';
 const highlightColor = 'rgba(170,70,50,0.5)';
-
-const canvases = document.getElementsByTagName('canvas');
-for (let i = 0; i < canvases.length; i++) {
-  canvases[i].width = innerWidth - 1;
-  canvases[i].height = innerHeight - 40;
-}
-
-const cBackground = canvases[0].getContext('2d');
-const cForeground = canvases[1].getContext('2d');
+const margins = 20;
 
 let viewport;
 function setViewport(viewport_) {
   viewport = viewport_
+}
+
+function setCanvasToWindowSize() {
+  const width = innerWidth;
+  const height = innerHeight;
+
+  for (let i = 0; i < canvases.length; i++) {
+    canvases[i].width = width - margins;
+    canvases[i].height = height - margins;
+  }
+}
+
+const canvases = document.getElementsByTagName('canvas');
+setCanvasToWindowSize();
+
+const cBackground = canvases[0].getContext('2d');
+const cForeground = canvases[1].getContext('2d');
+
+function refreshAll() {
+  layers.forEach(layer => {
+    layer.refresh();
+  });
 }
 
 const foreground = {
@@ -96,10 +104,15 @@ const background = {
   }
 }
 
-
+const layers = [
+  foreground,
+  background
+];
 
 export {
   setViewport,
+  setCanvasToWindowSize,
+  refreshAll,
   foreground,
   background,
 }

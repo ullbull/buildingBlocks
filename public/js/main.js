@@ -95,8 +95,9 @@ function mouseWheel(event) {
 }
 
 function resize() {
-  background.width = innerWidth - 20;
-  background.height = innerHeight - 20;
+  layers.setCanvasToWindowSize();
+  viewport.SetSize(innerWidth, innerHeight);
+  layers.refreshAll();
 }
 
 function download(content, fileName, contentType) {

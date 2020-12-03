@@ -17,11 +17,16 @@ export class Viewport {
     // this.pixels = {};
   }
 
-  getWorldWidth() {
+  SetSize(width, height) {
+    this.width = width;
+    this.height = height;
+  }
+
+  GetWorldWidth() {
     return this.width / this.pixelSize;
   }
 
-  getWorldHeight() {
+  GetWorldHeight() {
     return this.height / this.pixelSize;
   }
 
@@ -225,28 +230,6 @@ export class Viewport {
       }
     }
   }
-
-  // DrawBlocks(blocks, options = {}) {
-  //   let hiddenBlockIDs = {};
-  //   if (options.hasOwnProperty('hiddenBlockIDs')) {
-  //     hiddenBlockIDs = options.hiddenBlockIDs;
-  //   }
-
-  //   for (const key in blocks) {
-  //     if (blocks.hasOwnProperty(key)) {
-  //       const block = blocks[key];
-  //       if (!hiddenBlockIDs.hasOwnProperty(key)) {
-  //         this.DrawBlock(block, options);
-  //       } else {
-  //         this.DrawBlock(block, {
-  //           color: 'rgba(100,90,100,0.2',
-  //           context: options.context
-  //         });
-  //       }
-  //     }
-  //   }
-  // }
-
 
   DrawBlocks(blocks, options = {}) {
     let hiddenBlockIDs = [];
