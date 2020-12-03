@@ -3,7 +3,7 @@ import * as layers from './layers.js';
 import * as workerManager from './workerManager.js';
 import * as toolManager from './toolManager.js';
 import * as users from './users.js';
-import * as new_blockHider from './new_blockHider.js';
+import * as blockHider from './blockHider.js';
 
 const socket = io();
 

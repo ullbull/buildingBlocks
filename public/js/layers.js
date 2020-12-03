@@ -5,7 +5,7 @@
 // }
 
 import * as blockHider from './blockHider.js';
-import * as new_blockHider from './new_blockHider.js';
+import * as new_blockHider from './blockHider.js';
 import * as selector from './selector.js';
 import * as toolManager from './toolManager.js';
 import { appStatus } from './appStatus.js';

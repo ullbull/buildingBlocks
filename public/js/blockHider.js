@@ -1,53 +1,41 @@
-let hiddenBlockIDs = {};
+import * as serverLink from './serverLink.js';
+import * as users from './users.js';
 
-function addHiddenBlockID(blockID) {
-  hiddenBlockIDs[blockID] = blockID;
+function hideBlocks_ID(blockIDs) {
+  serverLink.sendData('hiddenBlockIDs', blockIDs);
 }
 
-function addHiddenBlockIDs(blockIDsArray) {
-  blockIDsArray.forEach(blockID => {
-    addHiddenBlockID(blockID);
+function hideBlocks(blocksArray) {
+  const blockIDs = [];
+  blocksArray.forEach(block => {
+    blockIDs.push(block.id);
   });
-}
-
-function addHiddenBlocks(blockArray) {
-  blockArray.forEach(block => {
-    addHiddenBlockID(block.id);
-  });
-}
-
-function removeHiddenBlockID(blockID) {
-  if(hiddenBlockIDs.hasOwnProperty(blockID)) {
-    delete hiddenBlockIDs[blockID];
-  }
+  hideBlocks_ID(blockIDs);
 }
 
 function getHiddenBlockIDs() {
+  const hiddenBlockIDs = [];
+  const allUsers = users.getAllUsers();
+
+  allUsers.forEach(user => {
+    if (user.hasOwnProperty('blockIDs')) {
+      user.blockIDs.forEach(blockID => {
+        hiddenBlockIDs.push(blockID);
+      });
+    }
+  });
   return hiddenBlockIDs;
 }
 
-function resetHiddenBlockIDs() {
-  const blockIDs = getHiddenBlockIDs();
-  hiddenBlockIDs = {};
-  return blockIDs;
-}
-
-function hasBlocks() {
-  for (const key in hiddenBlockIDs) {
-    if (hiddenBlockIDs.hasOwnProperty(key)) {
-      return true;      
-    } else {
-      return false;
-    }
-  }
+function resetHiddenBlocks() {
+  const hiddenBlockIDs = getHiddenBlockIDs();
+  serverLink.sendData('hiddenBlockIDs', []);
+  return hiddenBlockIDs;
 }
 
 export {
-  addHiddenBlockID,
-  addHiddenBlockIDs,
-  addHiddenBlocks,
-  removeHiddenBlockID,
+  hideBlocks_ID,
+  hideBlocks,
   getHiddenBlockIDs,
-  resetHiddenBlockIDs,
-  hasBlocks
+  resetHiddenBlocks
 }

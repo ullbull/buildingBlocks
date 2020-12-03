@@ -1,9 +1,7 @@
 import * as helpers from './helpers.js';
 import * as selector from './selector.js';
 import * as blockModule from './block.js';
-import * as dataKeeper from './dataKeeper.js';
 import * as blockHider from './blockHider.js';
-import * as new_blockHider from './new_blockHider.js';
 import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import * as layers from './layers.js';
@@ -87,36 +85,6 @@ function Builder() {
     });
   }
 
-  // this.copyBlocks = function (blockArray) {
-  //   const blocks = [];
-  //   blockArray.forEach(block => {
-  //     blocks.push(helpers.copyObject(block));
-  //   });
-  //   return blocks;
-  // }
-
-  // this.changeBlockToClickedBlock = function () {
-  //   if (!this.clickedBlock) {
-  //     console.error('no clicked block');
-  //     return;
-  //   }
-  //   // Get clicked pixel
-  //   const clickedPixel = blockModule.getPositionInBlock(
-  //     this.clickedBlock, this.x, this.y);
-
-  //   // Change this blocks to copy of clicked block
-  //   this.blocks = [helpers.copyObject(this.clickedBlock)];
-
-  //   // Set anchor point
-  //   blockModule.setBlockAnchorPointAutoShift(
-  //     this.blocks[0], clickedPixel.x, clickedPixel.y);
-
-  //   // Hide clicked block
-  //   // blockHider.addHiddenBlockID(this.clickedBlock.id);
-  //   console.log('hiding');
-  //   new_blockHider.hideBlocks([this.clickedBlock.id]);
-  // }
-
   this.refreshHoveredBlocks = function () {
     this.hoveredBlock = helpers.getBlockByPosition(
       mouse.wp.x, mouse.wp.y, mouse.viewport);
@@ -149,7 +117,7 @@ function Builder() {
 
         try {
           // blockHider.addHiddenBlocks(this.blocks);
-          new_blockHider.hideBlocks(this.blocks);
+          blockHider.hideBlocks(this.blocks);
         }
         catch (error) {
           console.error(error);
@@ -181,7 +149,7 @@ function Builder() {
         // Blocks was dropped outside frame.
 
         // Delete blocks
-        serverLink.deleteBlocks(blockHider.resetHiddenBlockIDs());
+        serverLink.deleteBlocks(blockHider.resetHiddenBlocks());
 
         // Reset idle blocks
         selector.resetBlocks('idle');
@@ -210,7 +178,7 @@ function Builder() {
 
     this.hideMe = (
       this.hoveredBlock &&
-      !blockHider.getHiddenBlockIDs().hasOwnProperty(this.hoveredBlock.id) &&
+      !blockHider.getHiddenBlockIDs().includes(this.hoveredBlock.id) &&
       !this.clickedBlock
     );
 
