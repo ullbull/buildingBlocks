@@ -3,6 +3,7 @@ import * as selector from './selector.js';
 import * as blockModule from './block.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as blockHider from './blockHider.js';
+import * as new_blockHider from './new_blockHider.js';
 import * as position from './positionTranslator.js';
 import * as mouse from './mouse.js';
 import * as layers from './layers.js';
@@ -94,25 +95,27 @@ function Builder() {
   //   return blocks;
   // }
 
-  this.changeBlockToClickedBlock = function () {
-    if (!this.clickedBlock) {
-      console.error('no clicked block');
-      return;
-    }
-    // Get clicked pixel
-    const clickedPixel = blockModule.getPositionInBlock(
-      this.clickedBlock, this.x, this.y);
+  // this.changeBlockToClickedBlock = function () {
+  //   if (!this.clickedBlock) {
+  //     console.error('no clicked block');
+  //     return;
+  //   }
+  //   // Get clicked pixel
+  //   const clickedPixel = blockModule.getPositionInBlock(
+  //     this.clickedBlock, this.x, this.y);
 
-    // Change this blocks to copy of clicked block
-    this.blocks = [helpers.copyObject(this.clickedBlock)];
+  //   // Change this blocks to copy of clicked block
+  //   this.blocks = [helpers.copyObject(this.clickedBlock)];
 
-    // Set anchor point
-    blockModule.setBlockAnchorPointAutoShift(
-      this.blocks[0], clickedPixel.x, clickedPixel.y);
+  //   // Set anchor point
+  //   blockModule.setBlockAnchorPointAutoShift(
+  //     this.blocks[0], clickedPixel.x, clickedPixel.y);
 
-    // Hide clicked block
-    blockHider.addHiddenBlockID(this.clickedBlock.id);
-  }
+  //   // Hide clicked block
+  //   // blockHider.addHiddenBlockID(this.clickedBlock.id);
+  //   console.log('hiding');
+  //   new_blockHider.hideBlocks([this.clickedBlock.id]);
+  // }
 
   this.refreshHoveredBlocks = function () {
     this.hoveredBlock = helpers.getBlockByPosition(
@@ -145,7 +148,8 @@ function Builder() {
         this.blocks = helpers.copyObject(this.hoveredBlocks);
 
         try {
-          blockHider.addHiddenBlocks(this.blocks);
+          // blockHider.addHiddenBlocks(this.blocks);
+          new_blockHider.hideBlocks(this.blocks);
         }
         catch (error) {
           console.error(error);

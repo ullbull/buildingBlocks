@@ -86,7 +86,11 @@ io.on('connection', socket => {
   });
 
   socket.on('hiddenBlockIDs', blockIDs => {
-    
+    const userId = socket.id;
+    users.setUserBlockIDs(userId, blockIDs);
+
+    // Alert all clients that blocks are hidden
+    io.emit('hiddenBlockIDs', { userId, blockIDs });
   });
 
 

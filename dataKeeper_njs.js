@@ -152,10 +152,6 @@ function deleteBlocks(blockIDs) {
   }
 }
 
-
-
-
-
 function deleteGridPoint(x, y) {
   const key = helpers.positionToKey(x, y);
   delete blockData.gridPoints[key];

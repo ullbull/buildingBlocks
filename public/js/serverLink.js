@@ -2,6 +2,7 @@ import * as dataKeeper from './dataKeeper.js';
 import * as layers from './layers.js';
 import * as workerManager from './workerManager.js';
 import * as toolManager from './toolManager.js';
+import * as users from './users.js';
 
 const socket = io();
 
@@ -29,6 +30,13 @@ socket.on('deleteBlocks', blockIDs => {
   dataKeeper.deleteBlocks(blockIDs);
   layers.background.refresh();
 })
+
+socket.on('hiddenBlockIDs', ({ userId, blockIDs }) => {
+  users.setUserBlockIDs(userId, blockIDs);
+  layers.background.refresh();
+  console.log(users.getAllUsers());
+})
+
 
 function sendData(type, payload) {
   socket.emit(type, payload);
