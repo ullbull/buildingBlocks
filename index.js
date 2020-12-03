@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const users = require('./users.js');
+const users = require('./users_njs.js');
 
 const PORT = process.env.PORT || 3000;
 const WS_PORT = 8082;
@@ -56,15 +56,24 @@ io.on('connection', socket => {
 
   });
 
-  socket.on('blocksArray', blocksArray => {
-    console.log(`Incoming blocksArray from ${socket.id}: ${blocksArray}`);
-
+  function addBlocks(blocks) {
     // Add incoming blocks
-    dataKeeper.addBlocksArray(blocksArray);
-
+    dataKeeper.addBlocksArray(blocks);
+  
     // Send incoming blocks to all clients
-    io.emit('blocksArray', blocksArray);
+    io.emit('blocksArray', blocks);
+  }
 
+  function resetHiddenBlocks(userId) {
+    // Send empty hidden block ID array to all clients
+    const blockIDs = [];
+    io.emit('hiddenBlockIDs', { userId, blockIDs });
+  }
+
+  socket.on('blocksArray', blocksArray => {
+    // console.log(`Incoming blocksArray from ${socket.id}: ${blocksArray}`);
+    addBlocks(blocksArray);
+    resetHiddenBlocks(socket.id);
     saveFile();
   });
 

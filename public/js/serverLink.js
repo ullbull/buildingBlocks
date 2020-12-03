@@ -3,6 +3,7 @@ import * as layers from './layers.js';
 import * as workerManager from './workerManager.js';
 import * as toolManager from './toolManager.js';
 import * as users from './users.js';
+import * as new_blockHider from './new_blockHider.js';
 
 const socket = io();
 
@@ -34,7 +35,6 @@ socket.on('deleteBlocks', blockIDs => {
 socket.on('hiddenBlockIDs', ({ userId, blockIDs }) => {
   users.setUserBlockIDs(userId, blockIDs);
   layers.background.refresh();
-  console.log(users.getAllUsers());
 })
 
 

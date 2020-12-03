@@ -70,8 +70,8 @@ function Builder() {
     // Send blocks to server
     serverLink.sendData('blocksArray', blocksCopy);
 
-    // Reset hidden blocks
-    blockHider.resetHiddenBlockIDs();
+    // // Reset hidden blocks
+    // blockHider.resetHiddenBlockIDs();
   }
 
   this.setPosition = function (x, y) {

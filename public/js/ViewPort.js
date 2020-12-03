@@ -226,8 +226,30 @@ export class Viewport {
     }
   }
 
+  // DrawBlocks(blocks, options = {}) {
+  //   let hiddenBlockIDs = {};
+  //   if (options.hasOwnProperty('hiddenBlockIDs')) {
+  //     hiddenBlockIDs = options.hiddenBlockIDs;
+  //   }
+
+  //   for (const key in blocks) {
+  //     if (blocks.hasOwnProperty(key)) {
+  //       const block = blocks[key];
+  //       if (!hiddenBlockIDs.hasOwnProperty(key)) {
+  //         this.DrawBlock(block, options);
+  //       } else {
+  //         this.DrawBlock(block, {
+  //           color: 'rgba(100,90,100,0.2',
+  //           context: options.context
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
+
+
   DrawBlocks(blocks, options = {}) {
-    let hiddenBlockIDs = {};
+    let hiddenBlockIDs = [];
     if (options.hasOwnProperty('hiddenBlockIDs')) {
       hiddenBlockIDs = options.hiddenBlockIDs;
     }
@@ -235,7 +257,7 @@ export class Viewport {
     for (const key in blocks) {
       if (blocks.hasOwnProperty(key)) {
         const block = blocks[key];
-        if (!hiddenBlockIDs.hasOwnProperty(key)) {
+        if (!hiddenBlockIDs.includes(key)) {
           this.DrawBlock(block, options);
         } else {
           this.DrawBlock(block, {

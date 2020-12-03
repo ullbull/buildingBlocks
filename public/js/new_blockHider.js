@@ -8,20 +8,23 @@ function hideBlocks_ID(blockIDs) {
 function hideBlocks(blocksArray) {
   const blockIDs = [];
   blocksArray.forEach(block => {
-    blockIDs.push(block);
+    blockIDs.push(block.id);
   });
   hideBlocks_ID(blockIDs);
 }
 
 function getHiddenBlockIDs() {
-  const userIDs = [];
+  const hiddenBlockIDs = [];
   const allUsers = users.getAllUsers();
 
   allUsers.forEach(user => {
-    userIDs.push(user.id);
+    if (user.hasOwnProperty('blockIDs')) {
+      user.blockIDs.forEach(blockID => {
+        hiddenBlockIDs.push(blockID);
+      });
+    }
   });
-
-  return userIDs;
+  return hiddenBlockIDs;
 }
 
 export {
