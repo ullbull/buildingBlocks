@@ -92,9 +92,13 @@ io.on('connection', socket => {
       io.to(sectionName).emit('blocksArray', blocksArray);
     });
 
-    dataKeeper_2.addBlocks(blocksArray);
+    // Add the blocks on server
+    const sectionNames = dataKeeper_2.addBlocks(blocksArray);
+
     resetHiddenBlocks(socket.id);
-    fileManager.saveFile('0,0');
+
+    // Save all sections where a block has been added
+    fileManager.saveSectionsToFiles(sectionNames);
   });
 
   socket.on('worker', worker => {
@@ -104,9 +108,10 @@ io.on('connection', socket => {
 
   socket.on('deleteBlocks', blockIDs => {
     // Delete blocks
-    dataKeeper_2.deleteBlocks(blockIDs)
+    const sectionNames = dataKeeper_2.deleteBlocks(blockIDs)
 
-    fileManager.saveFile('0,0');
+    // Save all sections where a block has been deleted
+    fileManager.saveSectionsToFiles(sectionNames);
 
     // Alert all clients that blocks are deleted
     io.emit('deleteBlocks', blockIDs);

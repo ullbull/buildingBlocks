@@ -6,6 +6,7 @@ function getSectionValue(value) {
   return Math.floor(value / sectionSize);
 }
 
+// Returns the section name for passed position
 function getSectionName(x, y) {
   return helpers.positionToKey(getSectionValue(x), getSectionValue(y));
 }

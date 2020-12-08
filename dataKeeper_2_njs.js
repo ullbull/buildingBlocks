@@ -160,6 +160,10 @@ function addGridPoint(sectionName, key, blockID) {
   section.gridPoints[key] = blockID;
 }
 
+// Adds the block in block positions section.
+// Returns the section name where block was added.
+// Note that pixels in block could be in another section
+// but will still be added in section for the blocks position.
 function addBlock(block) {
   // Find out what section the block should be added to
   const sectionName = sectionManager.getSectionName(block.x, block.y);
@@ -194,12 +198,23 @@ function addBlock(block) {
   gridPointKeys.forEach(key => {
     addGridPoint(sectionName, key, block.id);
   });
+
+  return sectionName;
 }
 
+// Adds the blocks in each block positions section.
+// Returns an array holding all section names where a block was added.
+// Note that pixels in a block could be in another section
+// but will still be added in section for the blocks position.
 function addBlocks(blocks) {
+  const sectionNames = {};
+
   blocks.forEach(block => {
-    addBlock(block);
+    const name = addBlock(block);
+    sectionNames[name] = name;  
   });
+
+  return Object.values(sectionNames);
 }
 
 // Returns the block at passed position
@@ -232,6 +247,8 @@ function getBlockAtPosition_k(key) {
   return _getBlockAtPosition(p.x, p.y, key);
 }
 
+// Deletes the block and returns section name 
+// where block was deleted
 function deleteBlock(blockID) {
   const { block, sectionName } = getBlockAndSectionName(blockID);
   if (!block) {
@@ -251,12 +268,21 @@ function deleteBlock(blockID) {
 
   // Delete block
   section.blocks.splice(index, 1);
+
+  return sectionName;
 }
 
+// Deletes the blocks and returns an array holding 
+// all section names where a block was deleted.
 function deleteBlocks(blockIDs) {
+  const sectionNames = {};
+
   blockIDs.forEach(blockID => {
-    deleteBlock(blockID);
+    const name = deleteBlock(blockID);
+    sectionNames[name] = name;  
   })
+
+  return Object.values(sectionNames);
 }
 
 function deleteGridPoint(sectionName, x, y) {

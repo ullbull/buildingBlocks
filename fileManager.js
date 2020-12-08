@@ -2,20 +2,21 @@ const fs = require('fs');
 const helpers = require('./helpers_njs.js');
 const dataKeeper_2 = require('./dataKeeper_2_njs.js');
 
-const dirPath = './blockData/';
+const pathSectionData = './sectionData/';
+const pathTempFiles = pathSectionData + 'tempFiles/';
 const fileExtension = '.json'
 // const filename_ = '0,0';
 // const filePath = dirPath + filename_ + fileExtension;
-let fileVersion = 1;
+let fileVersion = 0;
 
-function getFilePath(filename, separator = '', suffix = '') {
-  return dirPath + filename + separator + suffix + fileExtension
+function getFilePath(path, filename, separator = '', suffix = '') {
+  return path + filename + separator + suffix + fileExtension
 }
 
 // Loads the file content into corresponding section.
 // Loads and empty section if file doesn't exist
 function loadFile(filename = '0,0') {
-  const filePath = getFilePath(filename);
+  const filePath = getFilePath(pathSectionData, filename);
   let rawData = null;
 
   try {
@@ -45,13 +46,14 @@ function loadFile(filename = '0,0') {
   dataKeeper_2.setSection(section, filename);
 }
 
+// Saves a file. Overwrites if file exist
 function saveFile(filename) {
   const dataString = JSON.stringify(dataKeeper_2.getSection(filename));
   // const dataString = JSON.stringify(blockData, null, 2);
 
   fileVersion = (++fileVersion > 2) ? 1 : fileVersion;
-  const tempFilePath = getFilePath(filename, '_', ''+fileVersion);
-  const filePath = getFilePath(filename);
+  const tempFilePath = getFilePath(pathTempFiles, filename, '_', ''+fileVersion);
+  const filePath = getFilePath(pathSectionData, filename);
   // const tempFilePath = dirPath + filename + '_' + (fileVersion) + fileExtension
 
   // Save temporary file
@@ -72,7 +74,15 @@ function saveFile(filename) {
   });
 }
 
+// Saves each section to a separate file
+function saveSectionsToFiles(sectionNames) {
+  sectionNames.forEach(sectionName => {
+    saveFile(sectionName);
+  })
+}
+
 module.exports = {
   loadFile,
-  saveFile
+  saveFile,
+  saveSectionsToFiles
 }
