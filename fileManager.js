@@ -14,7 +14,8 @@ function getFilePath(path, filename, separator = '', suffix = '') {
 }
 
 // Loads the file content into corresponding section.
-// Loads and empty section if file doesn't exist
+// Loads and empty section if file doesn't exist.
+// Returns loaded section.
 function loadFile(filename = '0,0') {
   const filePath = getFilePath(pathSectionData, filename);
   let rawData = null;
@@ -44,6 +45,8 @@ function loadFile(filename = '0,0') {
 
   // Load data into section
   dataKeeper_2.setSection(section, filename);
+
+  return section;
 }
 
 // Saves a file. Overwrites if file exist
@@ -52,7 +55,7 @@ function saveFile(filename) {
   // const dataString = JSON.stringify(blockData, null, 2);
 
   fileVersion = (++fileVersion > 2) ? 1 : fileVersion;
-  const tempFilePath = getFilePath(pathTempFiles, filename, '_', ''+fileVersion);
+  const tempFilePath = getFilePath(pathTempFiles, filename, '_', '' + fileVersion);
   const filePath = getFilePath(pathSectionData, filename);
   // const tempFilePath = dirPath + filename + '_' + (fileVersion) + fileExtension
 
@@ -81,8 +84,37 @@ function saveSectionsToFiles(sectionNames) {
   })
 }
 
+// Returns requested section.
+// Loads section if not loaded.
+// Returns empty section if section doesn't exist
+function getSection(sectionName) {
+  const section = dataKeeper_2.getSection(sectionName);
+  if (section.blocks[0]) {
+    // Section is already loaded. Return the section
+    return section;
+  } else {
+    // Section is not loaded. Load the section and return it.
+    return loadFile(sectionName);
+  }
+}
+
+// Returns requested sections.
+// Loads section if not loaded.
+// Returns empty section if section doesn't exist
+function getSections(sectionNames) {
+  const sections = {};
+
+  sectionNames.forEach(sectionName => {
+    sections[sectionName] = getSection(sectionName);
+  });
+
+  return sections;
+}
+
 module.exports = {
   loadFile,
   saveFile,
-  saveSectionsToFiles
+  saveSectionsToFiles,
+  getSection,
+  getSections
 }

@@ -54,13 +54,6 @@ function getSection(sectionName) {
   return Sections[sectionName];
 }
 
-// Returns the section name or
-// undefined if section doesn't exist
-function getSectionName(blockID) {
-  const { block, sectionName } = getBlockAndSectionName(blockID);
-  return sectionName;
-}
-
 // Returns the sections. If any section doesn't exist
 // an empty section is created.
 function getSections(sectionNames) {
@@ -71,6 +64,13 @@ function getSections(sectionNames) {
   });
 
   return sections;
+}
+
+// Returns the section name or
+// undefined if section doesn't exist
+function getSectionName(blockID) {
+  const { block, sectionName } = getBlockAndSectionName(blockID);
+  return sectionName;
 }
 
 // Returns data from section or
@@ -211,7 +211,7 @@ function addBlocks(blocks) {
 
   blocks.forEach(block => {
     const name = addBlock(block);
-    sectionNames[name] = name;  
+    sectionNames[name] = name;
   });
 
   return Object.values(sectionNames);
@@ -236,7 +236,7 @@ function _getBlockAtPosition(x, y, key) {
 // Returns the block at passed position
 // or undefined if there is no block.
 function getBlockAtPosition(x, y) {
-  const key = helpers.positionToKey(x,y);
+  const key = helpers.positionToKey(x, y);
   return _getBlockAtPosition(x, y, key);
 }
 
@@ -279,7 +279,7 @@ function deleteBlocks(blockIDs) {
 
   blockIDs.forEach(blockID => {
     const name = deleteBlock(blockID);
-    sectionNames[name] = name;  
+    sectionNames[name] = name;
   })
 
   return Object.values(sectionNames);

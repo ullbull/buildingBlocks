@@ -52,7 +52,7 @@ io.on('connection', socket => {
     socket.emit('message', `Welcome to room ${sectionNames}`);
 
     // Send sections to client
-    socket.emit('sections', dataKeeper_2.getSections(sectionNames));
+    socket.emit('sections', fileManager.getSections(sectionNames));
 
     // Broadcast when a user connects
     sectionNames.forEach(sectionName => {
@@ -81,7 +81,7 @@ io.on('connection', socket => {
   socket.on('requestSections', sectionNames => {
 
     // Send sections to client
-    socket.emit('sections', dataKeeper_2.getSections(sectionNames));
+    socket.emit('sections', fileManager.getSections(sectionNames));
   })
 
   socket.on('blocksArray', blocksArray => {
