@@ -40,7 +40,7 @@ function getBlocksArray(blocksToGet = 'selected') {
   return blocks;
 }
 
-function getBlockIDs(blocksToGet = 'selected') {
+function getBlockIDsOBJ(blocksToGet = 'selected') {
   setBlocksToModify(blocksToGet);
 
   const blockIDs = {};
@@ -48,6 +48,19 @@ function getBlockIDs(blocksToGet = 'selected') {
     if (blocksToModify.hasOwnProperty(key)) {
       const block = blocksToModify[key];
       blockIDs[block.id] = block.id;
+    }
+  }
+  return blockIDs;
+}
+
+function getBlockIDs(blocksToGet = 'selected') {
+  setBlocksToModify(blocksToGet);
+
+  const blockIDs = [];
+  for (const key in blocksToModify) {
+    if (blocksToModify.hasOwnProperty(key)) {
+      const block = blocksToModify[key];
+      blockIDs.push(block.id);
     }
   }
   return blockIDs;

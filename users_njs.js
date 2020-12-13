@@ -1,47 +1,55 @@
-const helpers = require('./helpers_njs.js');
+const timer = require('./timer.js');
 
-const users = {};
+const users = [];
 
-// Add new user
+// Adds a new user.
+// Overwrites user if user ID already exists
+// Returns the added user
 function addUser(id, sectionNames) {
-  const user = {
+  const newUser = {
     id,
     subscriptions: sectionNames,
     blockIDs: []
   };
 
-  users[id] = user;
+  const index = users.findIndex(user => user.id == id)
+  if (index != -1) {
+    users[index] = newUser;
+  } else {
+    users.push(newUser)
+  }
 
-  return user;
+  return newUser;
 }
 
-// function getUser(userID) {
-//   return users.find(user => user.id === userID);
-// }
-
+// Returns user or undefined if user doesn't exist
 function getUser(userID) {
-  return users[userID];
+  return users.find(user => user.id === userID);
 }
 
-// // Remove user and return removed user
-// function removeUser(userId) {
-//   const index = users.findIndex(user => user.id === userId);
+// Remove user and return removed user or
+// undefined if user doesn't exist
+function removeUser(userId) {
+  const index = users.findIndex(user => user.id === userId);
 
-//   if (index !== -1) {
-//     return users.splice(index, 1)[0];
-//   }
-// }
-
-// Remove user and return removed user
-function removeUser(userID) {
-  const user = helpers.copyObject(users[userID]);
-  delete users[userID];
-  return user;
+  if (index !== -1) {
+    return users.splice(index, 1)[0];
+  }
 }
 
-// Get all users in room
+// Returns all users in room
 function getRoomUsers(room) {
-  return users.filter(user => user.room === room);
+  const requestedUsers = []
+
+  users.forEach(user => {
+    const index = user.subscriptions.findIndex(subscription => {
+      return subscription == room
+    });
+    if (index !== -1) {
+      requestedUsers.push(user)
+    }
+  })
+  return requestedUsers;
 }
 
 function setUserBlockIDs(userID, blockIDs) {
@@ -72,6 +80,52 @@ function removeSubscriptions(userID, sectionNames) {
   });
 }
 
+function getUserIDsInSections(sectionNames) {
+  timer.resetTimer();
+  const userIDs = [];
+
+  sectionNames.forEach(sectionName => {
+    const usersInSection = getRoomUsers(sectionName);
+    usersInSection.forEach(user => {
+      const index = userIDs.findIndex(userID => userID == user.id);
+      if (index === -1) {
+        userIDs.push(user.id);
+      }
+    })
+  });
+
+  console.log(`getUserIDsInSection() finished in ${timer.getPassedTime()} milliseconds.`);
+  console.log('returning userIDs:', userIDs);
+  return userIDs;
+}
+
+function getUserIDsInSections_2(sectionNames) {
+  timer.resetTimer();
+  const uids = {};
+
+  sectionNames.forEach(sectionName => {
+    const usrids = getUserIDsInSection(sectionName);
+    usrids.forEach(id => {
+      uids[id] = id;
+    })
+  })
+
+  const userIDs = Object.values(uids);
+
+  console.log(`getUserIDsInSection_2() finished in ${timer.getPassedTime()} milliseconds.`);
+  console.log('returning userIDs:', userIDs);
+  return userIDs;
+}
+
+function getUserIDsInSection(sectionName) {
+  const userIDs = [];
+  const users = getRoomUsers(sectionName);
+  users.forEach(user => {
+    userIDs.push(user.id);
+  });
+  return userIDs;
+}
+
 module.exports = {
   addUser,
   getUser,
@@ -79,5 +133,8 @@ module.exports = {
   getRoomUsers,
   setUserBlockIDs,
   addSubscriptions,
-  removeSubscriptions
+  removeSubscriptions,
+  getUserIDsInSections,
+  getUserIDsInSections_2,
+  getUserIDsInSection
 };

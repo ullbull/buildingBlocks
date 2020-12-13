@@ -1,5 +1,4 @@
 const fs = require('fs');
-const helpers = require('./helpers_njs.js');
 const dataKeeper_2 = require('./dataKeeper_2_njs.js');
 
 const pathSectionData = './sectionData/';

@@ -1,5 +1,4 @@
 const helpers = require('./helpers_njs.js');
-const dataKeeper = require('./dataKeeper_njs.js');
 
 function createBlock(x = 0, y = 0, width = 2, height = 2, color = 'gray', anchorPoint = { x: 0, y: 0 }) {
   let key;
@@ -84,49 +83,6 @@ function setBlockPosition(block, x, y) {
   block.y = y;
 }
 
-function setBlockPosition_old(block, position) {
-  const children = linkKeeper.getChildren(block);
-  
-  // Check if block has children
-  if (children) {
-    // Find distance to new position
-    const xDistance = position.x - block.x;
-    const yDistance = position.y - block.y;
-
-    for (const key in children) {
-      if (children.hasOwnProperty(key)) {
-        const childID = children[key];
-        const blockData = dataKeeper.getBlockData();
-        const child = blockData.blocks[childID];
-        setBlockPosition(child,
-          {
-            x: child.x + xDistance,
-            y: child.y + yDistance
-          }
-        )
-      }
-    }
-  }
-
-  // if (block.hasOwnProperty('children')) {
-  //   // Find distance to new position
-  //   const xDistance = position.x - block.x;
-  //   const yDistance = position.y - block.y;
-
-  //   // Move children according to distance
-  //   for (const key in block.children) {
-  //     if (block.children.hasOwnProperty(key)) {
-  //       const child = block.children[key];
-  //       child.x += xDistance;
-  //       child.y += yDistance;
-  //     }
-  //   }
-  // }
-  
-    // Move block
-    block.x = position.x;
-    block.y = position.y;
-}
 
 function moveBlock(block, position) {
   // Delete grid points for this block

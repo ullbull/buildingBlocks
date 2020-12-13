@@ -3,11 +3,10 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const connection = require('./connectionToClients.js');
-const dataKeeper = require('./dataKeeper_njs.js');
 const dataKeeper_2 = require('./dataKeeper_2_njs.js');
 const users = require('./users_njs.js');
 const fileManager = require('./fileManager.js');
+const ctc = require('./connectionToClients.js');
 
 const PORT = process.env.PORT || 3000;
 
@@ -25,51 +24,20 @@ fileManager.loadFile('0,0');
 // Run when client connects
 io.on('connection', socket => {
   console.log('User connected', socket.id);
-  socket.emit('message', `Welcome ${socket.id}`);
+
+  // Add user
+  users.addUser(socket.id, []);
+
+  socket.emit('message', `You are connected!`);
 
   // Listen for data from client
+
   socket.on('subscribe', sectionNames => {
-
-    // Leave all rooms
-    let user = users.getUser(socket.id);
-    if (user) {
-      user.subscriptions.forEach(sectionName => {
-        socket.leave(sectionName);
-      });
-    }
-
-    // Add user
-    user = users.addUser(socket.id, sectionNames);
-
-    // Join rooms
-    sectionNames.forEach(sectionName => {
-      socket.join(sectionName);
-    });
-
-    console.log('user joined', user);
-
-    // Welcome current user
-    socket.emit('message', `Welcome to room ${sectionNames}`);
-
-    // Send sections to client
-    socket.emit('sections', fileManager.getSections(sectionNames));
-
-    // Broadcast when a user connects
-    sectionNames.forEach(sectionName => {
-      socket.broadcast.to(sectionName).emit('message',
-        `${user.id} has joined us`
-      );
-    })
-
-    // // Send users and room info
-    // io.to(user.room).emit('roomUsers', {
-    //   room: user.room,
-    //   users: getRoomUsers(user.room)
-    // }); 
+    ctc.subscribe(sectionNames, socket);
   });
 
   socket.on('addSubscription', sectionNames => {
-    users.addSubscriptions(socket.id, sectionName)
+    users.addSubscriptions(socket.id, sectionNames)
   });
 
   socket.on('message', message => {
@@ -85,20 +53,7 @@ io.on('connection', socket => {
   })
 
   socket.on('blocksArray', blocksArray => {
-    const user = users.getUser(socket.id);
-
-    // Send incoming blocks to all clients in room
-    user.subscriptions.forEach(sectionName => {
-      io.to(sectionName).emit('blocksArray', blocksArray);
-    });
-
-    // Add the blocks on server
-    const sectionNames = dataKeeper_2.addBlocks(blocksArray);
-
-    resetHiddenBlocks(socket.id);
-
-    // Save all sections where a block has been added
-    fileManager.saveSectionsToFiles(sectionNames);
+    ctc.receiveBlocks(blocksArray, socket, io);
   });
 
   socket.on('worker', worker => {
@@ -107,6 +62,8 @@ io.on('connection', socket => {
   });
 
   socket.on('deleteBlocks', blockIDs => {
+    console.log('blockIDs = ', blockIDs);
+
     // Delete blocks
     const sectionNames = dataKeeper_2.deleteBlocks(blockIDs)
 
@@ -127,7 +84,15 @@ io.on('connection', socket => {
 
   // Runs when client disconnects
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    console.log('Disconnecting user', socket.id)
+    const user = users.removeUser(socket.id);
+
+    if (user) {
+      console.log(`User ${user.id} disconnected`);
+    } else {
+      console.error(`The user ${socket.id} doesn't exist!`);
+    }
+
   });
 });
 
@@ -147,22 +112,19 @@ io.emit();
 
 
 
-function addBlocks(blocks) {
-  // Add incoming blocks
-  dataKeeper.addBlocksArray(blocks);
+// function addBlocks(blocks) {
+//   // Add incoming blocks
+//   dataKeeper.addBlocksArray(blocks);
 
-  // Send incoming blocks to all clients
-  io.emit('blocksArray', blocks);
-}
+//   // Send incoming blocks to all clients
+//   io.emit('blocksArray', blocks);
+// }
 
-function resetHiddenBlocks(userId) {
-  // Send empty hidden block ID array to all clients
-  const blockIDs = [];
-  io.emit('hiddenBlockIDs', { userId, blockIDs });
-}
 
 // Cleanup if block data is corrupt
 const cleanup = require("./cleanup.js");
-const { exit } = require('process');
-cleanup.deleteBadGridpoints(dataKeeper.getBlockData());
-cleanup.deleteBadBlocks(dataKeeper.getBlockData());
+// const { exit } = require('process');
+
+// SEE IF I NEED THESE FUNCTIONS. CHANGE TO DATA KEEPER 2
+// cleanup.deleteBadGridpoints(dataKeeper.getBlockData());
+// cleanup.deleteBadBlocks(dataKeeper.getBlockData());

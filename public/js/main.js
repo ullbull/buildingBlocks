@@ -11,6 +11,8 @@ import * as scanner from './scanner.js';
 import * as connection from './connectionToServer.js';
 import * as workerManager from './workerManager.js';
 import * as dataKeeper_2 from './dataKeeper_2.js';
+import * as blockHider from './blockHider.js';
+
 
 
 // const canvas = document.querySelector('canvas');
@@ -158,7 +160,7 @@ function keyDown(event) {
       console.log('blockData:', dataKeeper.getBlockData());
       console.log('selectedBlocks:', selector.getBlocks());
       console.log('appStatus', appStatus);
-      console.log('Workers', dataKeeper.workers);
+      console.log('Hidden blocks', blockHider.getHiddenBlockIDs());
     }
   }
 
@@ -169,13 +171,13 @@ function keyUp(event) {
   appStatus.spaceKeyDown = false;
   toolManager.keyUp(event);
 
-  if (event.key == 's') {
-    scanner.defineArea(viewport.getWorldWidth(), viewport.getWorldHeight());
-    let scannedBlocks = scanner.scan();
-    console.log('scannedBlocks', scannedBlocks);
-  }
+  // if (event.key == 's') {
+  //   scanner.defineArea(viewport.GetWorldWidth(), viewport.GetWorldHeight());
+  //   let scannedBlocks = scanner.scan();
+  //   console.log('scannedBlocks', scannedBlocks);
+  // }
 
-  console.log('Sections covered', viewport.GetSectionNames());
+  // console.log('Sections covered', viewport.GetSectionNames());
 
 }
 

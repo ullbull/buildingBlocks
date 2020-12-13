@@ -1,5 +1,3 @@
-const dataKeeper = require('./dataKeeper_njs.js');
-
 function positionToKey(x, y) {
   return x + ',' + y;
 }
