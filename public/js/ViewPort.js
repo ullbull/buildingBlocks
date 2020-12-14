@@ -232,17 +232,25 @@ export class Viewport {
   }
 
   DrawBlock(block, options = {}) {
-    if(!block) {
+    if (!block) {
       console.error('block is not defined');
       return;
     }
+
+
     if (block.hasOwnProperty('pixels')) {
       for (const key in block.pixels) {
         if (block.pixels.hasOwnProperty(key)) {
           const pixel = helpers.copyObject(block.pixels[key]);
 
-          if (typeof options.color != 'undefined') {
+          if (options.hasOwnProperty('color')) {
             pixel.color = options.color;
+          }
+
+          if (options.hasOwnProperty('hiddenBlockIDs')) {
+            if (options.hiddenBlockIDs.includes(block.id)) {
+              pixel.color = 'rgba(100,90,100,0.2';
+            }
           }
 
           // Set pixel relative to block
@@ -274,22 +282,23 @@ export class Viewport {
   }
 
   DrawBlocks(blocks, options = {}) {
-    let hiddenBlockIDs = [];
-    if (options.hasOwnProperty('hiddenBlockIDs')) {
-      hiddenBlockIDs = options.hiddenBlockIDs;
-    }
+    // let hiddenBlockIDs = [];
+    // if (options.hasOwnProperty('hiddenBlockIDs')) {
+    //   hiddenBlockIDs = options.hiddenBlockIDs;
+    // }
 
     for (const key in blocks) {
       if (blocks.hasOwnProperty(key)) {
         const block = blocks[key];
-        if (!hiddenBlockIDs.includes(key)) {
-          this.DrawBlock(block, options);
-        } else {
-          this.DrawBlock(block, {
-            color: 'rgba(100,90,100,0.2',
-            context: options.context
-          });
-        }
+        this.DrawBlock(block, options);
+        // if (!hiddenBlockIDs.includes(key)) {
+        //   this.DrawBlock(block, options);
+        // } else {
+        //   this.DrawBlock(block, {
+        //     color: 'rgba(100,90,100,0.2',
+        //     context: options.context
+        //   });
+        // }
       }
     }
   }

@@ -46,32 +46,14 @@ function subscribe(sectionNames, socket) {
 }
 
 function receiveBlocks(blocksArray, socket, io) {
-  // const user = users.getUser(socket.id);
-
-
-  // // Send incoming blocks to all clients in room
-
-
-  // // Send incoming blocks to all clients in room
-  // user.subscriptions.forEach(sectionName => {
-  //   io.to(sectionName).emit('blocksArray', blocksArray);
-  // });
-
   // Add the blocks on server
   const sectionNames = dataKeeper_2.addBlocks(blocksArray);
-  console.log('added blocks in sections:', sectionNames);
+  
+  sendToAllInSections('blocksArray', blocksArray, io, sectionNames);
   resetHiddenBlocks(socket.id, io);
 
   // Save all sections where a block has been added
   fileManager.saveSectionsToFiles(sectionNames);
-
-  // Send blocks to users that should receive them
-  // Could probably use one of socket.io's built in functions instead
-  const userIDs = users.getUserIDsInSections(sectionNames);
-  const userIDs_2 = users.getUserIDsInSections_2(sectionNames);
-  userIDs.forEach(userID => {
-    io.to(userID).emit('blocksArray', blocksArray);
-  });
 }
 
 function resetHiddenBlocks(userId, io) {
@@ -80,7 +62,35 @@ function resetHiddenBlocks(userId, io) {
   io.emit('hiddenBlockIDs', { userId, blockIDs });
 }
 
+function sendToAllClients(type, payload, io) {
+  io.emit(type, payload);
+}
+
+function sendToAllClientsExceptSender(type, payload, socket) {
+  socket.broadcast.emit(type, payload);
+}
+
+function sendToAllInSections(type, payload, io, sectionNames){
+
+  // Could probably use one of socket.io's built in functions instead
+  const userIDs = users.getUserIDsInSections(sectionNames);
+  // Just comparing booth methods. They return the same info
+  const userIDs_2 = users.getUserIDsInSections_2(sectionNames);
+  
+  userIDs.forEach(userID => {
+    sendToOneClient(type, payload, io, userID);
+  });
+}
+
+function sendToOneClient(type, payload, io, id) {
+  io.to(id).emit(type, payload);
+}
+
 module.exports = {
   subscribe,
-  receiveBlocks
+  receiveBlocks,
+  sendToAllClients,
+  sendToAllClientsExceptSender,
+  sendToAllInSections,
+  sendToOneClient,
 }

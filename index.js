@@ -62,16 +62,14 @@ io.on('connection', socket => {
   });
 
   socket.on('deleteBlocks', blockIDs => {
-    console.log('blockIDs = ', blockIDs);
-
     // Delete blocks
     const sectionNames = dataKeeper_2.deleteBlocks(blockIDs)
 
     // Save all sections where a block has been deleted
     fileManager.saveSectionsToFiles(sectionNames);
 
-    // Alert all clients that blocks are deleted
-    io.emit('deleteBlocks', blockIDs);
+    // Alert clients that blocks are deleted
+    ctc.sendToAllInSections('deleteBlocks', blockIDs, io, sectionNames);
   });
 
   socket.on('hiddenBlockIDs', blockIDs => {

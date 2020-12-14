@@ -69,8 +69,8 @@ function Builder() {
     // Send blocks to server
     connection.sendData('blocksArray', blocksCopy);
 
-    // // Reset hidden blocks
-    // blockHider.resetHiddenBlockIDs();
+    // Reset hidden blocks
+    blockHider.resetHiddenBlocks();
   }
 
   this.setPosition = function (x, y) {
