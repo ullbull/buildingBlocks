@@ -45,15 +45,36 @@ function subscribe(sectionNames, socket) {
   // }); 
 }
 
-function receiveBlocks(blocksArray, socket, io) {
+function buildBlocks(blocksArray, socket, io) {
   // Add the blocks on server
   const sectionNames = dataKeeper_2.addBlocks(blocksArray);
-  
-  sendToAllInSections('blocksArray', blocksArray, io, sectionNames);
+
+  sendToAllInSections('blocks', blocksArray, io, sectionNames);
   resetHiddenBlocks(socket.id, io);
 
   // Save all sections where a block has been added
   fileManager.saveSectionsToFiles(sectionNames);
+}
+
+function moveBlocks(blocksArray, socket, io) {
+  // Delete blocks
+  const blockIDs = [];
+  blocksArray.forEach(block => blockIDs.push(block.id));
+  deleteBlocks(blockIDs, io);
+
+  // Build blocks
+  buildBlocks(blocksArray, socket, io);
+}
+
+function deleteBlocks(blockIDs, io) {
+  // Delete blocks
+  const sectionNames = dataKeeper_2.deleteBlocks(blockIDs)
+
+  // Save all sections where a block has been deleted
+  fileManager.saveSectionsToFiles(sectionNames);
+
+  // Alert clients that blocks are deleted
+  sendToAllInSections('deleteBlocks', blockIDs, io, sectionNames);
 }
 
 function resetHiddenBlocks(userId, io) {
@@ -70,13 +91,13 @@ function sendToAllClientsExceptSender(type, payload, socket) {
   socket.broadcast.emit(type, payload);
 }
 
-function sendToAllInSections(type, payload, io, sectionNames){
+function sendToAllInSections(type, payload, io, sectionNames) {
 
   // Could probably use one of socket.io's built in functions instead
   const userIDs = users.getUserIDsInSections(sectionNames);
   // Just comparing booth methods. They return the same info
   const userIDs_2 = users.getUserIDsInSections_2(sectionNames);
-  
+
   userIDs.forEach(userID => {
     sendToOneClient(type, payload, io, userID);
   });
@@ -88,7 +109,9 @@ function sendToOneClient(type, payload, io, id) {
 
 module.exports = {
   subscribe,
-  receiveBlocks,
+  buildBlocks,
+  moveBlocks,
+  deleteBlocks,
   sendToAllClients,
   sendToAllClientsExceptSender,
   sendToAllInSections,

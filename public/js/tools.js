@@ -49,9 +49,12 @@ function Builder() {
 
 
   this.build = function (method = 'build') {
-    // 'build' adds a block with new id       
-    // 'move' adds a block with same id
-    // which means the block will be moved
+    // 'build' adds a block with new id    
+
+    // 'move' deletes the block first,
+    // then adds a block with same id
+
+    // Should restructure this function
 
     const blocksCopy = helpers.copyObject(this.blocks);
 
@@ -67,8 +70,12 @@ function Builder() {
     selector.addBlocksArray(blocksCopy, 'idle');
 
     // Send blocks to server
-    connection.sendData('blocksArray', blocksCopy);
-
+    if (method == 'build') {
+      connection.sendData('buildBlocks', blocksCopy);
+    }
+    else if (method == 'move') {
+      connection.sendData('moveBlocks', blocksCopy);
+    }
     // Reset hidden blocks
     blockHider.resetHiddenBlocks();
   }

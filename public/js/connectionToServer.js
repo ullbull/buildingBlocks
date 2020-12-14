@@ -37,7 +37,7 @@ function handleIncomingData() {
     layers.background.refresh();
   })
 
-  socket.on('blocksArray', blocksArray => {
+  socket.on('blocks', blocksArray => {
     dataKeeper_2.addBlocks(blocksArray)
     toolManager.builder.refreshHoveredBlocks();
     layers.background.refresh();

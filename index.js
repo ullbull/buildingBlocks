@@ -52,8 +52,12 @@ io.on('connection', socket => {
     socket.emit('sections', fileManager.getSections(sectionNames));
   })
 
-  socket.on('blocksArray', blocksArray => {
-    ctc.receiveBlocks(blocksArray, socket, io);
+  socket.on('buildBlocks', blocksArray => {
+    ctc.buildBlocks(blocksArray, socket, io);
+  });
+
+  socket.on('moveBlocks', blocksArray => {
+    ctc.moveBlocks(blocksArray, socket, io);
   });
 
   socket.on('worker', worker => {
@@ -62,14 +66,7 @@ io.on('connection', socket => {
   });
 
   socket.on('deleteBlocks', blockIDs => {
-    // Delete blocks
-    const sectionNames = dataKeeper_2.deleteBlocks(blockIDs)
-
-    // Save all sections where a block has been deleted
-    fileManager.saveSectionsToFiles(sectionNames);
-
-    // Alert clients that blocks are deleted
-    ctc.sendToAllInSections('deleteBlocks', blockIDs, io, sectionNames);
+    ctc.deleteBlocks(blockIDs, io);
   });
 
   socket.on('hiddenBlockIDs', blockIDs => {
