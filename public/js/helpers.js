@@ -1,5 +1,3 @@
-import * as dataKeeper from './dataKeeper.js';
-
 function positionToKey(x, y) {
   return x + ',' + y;
 }

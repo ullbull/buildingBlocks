@@ -118,8 +118,7 @@ io.emit();
 
 // Cleanup if block data is corrupt
 const cleanup = require("./cleanup.js");
-// const { exit } = require('process');
 
 // SEE IF I NEED THESE FUNCTIONS. CHANGE TO DATA KEEPER 2
-// cleanup.deleteBadGridpoints(dataKeeper.getBlockData());
-// cleanup.deleteBadBlocks(dataKeeper.getBlockData());
+cleanup.deleteBadGridpoints('0,0');
+cleanup.deleteBadBlocks('0,0');

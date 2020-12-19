@@ -2,7 +2,7 @@ const blockModule = require('./block_njs.js');
 const sectionManager = require('./sectionManager_njs.js');
 const helpers = require('./helpers_njs.js');
 
-const BlockDataExample = {
+const sectionExample = {
   "0,0": {
     blocks: [],
     gridPoints: {
@@ -76,8 +76,7 @@ function getSectionName(blockID) {
 // Returns data from section or
 // undefined if data doesn't exist.
 function getData(sectionName, dataName) {
-  if (dataName == 'blocks' ||
-    dataName == 'gridPoints') {
+  if (dataName == 'blocks' || dataName == 'gridPoints') {
     return getSection(sectionName)[dataName];
   }
   else {
@@ -117,6 +116,8 @@ function getBlockAndSectionName(blockID) {
   return { undefined, undefined };
 }
 
+// Returns index of block or
+// -1 if block doesn't exist
 function getBlockIndex(sectionName, blockID) {
   return getBlocks(sectionName).findIndex(block => block.id === blockID);
 }
@@ -302,5 +303,7 @@ module.exports = {
   addBlocks,
   getBlockAtPosition,
   getBlockAtPosition_k,
+  getBlockIndex,
+  deleteBlock,
   deleteBlocks
 };

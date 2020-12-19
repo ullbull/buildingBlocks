@@ -83,7 +83,6 @@ function setBlockPosition(block, x, y) {
   block.y = y;
 }
 
-
 function moveBlock(block, position) {
   // Delete grid points for this block
   for (const key in block.pixels) {

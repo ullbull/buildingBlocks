@@ -1,38 +1,58 @@
+const dataKeeper_2 = require('./dataKeeper_2_njs.js');
+const fileManager = require('./fileManager.js');
+
+function deleteBadGridpoints(sectionName) {
+  deleteBadGridpoints_(dataKeeper_2.getSection(sectionName), sectionName)
+}
+
 // Delete all gridpoints that has no linked blocks
-function deleteBadGridpoints(blockData) {
-  for (const key in blockData.gridPoints) {
-    if (blockData.gridPoints.hasOwnProperty(key)) {
-      const gridpoint = blockData.gridPoints[key];
-      if (typeof blockData.blocks[gridpoint] == 'undefined') {
+function deleteBadGridpoints_(section, sectionName) {
+  for (const key in section.gridPoints) {
+    if (section.gridPoints.hasOwnProperty(key)) {
+      const blockID = section.gridPoints[key];
+      const blockIndex = dataKeeper_2.getBlockIndex(sectionName, blockID)
+      if (blockIndex == -1) {
         console.log('Deleting bad gridpoint: ', key);
-        delete blockData.gridPoints[key];
+        // delete section.gridPoints[key];
       }
     }
   }
 }
 
-// Delete all blocks that has no linked grid point
-function deleteBadBlocks(blockData) {
-  let blockOK;
-  for (const blockKey in blockData.blocks) {
-    if (blockData.blocks.hasOwnProperty(blockKey)) {
-      const block = blockData.blocks[blockKey];
-      blockOK = false;
-      for (const gPkey in blockData.gridPoints) {
-        if (blockData.gridPoints.hasOwnProperty(gPkey)) {
-          const gridPoint = blockData.gridPoints[gPkey];
-          if (gridPoint == blockKey) {
-            blockOK = true;
-            break;
-          }
+// Delete all blocks that has no gridpoint pointing to it
+function deleteBadBlocks(sectionName) {
+  let blockOK = false;
+  const blockIDsToDelete = [];
+  const blocks = dataKeeper_2.getBlocks(sectionName)
+  const gridpoints = dataKeeper_2.getGridPoints(sectionName)
+
+  blocks.forEach(block => {
+    blockOK = false;
+    for (const key in gridpoints) {
+      if (Object.hasOwnProperty.call(gridpoints, key)) {
+        const blockID = gridpoints[key];
+        if (block.id == blockID) {
+          console.log(`OK ${block.id}`)
+          blockOK = true;
+          break;
         }
       }
-      if (!blockOK) {
-        console.log(`Deleting bad block: ${blockKey}`);
-        delete blockData.blocks[blockKey];
-      }
     }
+    if (!blockOK) {
+      console.log(`Found bad block: ${block.id}`);
+      blockIDsToDelete.push(block.id);
+    }
+  })
+
+  // Delete bad blocks
+  if(blockIDsToDelete[0]) {
+    console.log(`Deleting bad blocks: ${blockIDsToDelete}`);
+    const sectionNames = dataKeeper_2.deleteBlocks(blockIDsToDelete);
+    fileManager.saveSectionsToFiles(sectionNames);
   }
 }
-exports.deleteBadGridpoints = deleteBadGridpoints;
-exports.deleteBadBlocks = deleteBadBlocks;
+
+module.exports = {
+  deleteBadGridpoints,
+  deleteBadBlocks,
+}
