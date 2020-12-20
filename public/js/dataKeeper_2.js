@@ -67,13 +67,6 @@ function getSections(sectionNames) {
   return sections;
 }
 
-// Returns the section name or
-// undefined if section doesn't exist
-function getSectionName(blockID) {
-  const { block, sectionName } = findBlock(blockID);
-  return sectionName;
-}
-
 // Returns data from section or
 // undefined if data doesn't exist.
 function getData(sectionName, dataName) {
