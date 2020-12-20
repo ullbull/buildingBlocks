@@ -42,12 +42,7 @@ connection.sendData('subscribe', viewport.GetSectionNames());
 //   // connection.sendData('requestSections', viewport.GetSectionNames());
 // }, 5000);
 
-setTimeout(function () {
-  console.log('Sections', dataKeeper_2.getAllSections());
-}, 100);
-
 const worker = workerManager.getWorker();
-
 
 // viewport.AddLayer('foreground', cForeground);
 

@@ -19,6 +19,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
+// Load files to memory
 fileManager.loadFile('0,0');
 
 // Run when client connects
@@ -119,6 +120,8 @@ io.emit();
 // Cleanup if block data is corrupt
 const cleanup = require("./cleanup.js");
 
-// SEE IF I NEED THESE FUNCTIONS. CHANGE TO DATA KEEPER 2
-cleanup.deleteBadGridpoints('0,0');
-cleanup.deleteBadBlocks('0,0');
+const sections = dataKeeper_2.getAllSections();
+for (const sectionName in sections) {
+  cleanup.deleteBadGridpoints(sectionName);
+  cleanup.deleteBadBlocks(sectionName);
+}

@@ -38,7 +38,6 @@ function deleteBadBlocks(sectionName) {
       if (Object.hasOwnProperty.call(gridpoints, key)) {
         const blockID = gridpoints[key];
         if (block.id == blockID) {
-          console.log(`OK ${block.id}`)
           blockOK = true;
           break;
         }
