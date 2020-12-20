@@ -1,21 +1,27 @@
 const dataKeeper_2 = require('./dataKeeper_2_njs.js');
 const fileManager = require('./fileManager.js');
 
-function deleteBadGridpoints(sectionName) {
-  deleteBadGridpoints_(dataKeeper_2.getSection(sectionName), sectionName)
-}
-
 // Delete all gridpoints that has no linked blocks
-function deleteBadGridpoints_(section, sectionName) {
-  for (const key in section.gridPoints) {
-    if (section.gridPoints.hasOwnProperty(key)) {
-      const blockID = section.gridPoints[key];
+function deleteBadGridpoints(sectionName) {
+  const gridpoints = dataKeeper_2.getGridPoints(sectionName)
+  const keysToDelete = [];
+
+  for (const key in gridpoints) {
+    if (Object.hasOwnProperty.call(gridpoints, key)) {
+      const blockID = gridpoints[key];
       const blockIndex = dataKeeper_2.getBlockIndex(sectionName, blockID)
       if (blockIndex == -1) {
-        console.log('Deleting bad gridpoint: ', key);
-        // delete section.gridPoints[key];
+        console.log('Found bad gridpoint: ', key);
+        keysToDelete.push(key);
       }
     }
+  }
+
+  // Delete bad gridpoints
+  if(keysToDelete[0]) {
+    console.log(`Deleting bad gridpoints: ${keysToDelete}`);
+    const sectionNames = dataKeeper_2.deleteGridPoints_(keysToDelete);
+    fileManager.saveSectionsToFiles(sectionNames);
   }
 }
 

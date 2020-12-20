@@ -20,6 +20,7 @@ const sectionExample = {
   }
 };
 
+// Should be able to change to const
 let Sections = {};
 const emptySection = {
   blocks: [],
@@ -69,7 +70,7 @@ function getSections(sectionNames) {
 // Returns the section name or
 // undefined if section doesn't exist
 function getSectionName(blockID) {
-  const { block, sectionName } = getBlockAndSectionName(blockID);
+  const { block, sectionName } = findBlock(blockID);
   return sectionName;
 }
 
@@ -104,12 +105,26 @@ function getBlock(sectionName, blockID) {
 
 // Returns the block and sectionName or
 // { undefined, undefined } if the block doesn't exist.
-function getBlockAndSectionName(blockID) {
+function findBlock(blockID) {
   for (const sectionName in Sections) {
     if (Sections.hasOwnProperty(sectionName)) {
       const block = getBlock(sectionName, blockID);
       if (block) {
         return { block, sectionName };
+      }
+    }
+  }
+  return { undefined, undefined };
+}
+
+// Returns section and sectionName or
+// { undefined, undefined } if section doesn't exist
+function findSection(key) {
+  for (const sectionName in Sections) {
+    if (Object.hasOwnProperty.call(Sections, sectionName)) {
+      const section = Sections[sectionName];
+      if (section.gridPoints.hasOwnProperty(key)) {
+        return { section, sectionName };
       }
     }
   }
@@ -251,7 +266,7 @@ function getBlockAtPosition_k(key) {
 // Deletes the block and returns section name 
 // where block was deleted
 function deleteBlock(blockID) {
-  const { block, sectionName } = getBlockAndSectionName(blockID);
+  const { block, sectionName } = findBlock(blockID);
   if (!block) {
     console.error("Could not find the block", blockID);
     return;
@@ -286,8 +301,38 @@ function deleteBlocks(blockIDs) {
   return Object.values(sectionNames);
 }
 
+// Deletes gridpoint and returns section name 
+// where gridpoint was deleted
+function deleteGridPoint_(key) {
+  const { section, sectionName } = findSection(key);
+  if (!sectionName) {
+    console.error("Could not find the gridpoint", key);
+    return;
+  }
+
+  delete getGridPoints(sectionName)[key];
+  return sectionName;
+}
+
+// Deletes the gridpoints and returns an array holding 
+// all section names where a gridpoint was deleted.
+function deleteGridPoints_(keys) {
+  const sectionNames = {};
+
+  keys.forEach(key => {
+    const name = deleteGridPoint_(key);
+    sectionNames[name] = name;
+  })
+
+  return Object.values(sectionNames);
+}
+
 function deleteGridPoint(sectionName, x, y) {
   const key = helpers.positionToKey(x, y);
+  delete getGridPoints(sectionName)[key];
+}
+
+function deleteGridPoint_2(sectionName, key) {
   delete getGridPoints(sectionName)[key];
 }
 
@@ -305,5 +350,9 @@ module.exports = {
   getBlockAtPosition_k,
   getBlockIndex,
   deleteBlock,
-  deleteBlocks
+  deleteBlocks,
+  deleteGridPoint_,
+  deleteGridPoints_,
+  deleteGridPoint,
+  deleteGridPoint_2
 };
