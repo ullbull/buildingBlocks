@@ -133,16 +133,16 @@ function keyDown(event) {
   if (event.key == 'm') {
   }
   if (event.key == 'ArrowUp') {
-    viewport.y--;
+    viewport.SetPosition(viewport.x, viewport.y - 1);
   }
   if (event.key == 'ArrowDown') {
-    viewport.y++;
+    viewport.SetPosition(viewport.x, viewport.y + 1);
   }
   if (event.key == 'ArrowLeft') {
-    viewport.x--;
+    viewport.SetPosition(viewport.x - 1, viewport.y);
   }
   if (event.key == 'ArrowRight') {
-    viewport.x++;
+    viewport.SetPosition(viewport.x + 1, viewport.y);
   }
 
   if (event.code == 'Space') {
