@@ -1,42 +1,42 @@
 const dataKeeper_2 = require('./dataKeeper_2_njs.js');
 const fileManager = require('./fileManager.js');
 
-// Delete all gridpoints that has no linked blocks
-function deleteBadGridpoints(sectionName) {
-  const gridpoints = dataKeeper_2.getGridPoints(sectionName)
+// Delete all gridpixels that has no linked blocks
+function deleteBadGridpixels(sectionName) {
+  const gridpixels = dataKeeper_2.getGridPixels(sectionName)
   const keysToDelete = [];
 
-  for (const key in gridpoints) {
-    if (Object.hasOwnProperty.call(gridpoints, key)) {
-      const blockID = gridpoints[key];
+  for (const key in gridpixels) {
+    if (Object.hasOwnProperty.call(gridpixels, key)) {
+      const blockID = gridpixels[key];
       const blockIndex = dataKeeper_2.getBlockIndex(sectionName, blockID)
       if (blockIndex == -1) {
-        console.log('Found bad gridpoint: ', key);
+        console.log('Found bad grid pixel: ', key);
         keysToDelete.push(key);
       }
     }
   }
 
-  // Delete bad gridpoints
+  // Delete bad gridpixels
   if(keysToDelete[0]) {
-    console.log(`Deleting bad gridpoints: ${keysToDelete}`);
-    const sectionNames = dataKeeper_2.deleteGridPoints_(keysToDelete);
+    console.log(`Deleting bad gridpixels: ${keysToDelete}`);
+    const sectionNames = dataKeeper_2.deleteGridPixels_(keysToDelete);
     fileManager.saveSectionsToFiles(sectionNames);
   }
 }
 
-// Delete all blocks that has no gridpoint pointing to it
+// Delete all blocks that has no grid pixel pointing to it
 function deleteBadBlocks(sectionName) {
   let blockOK = false;
   const blockIDsToDelete = [];
   const blocks = dataKeeper_2.getBlocks(sectionName)
-  const gridpoints = dataKeeper_2.getGridPoints(sectionName)
+  const gridpixels = dataKeeper_2.getGridPixels(sectionName)
 
   blocks.forEach(block => {
     blockOK = false;
-    for (const key in gridpoints) {
-      if (Object.hasOwnProperty.call(gridpoints, key)) {
-        const blockID = gridpoints[key];
+    for (const key in gridpixels) {
+      if (Object.hasOwnProperty.call(gridpixels, key)) {
+        const blockID = gridpixels[key];
         if (block.id == blockID) {
           blockOK = true;
           break;
@@ -58,6 +58,6 @@ function deleteBadBlocks(sectionName) {
 }
 
 module.exports = {
-  deleteBadGridpoints,
+  deleteBadGridpixels,
   deleteBadBlocks,
 }

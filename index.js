@@ -122,6 +122,6 @@ const cleanup = require("./cleanup.js");
 
 const sections = dataKeeper_2.getAllSections();
 for (const sectionName in sections) {
-  cleanup.deleteBadGridpoints(sectionName);
+  cleanup.deleteBadGridpixels(sectionName);
   cleanup.deleteBadBlocks(sectionName);
 }

@@ -116,10 +116,10 @@ function removeBlocks(blocks, from = 'selected') {
   }
 }
 
-function addBlocksByGridPoints(gridPoints, viewport, to = 'selected') {
+function addBlocksBygridpixels(gridpixels, viewport, to = 'selected') {
   const blocks = {};
-  for (const key in gridPoints) {
-    if (gridPoints.hasOwnProperty(key)) {
+  for (const key in gridpixels) {
+    if (gridpixels.hasOwnProperty(key)) {
       const block = dataKeeper_2.getBlockAtPosition_k(key);
       if (block) {
         blocks[block.id] = block;
@@ -129,10 +129,10 @@ function addBlocksByGridPoints(gridPoints, viewport, to = 'selected') {
   addBlocks(blocks, to);
 }
 
-function removeBlocksByGridPoints(gridPoints, viewport, from = 'selected') {
+function removeBlocksBygridpixels(gridpixels, viewport, from = 'selected') {
   const blocks = {};
-  for (const key in gridPoints) {
-    if (gridPoints.hasOwnProperty(key)) {
+  for (const key in gridpixels) {
+    if (gridpixels.hasOwnProperty(key)) {
       const block = dataKeeper_2.getBlockAtPosition_k(key);
       if (block) {
         blocks[block.id] = block;
@@ -177,8 +177,8 @@ export {
   addBlocksArray,
   removeBlock,
   removeBlocks,
-  addBlocksByGridPoints,
-  removeBlocksByGridPoints,
+  addBlocksBygridpixels,
+  removeBlocksBygridpixels,
   isEmpty
   // refresh
 }

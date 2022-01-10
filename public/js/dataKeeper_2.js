@@ -5,7 +5,7 @@ import * as helpers from './helpers.js';
 const sectionExample = {
   "0,0": {
     blocks: [],
-    gridPoints: {
+    gridpixels: {
       "5,3": "id_string-30295",
       "5,4": "id_string-30295"
     }
@@ -13,7 +13,7 @@ const sectionExample = {
 
   "1,0": {
     blocks: [],
-    gridPoints: {
+    gridpixels: {
       "5,3": "id_string-30295",
       "5,4": "id_string-30295"
     }
@@ -24,7 +24,7 @@ const sectionExample = {
 let Sections = {};
 const emptySection = {
   blocks: [],
-  gridPoints: {}
+  gridpixels: {}
 }
 
 function getAllSections() {
@@ -70,7 +70,7 @@ function getSections(sectionNames) {
 // Returns data from section or
 // undefined if data doesn't exist.
 function getData(sectionName, dataName) {
-  if (dataName == 'blocks' || dataName == 'gridPoints') {
+  if (dataName == 'blocks' || dataName == 'gridpixels') {
     return getSection(sectionName)[dataName];
   }
   else {
@@ -84,10 +84,10 @@ function getBlocks(sectionName) {
   return getData(sectionName, 'blocks');
 }
 
-// Returns all gridPoints from section or
-// empty object if gridPoints doesn't exist.
-function getGridPoints(sectionName) {
-  return getData(sectionName, 'gridPoints');
+// Returns all gridpixels from section or
+// empty object if gridpixels doesn't exist.
+function getGridPixels(sectionName) {
+  return getData(sectionName, 'gridpixels');
 }
 
 // Returns the block or
@@ -116,7 +116,7 @@ function findSection(key) {
   for (const sectionName in Sections) {
     if (Object.hasOwnProperty.call(Sections, sectionName)) {
       const section = Sections[sectionName];
-      if (section.gridPoints.hasOwnProperty(key)) {
+      if (section.gridpixels.hasOwnProperty(key)) {
         return { section, sectionName };
       }
     }
@@ -134,12 +134,12 @@ function addGridPoint(sectionName, key, blockID) {
   const { x, y } = helpers.keyToPosition(key);
   const section = getSection(sectionName);
 
-  // If this grid point already belongs to a block,
+  // If this grid pixel already belongs to a block,
   // we have to delete that pixel from existing block
 
-  // Check if grid point exist
-  if (typeof section.gridPoints[key] != 'undefined') {
-    const id = section.gridPoints[key];
+  // Check if grid pixel exist
+  if (typeof section.gridpixels[key] != 'undefined') {
+    const id = section.gridpixels[key];
     const block = getBlock(sectionName, id);
     const position = blockModule.getPositionInBlock(block, x, y);
     const pixelKey = helpers.positionToKey(position.x, position.y);
@@ -165,8 +165,8 @@ function addGridPoint(sectionName, key, blockID) {
     }
   }
 
-  // Add grid point
-  section.gridPoints[key] = blockID;
+  // Add grid pixel
+  section.gridpixels[key] = blockID;
 }
 
 // Adds the block in block positions section.
@@ -178,22 +178,22 @@ function addBlock(block) {
   const sectionName = sectionManager.getSectionName(block.x, block.y);
 
   const section = getSection(sectionName);
-  const gridPointKeys = blockModule.getGridPointKeysFromBlock(block);
+  const gridPointKeys = blockModule.getGridPixelKeys(block);
 
   // If the block already exists, we have to delete it and
-  // it's grid points from stored data before adding the block
+  // it's grid pixels from stored data before adding the block
 
   // Check if this block exist
   // const index = section.blocks.findIndex(x => x.id == block.id);
   const index = getBlockIndex(sectionName, block.id);
   if (index != -1) {
     // The block exists
-    const oldKeys = blockModule.getGridPointKeysFromBlock(section.blocks[index]);
-    const gridPoints = getGridPoints(sectionName);
+    const oldKeys = blockModule.getGridPixelKeys(section.blocks[index]);
+    const gridpixels = getGridPixels(sectionName);
 
-    // Delete blocks grid points from stored data
+    // Delete blocks grid pixels from stored data
     oldKeys.forEach(key => {
-      delete gridPoints[key];
+      delete gridpixels[key];
     });
 
     // Delete the block
@@ -203,7 +203,7 @@ function addBlock(block) {
   // Add the block
   getBlocks(sectionName).push(block);
 
-  // Add gridPoints
+  // Add gridpixels
   gridPointKeys.forEach(key => {
     addGridPoint(sectionName, key, block.id);
   });
@@ -231,11 +231,11 @@ function addBlocks(blocks) {
 function _getBlockAtPosition(x, y, key) {
   let block;
   const sectionName = sectionManager.getSectionName(x, y)
-  const gridPoints = getGridPoints(sectionName);
+  const gridpixels = getGridPixels(sectionName);
   const blocks = getBlocks(sectionName);
 
-  if (gridPoints.hasOwnProperty(key)) {
-    const blockID = gridPoints[key];
+  if (gridpixels.hasOwnProperty(key)) {
+    const blockID = gridpixels[key];
     block = blocks.find(block => block.id == blockID);
   }
 
@@ -267,11 +267,11 @@ function deleteBlock(blockID) {
   const section = getSection(sectionName);
   const index = section.blocks.findIndex(block => block.id == blockID);
 
-  // Delete grid points
+  // Delete grid pixels
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
-      const pos = blockModule.getGridPosition(block, key);
-      deleteGridPoint(sectionName, pos.x, pos.y);
+      const pos = blockModule.getGridPixel(block, key);
+      deleteGridPixel(sectionName, pos.x, pos.y);
     }
   }
 
@@ -294,39 +294,39 @@ function deleteBlocks(blockIDs) {
   return Object.values(sectionNames);
 }
 
-// Deletes gridpoint and returns section name 
-// where gridpoint was deleted
-function deleteGridPoint_(key) {
+// Deletes grid pixel and returns section name 
+// where grid pixel was deleted
+function deleteGridPixel_(key) {
   const { section, sectionName } = findSection(key);
   if (!sectionName) {
-    console.error("Could not find the gridpoint", key);
+    console.error("Could not find the grid pixel", key);
     return;
   }
 
-  delete getGridPoints(sectionName)[key];
+  delete getGridPixels(sectionName)[key];
   return sectionName;
 }
 
-// Deletes the gridpoints and returns an array holding 
-// all section names where a gridpoint was deleted.
-function deleteGridPoints_(keys) {
+// Deletes the gridpixels and returns an array holding 
+// all section names where a grid pixel was deleted.
+function deleteGridPixels_(keys) {
   const sectionNames = {};
 
   keys.forEach(key => {
-    const name = deleteGridPoint_(key);
+    const name = deleteGridPixel_(key);
     sectionNames[name] = name;
   })
 
   return Object.values(sectionNames);
 }
 
-function deleteGridPoint(sectionName, x, y) {
+function deleteGridPixel(sectionName, x, y) {
   const key = helpers.positionToKey(x, y);
-  delete getGridPoints(sectionName)[key];
+  delete getGridPixels(sectionName)[key];
 }
 
-function deleteGridPoint_2(sectionName, key) {
-  delete getGridPoints(sectionName)[key];
+function deleteGridPixel_2(sectionName, key) {
+  delete getGridPixels(sectionName)[key];
 }
 
 export {
@@ -336,7 +336,7 @@ export {
   setSection,
   getSections,
   getBlocks,
-  getGridPoints,
+  getGridPixels,
   addBlock,
   addBlocks,
   getBlockAtPosition,
@@ -344,8 +344,8 @@ export {
   getBlockIndex,
   deleteBlock,
   deleteBlocks,
-  deleteGridPoint_,
-  deleteGridPoints_,
-  deleteGridPoint,
-  deleteGridPoint_2
+  deleteGridPixel_,
+  deleteGridPixels_,
+  deleteGridPixel,
+  deleteGridPixel_2
 };

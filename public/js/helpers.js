@@ -89,12 +89,12 @@ function getBlockUnderMouse(mouse) {
   const key = this.positionToKey(mouse.GetXWorldPosition(), mouse.GetYWorldPosition());
 
   // Check if mouse is over any pixel
-  const blockID = mouse.dataKeeper.getBlockData().gridPoints[key];
+  const blockID = mouse.dataKeeper.getBlockData().gridpixels[key];
   return blockID;
 }
 
 // function getBlockByKey(key) {
-//   const blockID = dataKeeper.getBlockData().gridPoints[key];
+//   const blockID = dataKeeper.getBlockData().gridpixels[key];
 //   let block;
 //   if (typeof blockID != 'undefined') {
 //     block = dataKeeper.getBlockData().blocks[blockID];
@@ -116,7 +116,7 @@ function getYGrid(y, pixelSize) {
   return Math.floor(y / pixelSize);
 }
 
-function getGridPosition(x, y, pixelSize) {
+function getGridPixel(x, y, pixelSize) {
   return { x: this.GetXWorldPosition(x, pixelSize), y: this.getYGrid(y, pixelSize) };
 }
 
@@ -148,7 +148,7 @@ export {
   // getBlockByPosition,
   getXGrid,
   getYGrid,
-  getGridPosition,
+  getGridPixel,
   insideFrame,
   isObjectEmpty
 };

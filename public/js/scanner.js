@@ -32,7 +32,7 @@ function scan() {
       const block = helpers.getBlockByKey(key);
       if (block) {
         blocks.push(block);
-        blockModule.getGridPointKeysFromBlock(block).forEach(blockKey => {
+        blockModule.getGridPixelKeys(block).forEach(blockKey => {
           delete area[blockKey];
         });
       } else {

@@ -1,5 +1,22 @@
 import * as helpers from './helpers.js';
 
+const block_example = {
+  id: "4f04294fcd875_1607847853215",
+  x: 0,
+  y: 0,
+  anchorPoint: { x: 0, y: 0 },
+  pixels: {
+    "0,0": { x: 0, y: 0, color: "gray", clearEdges: ["top", "left"] },
+    "1,0": { x: 1, y: 0, color: "gray", clearEdges: ["top"] },
+    "2,0": { x: 2, y: 0, color: "gray", clearEdges: ["top"] },
+    "3,0": { x: 3, y: 0, color: "gray", clearEdges: ["top", "right"] },
+    "0,1": { x: 0, y: 1, color: "gray", clearEdges: ["bottom", "left"] },
+    "1,1": { x: 1, y: 1, color: "gray", clearEdges: ["bottom"] },
+    "2,1": { x: 2, y: 1, color: "gray", clearEdges: ["bottom"] },
+    "3,1": { x: 3, y: 1, color: "gray", clearEdges: ["bottom", "right"] },
+  },
+};
+
 function createBlock(x = 0, y = 0, width = 2, height = 2, color = 'gray', anchorPoint = { x: 0, y: 0 }) {
   let key;
   const id = helpers.generateID();
@@ -83,27 +100,28 @@ function setBlockPosition(block, x, y) {
   block.y = y;
 }
 
-function moveBlock(block, position) {
-  // Delete grid points for this block
-  for (const key in block.pixels) {
-    if (block.pixels.hasOwnProperty(key)) {
-      const gridKey = blockPixelToGridKey(block, key);
-      delete g_viewport.blockData.gridPoints[gridKey];
-    }
-  }
-  g_viewport.blockData.gridPoints
+// I think this function is not being used
+// function moveBlock(block, position) {
+//   // Delete grid pixels for this block
+//   for (const key in block.pixels) {
+//     if (block.pixels.hasOwnProperty(key)) {
+//       const gridKey = blockPixelToGridKey(block, key);
+//       delete g_viewport.blockData.gridpixels[gridKey];
+//     }
+//   }
+//   g_viewport.blockData.gridpixels
 
-  // Move block
-  setBlockPosition(block, position);
+//   // Move block
+//   setBlockPosition(block, position);
 
-  // Add grid points for this block
-  for (const key in block.pixels) {
-    if (block.pixels.hasOwnProperty(key)) {
-      const gridPosition = getGridPosition(block, key);
-      g_viewport.AddGridPoint(gridPosition.x, gridPosition.y, block.id);
-    }
-  }
-}
+//   // Add grid pixels for this block
+//   for (const key in block.pixels) {
+//     if (block.pixels.hasOwnProperty(key)) {
+//       const gridPosition = getGridPixel(block, key);
+//       g_viewport.AddGridPoint(gridPosition.x, gridPosition.y, block.id);
+//     }
+//   }
+// }
 
 
 function setBlockAnchorPoint(block, x, y) {
@@ -130,7 +148,7 @@ function setBlockAnchorPointAutoShift(block, x, y) {
 }
 
 // Translate block pixel to position on grid
-function getGridPosition(block, key) {
+function getGridPixel(block, key) {
   if (block.pixels.hasOwnProperty(key)) {
     const pixel = block.pixels[key];
     return {
@@ -140,26 +158,26 @@ function getGridPosition(block, key) {
   }
 }
 
-function getGridPointKeysFromBlock(block) {
-  const gridPointKeys = [];
+function getGridPixel_id(block, key) {
+  const gridPixel = getGridPixel(block, key);
+  gridPixel.id = block.id;
+  return gridPixel;
+}
+
+function getGridPixelKeys(block) {
+  const gridPixelKeys = [];
 
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
-      const gridPointKey = blockPixelToGridKey(block, key);
-      gridPointKeys.push(gridPointKey);
+      const gridPixelKey = blockPixelToGridKey(block, key);
+      gridPixelKeys.push(gridPixelKey);
     }
   }
-  return gridPointKeys;
-}
-
-function getGridPoint(block, key) {
-  const gridPoint = getGridPosition(block, key);
-  gridPoint.id = block.id;
-  return gridPoint;
+  return gridPixelKeys;
 }
 
 function blockPixelToGridKey(block, key) {
-  const pixel = getGridPosition(block, key);
+  const pixel = getGridPixel(block, key);
   return helpers.positionToKey(pixel.x, pixel.y);
 }
 
@@ -177,12 +195,11 @@ export {
   createPixel,
   findClearEdges,
   setBlockPosition,
-  moveBlock,
+  // moveBlock,
   setBlockAnchorPoint,
   setBlockAnchorPointAutoShift,
-  getGridPosition,
-  getGridPointKeysFromBlock,
-  getGridPoint,
+  getGridPixel,
+  getGridPixelKeys,
   blockPixelToGridKey,
   getPositionInBlock
 };

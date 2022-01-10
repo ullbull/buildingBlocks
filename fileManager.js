@@ -31,7 +31,7 @@ function loadFile(filename = '0,0') {
 
   const emptySection = {
     blocks: [],
-    gridPoints: {}
+    gridpixels: {}
   }
   let section;
 

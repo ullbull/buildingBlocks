@@ -273,12 +273,12 @@ function BoxSelection() {
   this.height = 0;
   this.color = 'rgba(200,200,255,0.1)';
   this.strokeWidth = 1;
-  this.gridPoints = {};
+  this.gridpixels = {};
 
-  this.initGridPoints = function () {
-    this.clearGridPoints();
+  this.initgridpixels = function () {
+    this.cleargridpixels();
 
-    // Create gridpoints for both positive and negative box size
+    // Create gridpixels for both positive and negative box size
     let x;
     let y;
     let width = (this.width < 0) ? this.width * -1 : this.width;
@@ -299,16 +299,16 @@ function BoxSelection() {
     }
   }
 
-  this.clearGridPoints = function () {
-    this.gridPoints = {};
+  this.cleargridpixels = function () {
+    this.gridpixels = {};
   }
 
   this.addGridPoint = function (x, y) {
     const key = helpers.positionToKey(x, y);
-    this.gridPoints[key] = 'SelectionBox';
+    this.gridpixels[key] = 'SelectionBox';
   }
 
-  this.addGridPointsByMovement = function (event) {
+  this.addgridpixelsByMovement = function (event) {
     const movementPxX = Math.abs(event.movementX) / mouse.viewport.pixelSize;
     const movementPxY = Math.abs(event.movementY) / mouse.viewport.pixelSize;
     let x = mouse.wp.x;
@@ -334,12 +334,12 @@ function BoxSelection() {
 
   this.setWidth = function (width) {
     this.width = width;
-    this.initGridPoints();
+    this.initgridpixels();
   }
 
   this.setHeight = function (height) {
     this.height = height;
-    this.initGridPoints();
+    this.initgridpixels();
   }
 
   this.draw = function (options = {}) {
@@ -348,7 +348,7 @@ function BoxSelection() {
       this.x, this.y, this.width, this.height, this.color, options);
 
     if (appStatus.debug) {
-      mouse.viewport.DrawGridPoints(this.gridPoints, { color: 'red' });
+      mouse.viewport.Drawgridpixels(this.gridpixels, { color: 'red' });
     }
   }
 
@@ -391,24 +391,24 @@ function BoxSelection() {
       this.setHeight(mouse.wp.y - this.y);
 
       if (select) {   // Left button down
-        selector.addBlocksByGridPoints(this.gridPoints, mouse.viewport)
+        selector.addBlocksBygridpixels(this.gridpixels, mouse.viewport)
       }
       if (deselect) {   // Right button down
-        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewport, 'selected');
-        // selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewport, 'idle');
+        selector.removeBlocksBygridpixels(this.gridpixels, mouse.viewport, 'selected');
+        // selector.removeBlocksBygridpixels(this.gridpixels, mouse.viewport, 'idle');
       }
     }
     else if (event.ctrlKey || event.altKey) {
       this.x = mouse.wp.x;
       this.y = mouse.wp.y;
 
-      this.addGridPointsByMovement(event);
+      this.addgridpixelsByMovement(event);
 
       if (event.ctrlKey) {
-        selector.addBlocksByGridPoints(this.gridPoints, mouse.viewport)
+        selector.addBlocksBygridpixels(this.gridpixels, mouse.viewport)
       } else if (event.altKey) {
-        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewport, 'selected');
-        selector.removeBlocksByGridPoints(this.gridPoints, mouse.viewport, 'idle');
+        selector.removeBlocksBygridpixels(this.gridpixels, mouse.viewport, 'selected');
+        selector.removeBlocksBygridpixels(this.gridpixels, mouse.viewport, 'idle');
       }
     }
   }
@@ -434,7 +434,7 @@ function BoxSelection() {
   }
 
   this.keyUp = function (event) {
-    this.clearGridPoints();
+    this.cleargridpixels();
   }
 }
 

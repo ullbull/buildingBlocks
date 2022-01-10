@@ -64,7 +64,7 @@ function getBlockUnderMouse(mouse) {
   const key = this.positionToKey(mouse.GetXWorldPosition(), mouse.GetYWorldPosition());
   
   // Check if mouse is over any pixel
-  const blockID = mouse.viewport.blockData.gridPoints[key];
+  const blockID = mouse.viewport.blockData.gridpixels[key];
   return blockID;
 }
 
@@ -76,7 +76,7 @@ function getYGrid(y, pixelSize) {
   return Math.floor(y / pixelSize);
 }
 
-function getGridPosition(x, y, pixelSize) {
+function getGridPixel(x, y, pixelSize) {
   return { x: this.GetXWorldPosition(x, pixelSize), y: this.getYGrid(y, pixelSize) };
 }
 
@@ -89,5 +89,5 @@ module.exports = {
   getBlockUnderMouse,
   GetXGrid,
   getYGrid,
-  getGridPosition
+  getGridPixel
 };

@@ -22,7 +22,7 @@ export default class Mouse {
     return { x: this.x, y: this.y }
   }
 
-  GetGridPosition() {
+  getGridPixel() {
     return { x: this.GetXGrid(), y: this.GetYGrid() };
   }
 

@@ -84,22 +84,22 @@ function setBlockPosition(block, x, y) {
 }
 
 function moveBlock(block, position) {
-  // Delete grid points for this block
+  // Delete grid pixels for this block
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
       const gridKey = blockPixelToGridKey(block, key);
-      delete g_viewport.blockData.gridPoints[gridKey];
+      delete g_viewport.blockData.gridpixels[gridKey];
     }
   }
-  g_viewport.blockData.gridPoints
+  g_viewport.blockData.gridpixels
 
   // Move block
   setBlockPosition(block, position);
 
-  // Add grid points for this block
+  // Add grid pixels for this block
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
-      const gridPosition = getGridPosition(block, key);
+      const gridPosition = getGridPixel(block, key);
       g_viewport.AddGridPoint(gridPosition.x, gridPosition.y, block.id);
     }
   }
@@ -130,7 +130,7 @@ function setBlockAnchorPointAutoShift(block, x, y) {
 }
 
 // Translate block pixel to position on grid
-function getGridPosition(block, key) {
+function getGridPixel(block, key) {
   if (block.pixels.hasOwnProperty(key)) {
     const pixel = block.pixels[key];
     return {
@@ -140,7 +140,7 @@ function getGridPosition(block, key) {
   }
 }
 
-function getGridPointKeysFromBlock(block) {
+function getGridPixelKeys(block) {
   const gridPointKeys = [];
 
   for (const key in block.pixels) {
@@ -152,14 +152,14 @@ function getGridPointKeysFromBlock(block) {
   return gridPointKeys;
 }
 
-function getGridPoint(block, key) {
-  const gridPoint = getGridPosition(block, key);
-  gridPoint.id = block.id;
-  return gridPoint;
+function getGridPixel_id(block, key) {
+  const gridPixel = getGridPixel(block, key);
+  gridPixel.id = block.id;
+  return gridPixel;
 }
 
 function blockPixelToGridKey(block, key) {
-  const pixel = getGridPosition(block, key);
+  const pixel = getGridPixel(block, key);
   return helpers.positionToKey(pixel.x, pixel.y);
 }
 
@@ -180,9 +180,8 @@ module.exports = {
   moveBlock,
   setBlockAnchorPoint,
   setBlockAnchorPointAutoShift,
-  getGridPosition,
-  getGridPointKeysFromBlock,
-  getGridPoint,
+  getGridPixel,
+  getGridPixelKeys,
   blockPixelToGridKey,
   getPositionInBlock
 };

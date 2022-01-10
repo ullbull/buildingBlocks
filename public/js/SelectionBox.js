@@ -15,16 +15,16 @@ export class SelectionBox {
     this.width = width;
     this.height = height;
     this.color = color;
-    this.gridPoints = {};
-    this.InitGridPoints();
+    this.gridpixels = {};
+    this.Initgridpixels();
   }
 
-  InitGridPoints() {
+  Initgridpixels() {
     let point = {};
     let key;
-    this.gridPoints = {};
+    this.gridpixels = {};
 
-    // Create gridpoints for both positive and negative box size
+    // Create gridpixels for both positive and negative box size
     let x;
     let y;
     let width = (this.width < 0) ? this.width * -1 : this.width;
@@ -39,19 +39,19 @@ export class SelectionBox {
           y: Math.floor(this.y + y)
         };
         key = helpers.positionToKey(point.x, point.y);
-        this.gridPoints[key] = 'SelectionBox';
+        this.gridpixels[key] = 'SelectionBox';
       }
     }
   }
 
   SetWidth(width) {
     this.width = width;
-    this.InitGridPoints();
+    this.Initgridpixels();
   }
 
   SetHeight(height) {
     this.height = height;
-    this.InitGridPoints();
+    this.Initgridpixels();
   }
 
   SetSize(width, height) {

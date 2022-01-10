@@ -7,25 +7,25 @@ function addBlockTo(blockData, block) {
   // If this block exist in block data
   const blockDouble = blockData.blocks[blockCopy.id];
   if (blockDouble) {
-    const gridPointKeys = blockModule.getGridPointKeysFromBlock(blockDouble);
-    // Delete blocks grid points from block data
+    const gridPointKeys = blockModule.getGridPixelKeys(blockDouble);
+    // Delete blocks grid pixels from block data
     gridPointKeys.forEach(key => {
       console.log('delete gridpint', key);
-      delete blockData.gridPoints[key];
+      delete blockData.gridpixels[key];
     });
   }
 
   // Add the block
   blockData.blocks[blockCopy.id] = blockCopy;
 
-  // Add grid points
+  // Add grid pixels
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
 
-      // Get grid point
-      const gridPoint = blockModule.getGridPoint(block, key);
+      // Get grid pixel
+      const gridPoint = blockModule.getGridPixel(block, key);
 
-      // Add grid points
+      // Add grid pixels
       addGridPointTo(blockData, gridPoint);
     }
   }
@@ -53,9 +53,9 @@ function addGridPointTo(blockData, gridPoint) {
   const blockID = gridPoint.id;
   const key = helpers.positionToKey(x, y);
 
-  // If this grid point belongs to a block, delete pixel from that block
-  if (typeof blockData.gridPoints[key] != 'undefined') {
-    const id = blockData.gridPoints[key];
+  // If this grid pixel belongs to a block, delete pixel from that block
+  if (typeof blockData.gridpixels[key] != 'undefined') {
+    const id = blockData.gridpixels[key];
     const block = blockData.blocks[id];
     const position = blockModule.getPositionInBlock(block, x, y);
     const pixelKey = helpers.positionToKey(position.x, position.y);
@@ -82,18 +82,18 @@ function addGridPointTo(blockData, gridPoint) {
 
   }
 
-  // Add grid point
-  blockData.gridPoints[key] = blockID;
+  // Add grid pixel
+  blockData.gridpixels[key] = blockID;
 }
 
 function deleteBlockFrom(blockData, blockID) {
   const block = blockData.blocks[blockID];
   if (typeof block != 'undefined') {
-    // Delete grid points
+    // Delete grid pixels
     for (const key in block.pixels) {
       if (block.pixels.hasOwnProperty(key)) {
-        const position = blockModule.getGridPosition(block, key);
-        deleteGridPointFrom(blockData, position.x, position.y);
+        const position = blockModule.getGridPixel(block, key);
+        deleteGridPixelFrom(blockData, position.x, position.y);
       }
     }
 
@@ -118,9 +118,9 @@ function deleteBlockAndChildrenFrom(blockData, block) {
   deleteBlockFrom(blockData, block.id);
 }
 
-function deleteGridPointFrom(blockData, x, y) {
+function deleteGridPixelFrom(blockData, x, y) {
   const key = helpers.positionToKey(x, y);
-  delete blockData.gridPoints[key];
+  delete blockData.gridpixels[key];
 }
 
 module.exports = {
@@ -130,5 +130,5 @@ module.exports = {
   addGridPointTo,
   deleteBlockFrom,
   deleteBlockAndChildrenFrom,
-  deleteGridPointFrom
+  deleteGridPixelFrom
 };

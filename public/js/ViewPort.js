@@ -254,7 +254,7 @@ export class Viewport {
           }
 
           // Set pixel relative to block
-          const position = blockModule.getGridPosition(block, key);
+          const position = blockModule.getGridPixel(block, key);
           pixel.x = position.x;
           pixel.y = position.y;
 
@@ -354,21 +354,21 @@ export class Viewport {
     this.DrawPixel(pixel, options);
   }
 
-  DrawGridPoints(gridPoints, options = {}) {
-    for (const key in gridPoints) {
-      if (gridPoints.hasOwnProperty(key)) {
-        const gridPoint = gridPoints[key];
+  Drawgridpixels(gridpixels, options = {}) {
+    for (const key in gridpixels) {
+      if (gridpixels.hasOwnProperty(key)) {
+        const gridPoint = gridpixels[key];
         this.DrawGridPoint(key, options);
       }
     }
   }
 
-  DrawAllGridPoints(options = {}) {
+  DrawAllgridpixels(options = {}) {
     const blockData = dataKeeper_2.getAllSections();
     for (const key in blockData) {
       if (blockData.hasOwnProperty(key)) {
         const section = blockData[key];
-        this.DrawGridPoints(section.gridPoints, options);
+        this.Drawgridpixels(section.gridpixels, options);
       }
     }
   }

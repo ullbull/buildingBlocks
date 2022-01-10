@@ -93,7 +93,7 @@ const background = {
       });
 
       if (appStatus.debug) {
-        viewport.DrawAllGridPoints({
+        viewport.DrawAllgridpixels({
           alphaValue: 0.5,
           context: this.context
         });

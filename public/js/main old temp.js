@@ -25,7 +25,7 @@ let workers = {};
 let hoveredBlock = {};
 // let selectedBlocks = tools.selectedBlocks;
 let hoveredBlockOptions = { color: highlightColor };
-let lastGridPosition = mouse.GetGridPosition();
+let lastGridPosition = mouse.getGridPixel();
 let tool = tools.builder;
 tool.viewport = viewport;
 
@@ -148,8 +148,8 @@ function animate() {
   if (!appStatus.hideGrid) viewport.DrawGrid();
 
   if (appStatus.debug) {
-    viewport.DrawAllGridPoints();
-    viewport.DrawGridPoints(tool.gridPoints, 'red');
+    viewport.DrawAllgridpixels();
+    viewport.Drawgridpixels(tool.gridpixels, 'red');
     console.log('cursor.id', cursor.id);
   }
 }
@@ -169,7 +169,7 @@ async function mouseMove(event) {
 
   // Update mouse position
   mouse.SetPosition(event.x, event.y);
-  const gridPosition = mouse.GetGridPosition();
+  const gridPosition = mouse.getGridPixel();
 
   appStatus.moveViewport = (
     event.buttons == 4 ||   // Middle button down
@@ -198,7 +198,7 @@ async function mouseMove(event) {
 
     await api.sendData('/workers', worker);
 
-    lastGridPosition = mouse.GetGridPosition();
+    lastGridPosition = mouse.getGridPixel();
   }
 
   // Move cursor
