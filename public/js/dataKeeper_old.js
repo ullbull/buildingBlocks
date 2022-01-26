@@ -61,7 +61,7 @@ function addBlock(block) {
       const gridPoint = blockModule.getGridPixel(block, key);
 
       // Add grid pixels
-      addGridPoint(gridPoint);
+      addGridPixel(gridPoint);
     }
   }
 }
@@ -88,7 +88,7 @@ function addBlockAndChildren(block) {
   }
 }
 
-function addGridPoint(gridPoint) {
+function addGridPixel(gridPoint) {
   const x = gridPoint.x;
   const y = gridPoint.y;
   const blockID = gridPoint.id;
@@ -169,7 +169,7 @@ export {
   addBlocks,
   addBlocksArray,
   addBlockAndChildren,
-  addGridPoint,
+  addGridPixel,
   deleteBlock,
   deleteBlocks,
   deleteGridPixel,

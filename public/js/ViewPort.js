@@ -1,12 +1,12 @@
-import * as helpers from './helpers.js';
-import * as blockModule from './block.js';
-import * as dataKeeper from './dataKeeper.js';
-import * as dataKeeper_2 from './dataKeeper_2.js';
-import * as position from './positionTranslator.js';
-import { appStatus } from './appStatus.js'
-import * as layers from './layers.js';
-import * as sectionManager from './sectionManager.js';
-import * as connection from './connectionToServer.js';
+import * as helpers from "./helpers.js";
+import * as blockModule from "./block.js";
+import * as dataKeeper_new from "./dataKeeper_new.js";
+import * as dataKeeper_2 from "./dataKeeper_2_old.js";
+import * as position from "./positionTranslator.js";
+import { appStatus } from "./appStatus.js";
+import * as layers from "./layers.js";
+import * as sectionManager from "./sectionManager.js";
+import * as connection from "./connectionToServer.js";
 
 export class Viewport {
   constructor(width, height, pixelSize, context) {
@@ -15,7 +15,7 @@ export class Viewport {
     this.width = width;
     this.height = height;
     this.pixelSize = pixelSize;
-    this.layers = { 'background': context };
+    this.layers = { background: context };
     this.storedSectionNames = [];
     // this.anchorPoint = { x: 0, y: 0 };
     // this.pixels = {};
@@ -26,12 +26,12 @@ export class Viewport {
   GetNewSectionNames() {
     const sectionNames = this.GetSectionNames();
     const newSectionNames = [];
-    sectionNames.forEach(sectionName => {
-      const index = this.storedSectionNames.findIndex(storedSectionName => {
+    sectionNames.forEach((sectionName) => {
+      const index = this.storedSectionNames.findIndex((storedSectionName) => {
         return storedSectionName == sectionName;
       });
       if (index == -1) {
-        newSectionNames.push(sectionName)
+        newSectionNames.push(sectionName);
       }
     });
     this.storedSectionNames = sectionNames;
@@ -41,7 +41,10 @@ export class Viewport {
   // Returns the section names of sections covered by this viewport
   GetSectionNames() {
     return sectionManager.getSectionNames(
-      this.x, this.y, this.GetWorldWidth(), this.GetWorldHeight()
+      this.x,
+      this.y,
+      this.GetWorldWidth(),
+      this.GetWorldHeight()
     );
   }
 
@@ -49,8 +52,8 @@ export class Viewport {
   AutoSubscribe() {
     const newSectionNames = this.GetNewSectionNames();
     if (newSectionNames[0]) {
-      console.log('new sections!', newSectionNames[0]);
-      connection.sendData('subscribe', this.storedSectionNames);
+      console.log("new sections!", newSectionNames[0]);
+      connection.sendData("subscribe", this.storedSectionNames);
     }
   }
 
@@ -77,8 +80,8 @@ export class Viewport {
   }
 
   DrawGrid(options = {}) {
-    let context = this.layers.background
-    if (options.hasOwnProperty('context')) {
+    let context = this.layers.background;
+    if (options.hasOwnProperty("context")) {
       context = options.context;
     }
 
@@ -86,7 +89,7 @@ export class Viewport {
     if (this.pixelSize < 5) return;
 
     context.lineWidth = 1;
-    context.strokeStyle = 'rgba(0,0,0,' + (this.pixelSize / 150) + ')';
+    context.strokeStyle = "rgba(0,0,0," + this.pixelSize / 150 + ")";
     context.beginPath();
     let x;
     let y;
@@ -115,11 +118,11 @@ export class Viewport {
 
   DrawRectangle(x, y, width, height, color, options = {}) {
     let context = this.layers.background;
-    if (options.hasOwnProperty('context')) {
+    if (options.hasOwnProperty("context")) {
       context = options.context;
     }
 
-    if (options.hasOwnProperty('alphaValue')) {
+    if (options.hasOwnProperty("alphaValue")) {
       color = helpers.getAlphaColor(color, options.alphaValue);
     }
 
@@ -131,7 +134,7 @@ export class Viewport {
 
     context.fillRect(x, y, width, height);
 
-    if (options.hasOwnProperty('stroke')) {
+    if (options.hasOwnProperty("stroke")) {
       context.lineWidth = options.stroke;
       context.strokeRect(x, y, width, height);
     }
@@ -141,7 +144,7 @@ export class Viewport {
     let context = this.layers.background;
     let size = 1;
 
-    if (options.hasOwnProperty('size')) {
+    if (options.hasOwnProperty("size")) {
       size = options.size;
     }
 
@@ -149,13 +152,21 @@ export class Viewport {
     this.DrawRectangle(pixel.x, pixel.y, size, size, pixel.color, options);
   }
 
-  DrawText(text, x, y, size = 18, color = 'black', font = 'Arial', options = {}) {
+  DrawText(
+    text,
+    x,
+    y,
+    size = 18,
+    color = "black",
+    font = "Arial",
+    options = {}
+  ) {
     let context = this.layers.background;
-    if ('context' in options) {
+    if ("context" in options) {
       context = options.context;
     }
 
-    context.font = '' + size + 'px ' + font;
+    context.font = "" + size + "px " + font;
     context.fillStyle = color;
     x = position.worldXToViewport(x, this);
     y = position.worldYToViewport(y, this);
@@ -164,7 +175,7 @@ export class Viewport {
 
   StrokePixel(pixel, lineWidth, color, options) {
     let context = this.layers.background;
-    if (options.hasOwnProperty('context')) {
+    if (options.hasOwnProperty("context")) {
       context = options.context;
     }
 
@@ -177,14 +188,14 @@ export class Viewport {
     context.strokeStyle = color;
     context.beginPath();
 
-    pixel.clearEdges.forEach(edge => {
+    pixel.clearEdges.forEach((edge) => {
       let xStart;
       let yStart;
       let xEnd;
       let yEnd;
 
       switch (edge) {
-        case 'top':
+        case "top":
           xStart = x;
           yStart = y;
           xEnd = xStart + pixelSize;
@@ -193,7 +204,7 @@ export class Viewport {
           context.moveTo(xStart, yStart);
           context.lineTo(xEnd, yEnd);
           break;
-        case 'bottom':
+        case "bottom":
           xStart = x;
           yStart = y + pixelSize;
           xEnd = xStart + pixelSize;
@@ -202,7 +213,7 @@ export class Viewport {
           context.moveTo(xStart, yStart);
           context.lineTo(xEnd, yEnd);
           break;
-        case 'left':
+        case "left":
           xStart = x;
           yStart = y;
           xEnd = xStart;
@@ -211,7 +222,7 @@ export class Viewport {
           context.moveTo(xStart, yStart);
           context.lineTo(xEnd, yEnd);
           break;
-        case 'right':
+        case "right":
           xStart = x + pixelSize;
           yStart = y;
           xEnd = xStart;
@@ -221,10 +232,9 @@ export class Viewport {
           context.lineTo(xEnd, yEnd);
           break;
         default:
-          console.log('Invalid value for edge: ', edge);
+          console.log("Invalid value for edge: ", edge);
           return;
       }
-
     });
 
     // Stroke edges
@@ -233,23 +243,22 @@ export class Viewport {
 
   DrawBlock(block, options = {}) {
     if (!block) {
-      console.error('block is not defined');
+      console.error("block is not defined");
       return;
     }
 
-
-    if (block.hasOwnProperty('pixels')) {
+    if (block.hasOwnProperty("pixels")) {
       for (const key in block.pixels) {
         if (block.pixels.hasOwnProperty(key)) {
           const pixel = helpers.copyObject(block.pixels[key]);
 
-          if (options.hasOwnProperty('color')) {
+          if (options.hasOwnProperty("color")) {
             pixel.color = options.color;
           }
 
-          if (options.hasOwnProperty('hiddenBlockIDs')) {
+          if (options.hasOwnProperty("hiddenBlockIDs")) {
             if (options.hiddenBlockIDs.includes(block.id)) {
-              pixel.color = 'rgba(100,90,100,0.2';
+              pixel.color = "rgba(100,90,100,0.2";
             }
           }
 
@@ -258,29 +267,39 @@ export class Viewport {
           pixel.x = position.x;
           pixel.y = position.y;
 
-          if (options.hasOwnProperty('offsetPosition')) {
+          if (options.hasOwnProperty("offsetPosition")) {
             pixel.x += options.offsetPosition.x;
             pixel.y += options.offsetPosition.y;
           }
 
           this.DrawPixel(pixel, options);
-          this.StrokePixel(pixel, 0.2, 'rgba(50,50,70,1)', options);
+          this.StrokePixel(pixel, 0.2, "rgba(50,50,70,1)", options);
         }
       }
 
-      if (options.hasOwnProperty('name')) {
-        this.DrawText(options.name, block.x, block.y - 0.5, 18, 'black', 'Arial', options);
+      if (options.hasOwnProperty("name")) {
+        this.DrawText(
+          options.name,
+          block.x,
+          block.y - 0.5,
+          18,
+          "black",
+          "Arial",
+          options
+        );
       }
 
       ///////DEBUGGING CODE/////////////
       if (appStatus.debug) {
-
         this.DrawText(block.id, block.x, block.y - 0.3);
-        this.DrawRectangle(block.x, block.y, 1, 1, 'pink');
+        this.DrawRectangle(block.x, block.y, 1, 1, "pink");
       }
     }
   }
 
+  /**
+   * @param {{}} blocks
+   */
   DrawBlocks(blocks, options = {}) {
     // let hiddenBlockIDs = [];
     // if (options.hasOwnProperty('hiddenBlockIDs')) {
@@ -325,36 +344,37 @@ export class Viewport {
   //   }
   // }
 
-  DrawBlocksArray(blocks, options = {}) {
-    blocks.forEach(block => {
-      this.DrawBlock(block, options);
-    });
-  }
-
   DrawAllBlocks(options) {
-    const blockData = dataKeeper_2.getAllSections();
-    for (const key in blockData) {
-      if (blockData.hasOwnProperty(key)) {
-        const section = blockData[key];
-        this.DrawBlocksArray(section.blocks, options);
-      }
-    }
+    const blockData = dataKeeper_new.getBlockData();
+    const blocks = blockData.blocks;
+    console.log("bd", blockData);
+    this.DrawBlocks(blocks);
+    // for (const key in blocks) {
+    //   if (blocks.hasOwnProperty(key)) {
+    //     const section = blockData[key];
+    //     this.DrawBlocks(section.blocks, options);
+    //   }
+    // }
   }
 
   DrawGridPoint(gridPoint, options = {}) {
-    if (!options.hasOwnProperty('color')) {
-      options.color = 'blue';
+    if (!options.hasOwnProperty("color")) {
+      options.color = "blue";
     }
-    if (!options.hasOwnProperty('size')) {
+    if (!options.hasOwnProperty("size")) {
       options.size = 0.25;
     }
 
-    const position = gridPoint.split(',');
-    const pixel = blockModule.createPixel(position[0], position[1], options.color);
+    const position = gridPoint.split(",");
+    const pixel = blockModule.createPixel(
+      position[0],
+      position[1],
+      options.color
+    );
     this.DrawPixel(pixel, options);
   }
 
-  Drawgridpixels(gridpixels, options = {}) {
+  DrawGridpixels(gridpixels, options = {}) {
     for (const key in gridpixels) {
       if (gridpixels.hasOwnProperty(key)) {
         const gridPoint = gridpixels[key];
@@ -363,12 +383,12 @@ export class Viewport {
     }
   }
 
-  DrawAllgridpixels(options = {}) {
+  DrawAllGridpixels(options = {}) {
     const blockData = dataKeeper_2.getAllSections();
     for (const key in blockData) {
       if (blockData.hasOwnProperty(key)) {
         const section = blockData[key];
-        this.Drawgridpixels(section.gridpixels, options);
+        this.DrawGridpixels(section.gridpixels, options);
       }
     }
   }
@@ -384,7 +404,7 @@ export class Viewport {
     this.SetPosition(
       this.x + anchorPoint.x - position.x,
       this.y + anchorPoint.y - position.y
-    )
+    );
   }
 
   // SetXAtAnchorPoint(xAnchorPoint, x) {
@@ -407,6 +427,4 @@ export class Viewport {
   //   this.SetCenterX(x);
   //   this.SetCenterY(y);
   // }
-
-
 }

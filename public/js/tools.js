@@ -7,7 +7,7 @@ import * as mouse from './mouse.js';
 import * as layers from './layers.js';
 import { appStatus } from './appStatus.js';
 import * as connection from './connectionToServer.js';
-import * as dataKeeper_2 from './dataKeeper_2.js';
+import * as dataKeeper_2 from './dataKeeper_2_old.js';
 
 
 function Builder() {
@@ -34,16 +34,16 @@ function Builder() {
 
     if (this.drawIdleBlocks) {
       options.color = 'rgba(100,30,60,0.5';
-      mouse.viewport.DrawBlocksArray(selector.getBlocksArray('idle'), options);
+      mouse.viewport.DrawBlocks(selector.getBlocksArray('idle'), options);
     }
     else if (!this.hideMe) {
       delete options.color;
       options.alphaValue = alphaValue;
-      mouse.viewport.DrawBlocksArray(this.blocks, options);
+      mouse.viewport.DrawBlocks(this.blocks, options);
     }
     else {
       options.color = 'rgba(130,30,60,0.5';
-      mouse.viewport.DrawBlocksArray(this.hoveredBlocks, options);
+      mouse.viewport.DrawBlocks(this.hoveredBlocks, options);
     }
   }
 
@@ -294,7 +294,7 @@ function BoxSelection() {
           y: Math.floor(this.y + y)
         };
 
-        this.addGridPoint(point.x, point.y);
+        this.addGridPixel(point.x, point.y);
       }
     }
   }
@@ -303,7 +303,7 @@ function BoxSelection() {
     this.gridpixels = {};
   }
 
-  this.addGridPoint = function (x, y) {
+  this.addGridPixel = function (x, y) {
     const key = helpers.positionToKey(x, y);
     this.gridpixels[key] = 'SelectionBox';
   }
@@ -318,16 +318,16 @@ function BoxSelection() {
     //   for (let iy = 0; iy < movementPxY; iy++) { 
     //     x = (event.movementX < 0) ? this.wp.x + ix : this.wp.x - ix;
     //     y = (event.movementY < 0) ? this.wp.y + iy : this.wp.y - iy; 
-    //     this.addGridPoint(x, y);
+    //     this.addGridPixel(x, y);
     //   }
     // }
 
     for (let ix = 0; ix < movementPxX; ix++) {
-      this.addGridPoint(x, y);
+      this.addGridPixel(x, y);
       x = (event.movementX < 0) ? x + 1 : x - 1;
     }
     for (let iy = 0; iy < movementPxY; iy++) {
-      this.addGridPoint(x, y);
+      this.addGridPixel(x, y);
       y = (event.movementY < 0) ? y + 1 : y - 1;
     }
   }
