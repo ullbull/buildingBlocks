@@ -1,5 +1,4 @@
-import * as dataKeeper from './dataKeeper_old.js';
-import * as dataKeeper_new from './dataKeeper_new.js';
+import * as dataKeeper from './dataKeeper.js';
 import * as layers from './layers.js';
 import * as workerManager from './workerManager.js';
 import * as toolManager from './toolManager.js';
@@ -33,12 +32,12 @@ function handleIncomingData() {
 
   socket.on('sections', sections => {
     // Overwrites sections
-    dataKeeper_new.setSections(sections);
+    dataKeeper.setSections(sections);
     layers.background.refresh();
   })
 
   socket.on('blocks', blocksArray => {
-    dataKeeper_new.addBlocks(blocksArray)
+    dataKeeper.addBlocks(blocksArray)
     toolManager.builder.refreshHoveredBlocks();
     layers.background.refresh();
     console.log('Got blocks:', blocksArray);
@@ -50,7 +49,7 @@ function handleIncomingData() {
   })
 
   socket.on('deleteBlocks', blockIDs => {
-    dataKeeper_new.deleteBlocks(blockIDs);
+    dataKeeper.deleteBlocks(blockIDs);
     layers.background.refresh();
   })
 

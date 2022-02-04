@@ -115,7 +115,7 @@ function moveBlock(block, position) {
   for (const key in block.pixels) {
     if (block.pixels.hasOwnProperty(key)) {
       const gridPosition = getGridPixel(block, key);
-      g_viewport.AddGridPoint(gridPosition.x, gridPosition.y, block.id);
+      g_viewport.AddGridpixel(gridPosition.x, gridPosition.y, block.id);
     }
   }
 }

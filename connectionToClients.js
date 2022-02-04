@@ -1,6 +1,6 @@
 const users = require('./users_njs.js');
 const fileManager = require('./fileManager.js');
-const dataKeeper_2 = require('./dataKeeper_2_njs.js');
+const dataKeeper = require('./dataKeeper_njs.js');
 
 function subscribe(sectionNames, socket) {
   console.log(`User ${socket.id} subscribing to ${sectionNames}`);
@@ -47,7 +47,7 @@ function subscribe(sectionNames, socket) {
 
 function buildBlocks(blocksArray, socket, io) {
   // Add the blocks on server
-  const sectionNames = dataKeeper_2.addBlocks(blocksArray);
+  const sectionNames = dataKeeper.addBlocks(blocksArray);
 
   sendToAllInSections('blocks', blocksArray, io, sectionNames);
   resetHiddenBlocks(socket.id, io);
@@ -68,7 +68,7 @@ function moveBlocks(blocksArray, socket, io) {
 
 function deleteBlocks(blockIDs, io) {
   // Delete blocks
-  const sectionNames = dataKeeper_2.deleteBlocks(blockIDs)
+  const sectionNames = dataKeeper.deleteBlocks(blockIDs)
 
   // Save all sections where a block has been deleted
   fileManager.saveSectionsToFiles(sectionNames);

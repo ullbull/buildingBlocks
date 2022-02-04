@@ -1,0 +1,94 @@
+{
+  "blocks": [
+    {
+      "id": "6fa9e520243c9_1641825800516",
+      "x": -5,
+      "y": 7,
+      "anchorPoint": { "x": 0, "y": 0 },
+      "pixels": {
+        "0,0": {
+          "x": 0,
+          "y": 0,
+          "color": "gray",
+          "clearEdges": ["top", "left"]
+        },
+        "1,0": { "x": 1, "y": 0, "color": "gray", "clearEdges": ["top"] },
+        "2,0": { "x": 2, "y": 0, "color": "gray", "clearEdges": ["top"] },
+        "3,0": {
+          "x": 3,
+          "y": 0,
+          "color": "gray",
+          "clearEdges": ["top", "right"]
+        },
+        "0,1": {
+          "x": 0,
+          "y": 1,
+          "color": "gray",
+          "clearEdges": ["bottom", "left"]
+        },
+        "1,1": { "x": 1, "y": 1, "color": "gray", "clearEdges": ["bottom"] },
+        "2,1": { "x": 2, "y": 1, "color": "gray", "clearEdges": ["bottom"] },
+        "3,1": {
+          "x": 3,
+          "y": 1,
+          "color": "gray",
+          "clearEdges": ["bottom", "right"]
+        }
+      }
+    },
+    {
+      "id": "7c24c22c89499_1641825934606",
+      "x": -5,
+      "y": 0,
+      "anchorPoint": { "x": 0, "y": 0 },
+      "pixels": {
+        "0,0": {
+          "x": 0,
+          "y": 0,
+          "color": "gray",
+          "clearEdges": ["top", "left"]
+        },
+        "1,0": { "x": 1, "y": 0, "color": "gray", "clearEdges": ["top"] },
+        "2,0": { "x": 2, "y": 0, "color": "gray", "clearEdges": ["top"] },
+        "3,0": {
+          "x": 3,
+          "y": 0,
+          "color": "gray",
+          "clearEdges": ["top", "right"]
+        },
+        "0,1": {
+          "x": 0,
+          "y": 1,
+          "color": "gray",
+          "clearEdges": ["bottom", "left"]
+        },
+        "1,1": { "x": 1, "y": 1, "color": "gray", "clearEdges": ["bottom"] },
+        "2,1": { "x": 2, "y": 1, "color": "gray", "clearEdges": ["bottom"] },
+        "3,1": {
+          "x": 3,
+          "y": 1,
+          "color": "gray",
+          "clearEdges": ["bottom", "right"]
+        }
+      }
+    }
+  ],
+  "gridpixels": {
+    "-5,7": "6fa9e520243c9_1641825800516",
+    "-4,7": "6fa9e520243c9_1641825800516",
+    "-3,7": "6fa9e520243c9_1641825800516",
+    "-2,7": "6fa9e520243c9_1641825800516",
+    "-5,8": "6fa9e520243c9_1641825800516",
+    "-4,8": "6fa9e520243c9_1641825800516",
+    "-3,8": "6fa9e520243c9_1641825800516",
+    "-2,8": "6fa9e520243c9_1641825800516",
+    "-5,0": "7c24c22c89499_1641825934606",
+    "-4,0": "7c24c22c89499_1641825934606",
+    "-3,0": "7c24c22c89499_1641825934606",
+    "-2,0": "7c24c22c89499_1641825934606",
+    "-5,1": "7c24c22c89499_1641825934606",
+    "-4,1": "7c24c22c89499_1641825934606",
+    "-3,1": "7c24c22c89499_1641825934606",
+    "-2,1": "7c24c22c89499_1641825934606"
+  }
+}

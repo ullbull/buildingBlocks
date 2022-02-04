@@ -1,5 +1,5 @@
 import * as helpers from './helpers.js';
-import * as dataKeeper_2 from './dataKeeper_2_old.js';
+import * as dataKeeper from './dataKeeper.js';
 
 let selectedBlocks = {};
 let idleBlocks = {};
@@ -116,11 +116,11 @@ function removeBlocks(blocks, from = 'selected') {
   }
 }
 
-function addBlocksBygridpixels(gridpixels, viewport, to = 'selected') {
+function addBlocksByGridpixels(gridpixels, viewport, to = 'selected') {
   const blocks = {};
   for (const key in gridpixels) {
     if (gridpixels.hasOwnProperty(key)) {
-      const block = dataKeeper_2.getBlockAtPosition_k(key);
+      const block = dataKeeper.getBlockAtPosition({"key": key});
       if (block) {
         blocks[block.id] = block;
       }
@@ -129,11 +129,11 @@ function addBlocksBygridpixels(gridpixels, viewport, to = 'selected') {
   addBlocks(blocks, to);
 }
 
-function removeBlocksBygridpixels(gridpixels, viewport, from = 'selected') {
+function removeBlocksByGridpixels(gridpixels, viewport, from = 'selected') {
   const blocks = {};
   for (const key in gridpixels) {
     if (gridpixels.hasOwnProperty(key)) {
-      const block = dataKeeper_2.getBlockAtPosition_k(key);
+      const block = dataKeeper.getBlockAtPosition({"key": key});
       if (block) {
         blocks[block.id] = block;
       }
@@ -177,8 +177,8 @@ export {
   addBlocksArray,
   removeBlock,
   removeBlocks,
-  addBlocksBygridpixels,
-  removeBlocksBygridpixels,
+  addBlocksByGridpixels,
+  removeBlocksByGridpixels,
   isEmpty
   // refresh
 }

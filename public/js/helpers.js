@@ -1,3 +1,10 @@
+/**
+ * Returns a string from two ints.
+ * Adds a ',' between the ints, ex "1,2"
+ * @param {int} x 
+ * @param {int} y 
+ * @returns {string}
+ */
 function positionToKey(x, y) {
   return x + ',' + y;
 }

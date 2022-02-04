@@ -1,11 +1,10 @@
 import * as helpers from "./helpers.js";
 import * as blockModule from "./block.js";
-import * as dataKeeper_new from "./dataKeeper_new.js";
-import * as dataKeeper_2 from "./dataKeeper_2_old.js";
+import * as dataKeeper from "./dataKeeper.js";
 import * as position from "./positionTranslator.js";
 import { appStatus } from "./appStatus.js";
 import * as layers from "./layers.js";
-import * as sectionManager from "./sectionManager.js";
+import * as sectionTools from "./sectionTools.js";
 import * as connection from "./connectionToServer.js";
 
 export class Viewport {
@@ -40,7 +39,7 @@ export class Viewport {
 
   // Returns the section names of sections covered by this viewport
   GetSectionNames() {
-    return sectionManager.getSectionNames(
+    return sectionTools.getSectionNames(
       this.x,
       this.y,
       this.GetWorldWidth(),
@@ -345,7 +344,7 @@ export class Viewport {
   // }
 
   DrawAllBlocks(options) {
-    const blockData = dataKeeper_new.getBlockData();
+    const blockData = dataKeeper.getBlockData();
     const blocks = blockData.blocks;
     console.log("bd", blockData);
     this.DrawBlocks(blocks);
@@ -357,7 +356,7 @@ export class Viewport {
     // }
   }
 
-  DrawGridPoint(gridPoint, options = {}) {
+  DrawGridpixel(gridPoint, options = {}) {
     if (!options.hasOwnProperty("color")) {
       options.color = "blue";
     }
@@ -378,13 +377,13 @@ export class Viewport {
     for (const key in gridpixels) {
       if (gridpixels.hasOwnProperty(key)) {
         const gridPoint = gridpixels[key];
-        this.DrawGridPoint(key, options);
+        this.DrawGridpixel(key, options);
       }
     }
   }
 
   DrawAllGridpixels(options = {}) {
-    const blockData = dataKeeper_2.getAllSections();
+    const blockData = dataKeeper.getAllSections();
     for (const key in blockData) {
       if (blockData.hasOwnProperty(key)) {
         const section = blockData[key];

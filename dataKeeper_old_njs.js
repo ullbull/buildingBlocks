@@ -1,16 +1,51 @@
-const helpers = require('./helpers.njs');
-const blockModule = require('./block.njs');
+const helpers = require('./helpers_njs.js');
+const blockModule = require('./block_njs.js');
 
-function addBlockTo(blockData, block) {
+let blockData = { blocks: {}, gridpixels: {} };
+const worker = blockModule.createBlock(0, 0, 4, 2, 'gray');
+let workers = {};
+
+function addWorker(worker) {
+  workers[worker.id] = worker;
+}
+
+function setWorkers(wkrs) {
+  workers = wkrs;
+}
+
+function getBlockData() {
+  return blockData;
+}
+
+function setBlockData(data) {
+  blockData = data;
+}
+
+function add(data, to) {
+  try {
+    to[data.id] = data;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function addData(data, to) {
+  if(to == 'workers') {
+    add(data, workers);
+  } else {
+    console.error(`The variable ${data} doesn't exist!`);
+  }
+}
+
+function addBlock(block) {
   const blockCopy = helpers.copyObject(block);
 
   // If this block exist in block data
   const blockDouble = blockData.blocks[blockCopy.id];
   if (blockDouble) {
-    const gridPointKeys = blockModule.getGridPixelKeys(blockDouble);
     // Delete blocks grid pixels from block data
+    const gridPointKeys = blockModule.getGridPixelKeys(blockDouble);
     gridPointKeys.forEach(key => {
-      console.log('delete gridpint', key);
       delete blockData.gridpixels[key];
     });
   }
@@ -26,28 +61,34 @@ function addBlockTo(blockData, block) {
       const gridPoint = blockModule.getGridPixel(block, key);
 
       // Add grid pixels
-      addGridPixelTo(blockData, gridPoint);
+      addGridPixel(gridPoint);
     }
   }
 }
 
-function addMultipleBlocksTo(blockData, blocks) {
+function addBlocks(blocks) {
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)) {
       const block = blocks[key];
-      addBlockTo(blockData, block);
+      addBlock(block);
     }
   }
 }
 
-function addBlockAndChildrenTo(blockData, block) {
-  addBlockTo(blockData, block);
+function addBlocksArray(blocks) {
+  blocks.forEach(block => {
+    addBlock(block);
+  });
+}
+
+function addBlockAndChildren(block) {
+  addBlock(block);
   if (block.hasOwnProperty('children')) {
-    addMultipleBlocksTo(blockData, block.children);
+    addBlocks(block.children);
   }
 }
 
-function addGridPixelTo(blockData, gridPoint) {
+function addGridPixel(gridPoint) {
   const x = gridPoint.x;
   const y = gridPoint.y;
   const blockID = gridPoint.id;
@@ -86,14 +127,14 @@ function addGridPixelTo(blockData, gridPoint) {
   blockData.gridpixels[key] = blockID;
 }
 
-function deleteBlockFrom(blockData, blockID) {
+function deleteBlock(blockID) {
   const block = blockData.blocks[blockID];
   if (typeof block != 'undefined') {
     // Delete grid pixels
     for (const key in block.pixels) {
       if (block.pixels.hasOwnProperty(key)) {
         const position = blockModule.getGridPixel(block, key);
-        deleteGridPixelFrom(blockData, position.x, position.y);
+        deleteGridPixel(position.x, position.y);
       }
     }
 
@@ -102,33 +143,34 @@ function deleteBlockFrom(blockData, blockID) {
   }
 }
 
-function deleteBlockAndChildrenFrom(blockData, block) {
-  // Delete children
-  if (block.hasOwnProperty('children')) {
-    console.log(block.children);
-    for (const key in block.children) {
-      if (block.children.hasOwnProperty(key)) {
-        const child = block.children[key];
-        console.log(child);
-        deleteBlockFrom(blockData, child.id);
-      }
+function deleteBlocks(blockIDs) {
+  for (const key in blockIDs) {
+    if (blockIDs.hasOwnProperty(key)) {
+      const blockID = blockIDs[key];
+      deleteBlock(blockID);
     }
   }
-  // delete block
-  deleteBlockFrom(blockData, block.id);
 }
 
-function deleteGridPixelFrom(blockData, x, y) {
+function deleteGridPixel(x, y) {
   const key = helpers.positionToKey(x, y);
   delete blockData.gridpixels[key];
 }
 
 module.exports = {
-  addBlockTo,
-  addMultipleBlocksTo,
-  addBlockAndChildrenTo,
-  addGridPixelTo,
-  deleteBlockFrom,
-  deleteBlockAndChildrenFrom,
-  deleteGridPixelFrom
+  worker,
+  workers,
+  addWorker,
+  setWorkers,
+  addData,
+  getBlockData,
+  setBlockData,
+  addBlock,
+  addBlocks,
+  addBlocksArray,
+  addBlockAndChildren,
+  addGridPixel,
+  deleteBlock,
+  deleteBlocks,
+  deleteGridPixel,
 };

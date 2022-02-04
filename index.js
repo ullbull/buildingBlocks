@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const dataKeeper_2 = require('./dataKeeper_2_njs.js');
+const dataKeeper = require('./dataKeeper_njs.js');
 const users = require('./users_njs.js');
 const fileManager = require('./fileManager.js');
 const ctc = require('./connectionToClients.js');
@@ -120,7 +120,7 @@ io.emit();
 // Cleanup if block data is corrupt
 const cleanup = require("./cleanup.js");
 
-const sections = dataKeeper_2.getAllSections();
+const sections = dataKeeper.getAllSections();
 for (const sectionName in sections) {
   cleanup.deleteBadGridpixels(sectionName);
   cleanup.deleteBadBlocks(sectionName);

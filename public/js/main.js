@@ -1,6 +1,5 @@
 import * as blockModule from './block.js';
 import { Viewport } from './Viewport.js';
-import * as dataKeeper from './dataKeeper_old.js';
 import * as toolManager from './toolManager.js';
 import * as selector from './selector.js';
 import * as position from './positionTranslator.js';
@@ -10,7 +9,7 @@ import * as layers from './layers.js';
 import * as scanner from './scanner.js';
 import * as connection from './connectionToServer.js';
 import * as workerManager from './workerManager.js';
-import * as dataKeeper_new from './dataKeeper_new.js';
+import * as dataKeeper from './dataKeeper.js';
 import * as blockHider from './blockHider.js';
 
 
@@ -28,9 +27,9 @@ setTimeout(function () {
 
 // const testBlock = blockModule.createBlock(5,5,2,2);
 
-// console.log('section 0,0:', dataKeeper_2.getSection('0,0'));
-// dataKeeper_2.addBlock(testBlock);
-// console.log('section 0,0:', dataKeeper_2.getSection('0,0'));
+// console.log('section 0,0:', dataKeeper.getSection('0,0'));
+// dataKeeper.addBlock(testBlock);
+// console.log('section 0,0:', dataKeeper.getSection('0,0'));
 
 
 connection.connect();

@@ -1,6 +1,6 @@
-const blockModule = require('./block_njs.js');
-const sectionTools = require('./sectionTools_njs.js');
-const helpers = require('./helpers_njs.js');
+import * as blockModule from './block.js';
+import * as sectionTools from './sectionTools.js';
+import * as helpers from './helpers.js';
 
 const BlockExample = {
   id: "4f04294fcd875_1607847853215",
@@ -506,7 +506,7 @@ function deleteGridpixels(gridpixelKeys){
   return sectionNames;
 }
 
-module.exports = {
+export {
   EmptySection,
   mergeBlockData,
   setSection,
