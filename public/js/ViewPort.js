@@ -346,8 +346,7 @@ export class Viewport {
   DrawAllBlocks(options) {
     const blockData = dataKeeper.getBlockData();
     const blocks = blockData.blocks;
-    console.log("bd", blockData);
-    this.DrawBlocks(blocks);
+    this.DrawBlocks(blocks, options);
     // for (const key in blocks) {
     //   if (blocks.hasOwnProperty(key)) {
     //     const section = blockData[key];
@@ -383,7 +382,7 @@ export class Viewport {
   }
 
   DrawAllGridpixels(options = {}) {
-    const blockData = dataKeeper.getAllSections();
+    const blockData = dataKeeper.getBlockData();
     for (const key in blockData) {
       if (blockData.hasOwnProperty(key)) {
         const section = blockData[key];

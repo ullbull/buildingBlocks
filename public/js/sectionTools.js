@@ -6,7 +6,12 @@ function getSectionValue(value) {
   return Math.floor(value / sectionSize);
 }
 
-// Returns the section name for passed position
+/**
+ * Returns the section name for passed position
+ * @param {int} x 
+ * @param {int} y 
+ * @returns {string}
+ */
 function getSectionName(x, y) {
   return helpers.positionToKey(getSectionValue(x), getSectionValue(y));
 }

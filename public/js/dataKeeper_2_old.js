@@ -27,7 +27,7 @@ const emptySection = {
   gridpixels: {}
 }
 
-function getAllSections() {
+function getBlockData() {
   return Sections;
 }
 
@@ -331,7 +331,7 @@ function deleteGridPixel_2(sectionName, key) {
 
 export {
   setSections,
-  getAllSections,
+  getBlockData,
   getSection,
   setSection,
   getSections,
