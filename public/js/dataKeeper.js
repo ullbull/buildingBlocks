@@ -163,6 +163,21 @@ function getSections(sectionNames) {
 }
 
 /**
+ * 
+ * @returns Array of section names for all stored data
+ */
+function getAllSectionNames() {
+  const sectionNames = {}
+  for (const key in SectionData) {
+    if (SectionData.hasOwnProperty(key)){
+      const sectionName = SectionData[key];
+      sectionName[sectionName] = sectionName;
+    }
+  }
+  return Object.values(sectionNames);
+}
+
+/**
  * Returns gridpixels from section or
  * empty object if section doesn't exist. 
  * @param {string} sectionName 
@@ -361,7 +376,7 @@ function addBlock(block) {
 function addBlocks(blocks) {
   const sectionNames = {};
 
-  // Note: Lopping through all blocks and calling addBlock
+  // Note: Looping through all blocks and calling addBlock
   // instead of just calling addBlockToData,
   // because addBlock will also add block id to SectionData.
   for (const key in blocks) {
@@ -429,11 +444,11 @@ function deleteBlockFromData(blockID, blockData) {
 }
 
 /**
- * Deletes the blocks and returns array of section names
+ * Deletes the blocks and returns an array of section names
  * where any block was deleted. 
- * @param {[string]} blockIDs
+ * @param {string[]} blockIDs
  * @param {object} blockData 
- * @returns {[string]} sectionName
+ * @returns {string[]} sectionName
  */
 function deleteBlocksFromData(blockIDs, blockData) {
   const sectionNames = {};
@@ -447,6 +462,13 @@ function deleteBlocksFromData(blockIDs, blockData) {
   return Object.values(sectionNames);
 }
 
+/**
+ * Deletes the block from stored data
+ * and returns the section name
+ * where the block was deleted. 
+ * @param {string} blockIDs
+ * @returns {string} sectionName
+ */
 function deleteBlock(blockID) {
   const sectionName = deleteBlockFromData(blockID, BlockData);
   // Delete block from SectionData
@@ -454,6 +476,20 @@ function deleteBlock(blockID) {
   return sectionName
 }
 
+//TODO: 
+// when one block in one section overlaps another block in another section
+// the overlapped pixels in not deleted if site is reloaded.
+// make sure blockData is saved when it should be to fix this bug.
+
+//TODO: Add description and make blocks not delete on move in moveBlocks
+
+/**
+ * Deletes the blocks from stored data
+ * and returns an array of section names
+ * where any block was deleted. 
+ * @param {string} blockIDs
+ * @returns {string[]} sectionName
+ */
 function deleteBlocks(blockIDs) {
   const sectionNames = deleteBlocksFromData(blockIDs, BlockData);
   // Delete block from SectionData
@@ -522,6 +558,7 @@ export {
   getBlocks,
   getSection,
   getSections,
+  getAllSectionNames,
   getGridpixels,
   getAllGridpixels,
   getBlockFromData,
