@@ -171,7 +171,7 @@ function getAllSectionNames() {
   for (const key in SectionData) {
     if (SectionData.hasOwnProperty(key)){
       const sectionName = SectionData[key];
-      sectionName[sectionName] = sectionName;
+      sectionNames[sectionName] = sectionName;
     }
   }
   return Object.values(sectionNames);
