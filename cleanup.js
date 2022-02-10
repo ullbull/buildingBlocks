@@ -1,36 +1,36 @@
 const dataKeeper = require('./dataKeeper_njs.js');
-const fileManager = require('./fileManager.js');
 
 // Delete all gridpixels that has no linked blocks
-function deleteBadGridpixels(sectionName) {
-  const gridpixels = dataKeeper.getGridpixels(sectionName)
+function deleteBadGridpixels(blockData) {
+  const gridpixels = blockData.gridpixels
   const keysToDelete = [];
 
   for (const key in gridpixels) {
     if (Object.hasOwnProperty.call(gridpixels, key)) {
       const blockID = gridpixels[key];
-      const block = dataKeeper.getBlock(sectionName, blockID)
-      if (block == undefined) {
+      const block = dataKeeper.getBlockFromData(blockID, blockData)
+      if (!block) {
         console.log('Found bad grid pixel: ', key);
         keysToDelete.push(key);
       }
     }
   }
 
+  let sectionNames = [];
   // Delete bad gridpixels
   if(keysToDelete[0]) {
     console.log(`Deleting bad gridpixels: ${keysToDelete}`);
-    const sectionNames = dataKeeper.deleteGridpixels(keysToDelete);
-    fileManager.saveSectionsToFiles(sectionNames);
+    sectionNames = dataKeeper.deleteGridpixels(keysToDelete);
   }
+  return sectionNames;
 }
 
 // Delete all blocks that has no grid pixel pointing to it
-function deleteBadBlocks(sectionName) {
+function deleteBadBlocks(blockData) {
   let blockOK = false;
   const blockIDsToDelete = [];
-  const blocks = dataKeeper.getBlocks(sectionName)
-  const gridpixels = dataKeeper.getGridpixels(sectionName)
+  const blocks = blockData.blocks;
+  const gridpixels = blockData.gridpixels;
 
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)) {
@@ -52,14 +52,13 @@ function deleteBadBlocks(sectionName) {
     }
   }
 
-  
-
+  const sectionNames = [];
   // Delete bad blocks
   if(blockIDsToDelete[0]) {
     console.log(`Deleting bad blocks: ${blockIDsToDelete}`);
-    const sectionNames = dataKeeper.deleteBlocks(blockIDsToDelete);
-    fileManager.saveSectionsToFiles(sectionNames);
+    sectionNames = dataKeeper.deleteBlocks(blockIDsToDelete);
   }
+  return sectionNames;
 }
 
 module.exports = {

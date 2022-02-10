@@ -116,12 +116,3 @@ io.emit();
 //   io.emit('blocksArray', blocks);
 // }
 
-
-// Cleanup if block data is corrupt
-const cleanup = require("./cleanup.js");
-
-const sections = dataKeeper.getAllSections();
-for (const sectionName in sections) {
-  cleanup.deleteBadGridpixels(sectionName);
-  cleanup.deleteBadBlocks(sectionName);
-}

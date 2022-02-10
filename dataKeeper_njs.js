@@ -139,22 +139,6 @@ function getSectionName(blockID) {
 }
 
 /**
- * Returns blocks from section or
- * empty object if section doesn't exist. 
- * @param {string} sectionName
- * @returns {BlockData.blocks} blocks
- */
- function getBlocks(sectionName) {
-  const blocks = {};
-  for (const [blockID, value_sectionName] of Object.entries(SectionData)) {
-    if (value_sectionName == sectionName) {
-      blocks[blockID] = BlockData.blocks[blockID];
-    }
-  }
-  return blocks;
-}
-
-/**
  * Returns the section or empty section if the section doesn't exist.
  * @param {string} sectionName
  * @returns {BlockData}
@@ -178,8 +162,19 @@ function getSections(sectionNames) {
   return blockData;
 }
 
-function getAllSections() {
-  return getBlockData();
+/**
+ * 
+ * @returns Array of section names for all stored data
+ */
+function getAllSectionNames() {
+  const sectionNames = {}
+  for (const key in SectionData) {
+    if (SectionData.hasOwnProperty(key)){
+      const sectionName = SectionData[key];
+      sectionName[sectionName] = sectionName;
+    }
+  }
+  return Object.values(sectionNames);
 }
 
 /**
@@ -198,16 +193,30 @@ function getAllGridpixels(){
 }
 
 /**
- * Returns the block or
- * undefined if the block doesn't exist. 
- * @param {string} blockID 
- * @param {BlockDataExample} blockData 
- * @returns block or undefined
+ * Returns blocks from section or
+ * empty object if section doesn't exist. 
+ * @param {string} sectionName
+ * @returns {BlockData.blocks} blocks
  */
-function getBlockFromData(blockID, blockData) {
-  return blockData.blocks[blockID];
+ function getBlocks(sectionName) {
+  const blocks = {};
+  for (const [blockID, value_sectionName] of Object.entries(SectionData)) {
+    if (value_sectionName == sectionName) {
+      const block = getBlock(blockID);
+      if (block) {
+        blocks[blockID] = block;
+      }
+    }
+  }
+  return blocks;
 }
 
+/**
+ * Returns the block from stored data or
+ * undefined if the block doesn't exist. 
+ * @param {string} blockID 
+ * @returns block or undefined
+ */
 function getBlock(blockID) {
   return getBlockFromData(blockID, BlockData)
 }
@@ -215,13 +224,12 @@ function getBlock(blockID) {
 /**
  * Returns the block or
  * undefined if the block doesn't exist. 
- * @param {*} sectionName 
- * @param {*} blockID 
- * @returns 
+ * @param {string} blockID 
+ * @param {object} blockData 
+ * @returns block or undefined
  */
-function getBlockFromSectionName_WHY_NOT_USE_GET_BLOCK(blockID, sectionName) {
-  const blocks = getBlocks(sectionName);
-  return blocks[blockID];
+function getBlockFromData(blockID, blockData) {
+  return blockData.blocks[blockID];
 }
 
 /**
@@ -252,7 +260,10 @@ function addGridPixelToData(key, blockID, blockData) {
   // Check if grid pixel exist
   if (typeof blockData.gridpixels[key] != "undefined") {
     const id = blockData.gridpixels[key];
-    const block = blockData.blocks[id];
+    const block = getBlockFromData(id, blockData);
+    if (!block) {
+      console.log("Something is wrong!")
+    }
     const position = blockModule.getPositionInBlock(block, x, y);
     const pixelKey = helpers.positionToKey(position.x, position.y);
 
@@ -334,6 +345,10 @@ function addBlocksToData(blocks, blockData) {
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)){
       const block = blocks[key];
+      // if (!block){
+      //   console.log(blocks, blockData)
+      //   continue;
+      // }
       const sectionName = addBlockToData(block, blockData);
       sectionNames[sectionName] = sectionName;
     }
@@ -361,7 +376,7 @@ function addBlock(block) {
 function addBlocks(blocks) {
   const sectionNames = {};
 
-  // Note: Lopping through all blocks and calling addBlock
+  // Note: Looping through all blocks and calling addBlock
   // instead of just calling addBlockToData,
   // because addBlock will also add block id to SectionData.
   for (const key in blocks) {
@@ -422,20 +437,18 @@ function deleteBlockFromData(blockID, blockData) {
   }
   
   // Delete block
-  delete BlockData.blocks[blockID];
-  // Delete block from SectionData
-  delete SectionData[blockID];
+  delete blockData.blocks[blockID];
   
   const sectionName = getSectionName(blockID);
   return sectionName;
 }
 
 /**
- * Deletes the blocks and returns array of section names
+ * Deletes the blocks and returns an array of section names
  * where any block was deleted. 
- * @param {[string]} blockIDs
- * @param {BlockDataExample} blockData 
- * @returns {[string]} sectionName
+ * @param {string[]} blockIDs
+ * @param {object} blockData 
+ * @returns {string[]} sectionName
  */
 function deleteBlocksFromData(blockIDs, blockData) {
   const sectionNames = {};
@@ -449,12 +462,34 @@ function deleteBlocksFromData(blockIDs, blockData) {
   return Object.values(sectionNames);
 }
 
+/**
+ * Deletes the block from stored data
+ * and returns the section name
+ * where the block was deleted. 
+ * @param {string} blockIDs
+ * @returns {string} sectionName
+ */
 function deleteBlock(blockID) {
-  return deleteBlockFromData(blockID, BlockData);
+  const sectionName = deleteBlockFromData(blockID, BlockData);
+  // Delete block from SectionData
+  delete SectionData[blockID];
+  return sectionName
 }
 
+/**
+ * Deletes the blocks from stored data
+ * and returns an array of section names
+ * where any block was deleted. 
+ * @param {string} blockIDs
+ * @returns {string[]} sectionName
+ */
 function deleteBlocks(blockIDs) {
-  return deleteBlocksFromData(blockIDs, BlockData);
+  const sectionNames = deleteBlocksFromData(blockIDs, BlockData);
+  // Delete block from SectionData
+  blockIDs.forEach(blockID => {
+    delete SectionData[blockID];
+  });
+  return sectionNames;
 }
 
 /**
@@ -492,8 +527,8 @@ function deleteGridpixel(args){
 
 /**
  * 
- * @param {[string]} gridpixelKeys 
- * @returns {[string]} array of sectionNames or empty array
+ * @param {string[]} gridpixelKeys 
+ * @returns {string[]} array of sectionNames or empty array
  */
 function deleteGridpixels(gridpixelKeys){
   const sectionNames = [];
@@ -516,12 +551,11 @@ module.exports = {
   getBlocks,
   getSection,
   getSections,
-  getAllSections,
+  getAllSectionNames,
   getGridpixels,
   getAllGridpixels,
   getBlockFromData,
   getBlock,
-  getBlockFromSectionName_WHY_NOT_USE_GET_BLOCK,
   findBlock,
   addGridPixelToData,
   addBlockToData,

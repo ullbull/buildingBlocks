@@ -52,15 +52,17 @@ function buildBlocks(blocksArray, socket, io) {
   sendToAllInSections('blocks', blocksArray, io, sectionNames);
   resetHiddenBlocks(socket.id, io);
 
-  // Save all sections where a block has been added
-  fileManager.saveSectionsToFiles(sectionNames);
+  // // Save all sections where a block has been added
+  // fileManager.saveSectionsToFiles(sectionNames);
+
+  fileManager.saveAllSectionsToFiles();
 }
 
 function moveBlocks(blocksArray, socket, io) {
-  // Delete blocks
-  const blockIDs = [];
-  blocksArray.forEach(block => blockIDs.push(block.id));
-  deleteBlocks(blockIDs, io);
+  // // Delete blocks
+  // const blockIDs = [];
+  // blocksArray.forEach(block => blockIDs.push(block.id));
+  // deleteBlocks(blockIDs, io);
 
   // Build blocks
   buildBlocks(blocksArray, socket, io);

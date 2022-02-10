@@ -1,5 +1,6 @@
 const fs = require('fs');
 const dataKeeper = require('./dataKeeper_njs.js');
+const cleanup = require("./cleanup.js");
 
 const pathSectionData = './sectionData/';
 const pathTempFiles = pathSectionData + 'tempFiles/';
@@ -29,19 +30,25 @@ function loadFile(filename = '0,0') {
     }
   }
 
-  let section;
+  let blockData;
 
   if (rawData == null) {
     console.error(`Loading an empty section into section "${filename}"`);
-    section = dataKeeper.EmptySection;
+    blockData = dataKeeper.EmptySection;
   } else {
-    section = JSON.parse(rawData);
+    blockData = JSON.parse(rawData);
+    
+    // Cleanup if blockData is corrupt
+    let sectionNames = cleanup.deleteBadGridpixels(blockData);
+    saveSectionsToFiles(sectionNames);
+    sectionNames = cleanup.deleteBadBlocks(blockData);
+    saveSectionsToFiles(sectionNames);
   }
 
   // Load data into section
-  dataKeeper.setSection(section, filename);
+  dataKeeper.setSection(blockData, filename);
 
-  return section;
+  return blockData;
 }
 
 // Saves a file. Overwrites if file exist
@@ -79,6 +86,10 @@ function saveSectionsToFiles(sectionNames) {
   })
 }
 
+function saveAllSectionsToFiles() {
+  saveSectionsToFiles(dataKeeper.getAllSectionNames())
+}
+
 // Returns requested section.
 // Loads section if not loaded.
 // Returns empty section if section doesn't exist
@@ -110,6 +121,7 @@ module.exports = {
   loadFile,
   saveFile,
   saveSectionsToFiles,
+  saveAllSectionsToFiles,
   getSection,
   getSections
 }
