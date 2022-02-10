@@ -476,13 +476,6 @@ function deleteBlock(blockID) {
   return sectionName
 }
 
-//TODO: 
-// when one block in one section overlaps another block in another section
-// the overlapped pixels in not deleted if site is reloaded.
-// make sure blockData is saved when it should be to fix this bug.
-
-//TODO: Add description and make blocks not delete on move in moveBlocks
-
 /**
  * Deletes the blocks from stored data
  * and returns an array of section names

@@ -1,8 +1,7 @@
 import * as connection from './connectionToServer.js';
 import * as users from './users.js';
 
-// TODO: Find out why blocks don't hide.
-// This function runs but nothing hides anyway.
+
 function hideBlocks_ID(blockIDs) {
   connection.sendData('hiddenBlockIDs', blockIDs);
 }

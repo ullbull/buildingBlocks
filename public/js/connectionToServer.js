@@ -59,7 +59,6 @@ function handleIncomingData() {
   })
 }
 
-
 function sendData(type, payload) {
   socket.emit(type, payload);
 }
