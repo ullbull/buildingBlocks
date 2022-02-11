@@ -31,11 +31,13 @@ function Builder() {
     if (this.drawIdleBlocks) {
       options.color = "rgba(100,30,60,0.5";
       mouse.viewport.DrawBlocks(selector.getBlocksArray("idle"), options);
-    } else if (!this.hideMe) {
+    } 
+    else if (!this.hideMe) {
       delete options.color;
       options.alphaValue = alphaValue;
       mouse.viewport.DrawBlocks(this.blocks, options);
-    } else {
+    } 
+    else {
       options.color = "rgba(130,30,60,0.5";
       mouse.viewport.DrawBlocks(this.hoveredBlocks, options);
     }
@@ -282,8 +284,8 @@ function BoxSelection() {
   this.strokeWidth = 1;
   this.gridpixels = {};
 
-  this.initgridpixels = function () {
-    this.cleargridpixels();
+  this.initGridpixels = function () {
+    this.clearGridpixels();
 
     // Create gridpixels for both positive and negative box size
     let x;
@@ -306,7 +308,7 @@ function BoxSelection() {
     }
   };
 
-  this.cleargridpixels = function () {
+  this.clearGridpixels = function () {
     this.gridpixels = {};
   };
 
@@ -315,7 +317,7 @@ function BoxSelection() {
     this.gridpixels[key] = "SelectionBox";
   };
 
-  this.addgridpixelsByMovement = function (event) {
+  this.addGridpixelsByMovement = function (event) {
     const movementPxX = Math.abs(event.movementX) / mouse.viewport.pixelSize;
     const movementPxY = Math.abs(event.movementY) / mouse.viewport.pixelSize;
     let x = mouse.wp.x;
@@ -341,12 +343,12 @@ function BoxSelection() {
 
   this.setWidth = function (width) {
     this.width = width;
-    this.initgridpixels();
+    this.initGridpixels();
   };
 
   this.setHeight = function (height) {
     this.height = height;
-    this.initgridpixels();
+    this.initGridpixels();
   };
 
   this.draw = function (options = {}) {
@@ -414,7 +416,7 @@ function BoxSelection() {
       this.x = mouse.wp.x;
       this.y = mouse.wp.y;
 
-      this.addgridpixelsByMovement(event);
+      this.addGridpixelsByMovement(event);
 
       if (event.ctrlKey) {
         selector.addBlocksByGridpixels(this.gridpixels, mouse.viewport);
@@ -455,7 +457,7 @@ function BoxSelection() {
   };
 
   this.keyUp = function (event) {
-    this.cleargridpixels();
+    this.clearGridpixels();
   };
 }
 

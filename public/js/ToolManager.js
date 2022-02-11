@@ -72,11 +72,19 @@ function keyDown(event) {
 }
 
 function keyUp(event) {
+  console.log("key up", currentTool)
   boxSelection.keyUp(event);
   currentTool.keyUp(event);
 }
 
-
+function onFocus(event) {
+  // NOTE:
+  // Cursor hides on alt key down and unhides on alt key up.
+  // This means the cursor will get hidden if user alt-tabs to switch to another window.
+  // When switching back the cursor will remain hidden since alt key was released
+  // before the window got focus. The following code handles this issue:
+  builder.drawIdleBlocks = false;
+}
 
 
 
@@ -90,7 +98,8 @@ export {
   mouseUp,
   mouseMove,
   keyDown,
-  keyUp
+  keyUp,
+  onFocus,
 }
 
 

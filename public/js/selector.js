@@ -40,18 +40,18 @@ function getBlocksArray(blocksToGet = 'selected') {
   return blocks;
 }
 
-function getBlockIDsOBJ(blocksToGet = 'selected') {
-  setBlocksToModify(blocksToGet);
+// function getBlockIDsOBJ(blocksToGet = 'selected') {
+//   setBlocksToModify(blocksToGet);
 
-  const blockIDs = {};
-  for (const key in blocksToModify) {
-    if (blocksToModify.hasOwnProperty(key)) {
-      const block = blocksToModify[key];
-      blockIDs[block.id] = block.id;
-    }
-  }
-  return blockIDs;
-}
+//   const blockIDs = {};
+//   for (const key in blocksToModify) {
+//     if (blocksToModify.hasOwnProperty(key)) {
+//       const block = blocksToModify[key];
+//       blockIDs[block.id] = block.id;
+//     }
+//   }
+//   return blockIDs;
+// }
 
 function getBlockIDs(blocksToGet = 'selected') {
   setBlocksToModify(blocksToGet);

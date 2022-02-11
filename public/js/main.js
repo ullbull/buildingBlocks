@@ -55,16 +55,18 @@ function animate() {
 }
 
 window.addEventListener('contextmenu', event => event.preventDefault());
-window.addEventListener('mousemove', mouseMove);
-window.addEventListener('mousedown', mouseDown);
-window.addEventListener('mouseup', mouseUp);
-window.addEventListener('resize', resize);
-window.addEventListener('mousewheel', mouseWheel);
-window.addEventListener('keydown', keyDown);
-window.addEventListener('keyup', keyUp);
+window.addEventListener('mousemove', onMouseMove);
+window.addEventListener('mousedown', onMouseDown);
+window.addEventListener('mouseup', onMouseUp);
+window.addEventListener('resize', onResize);
+window.addEventListener('mousewheel', onMouseWheel);
+window.addEventListener('keydown', onKeyDown);
+window.addEventListener('keyup', onKeyUp);
+window.addEventListener('focus', onFocus);
+window.addEventListener('blur', onBlur);
 
 let lastWp = mouse.wp;
-async function mouseMove(event) {
+async function onMouseMove(event) {
   // Send this worker to server if mouse is moved one grid square
   if ((mouse.wp.x != lastWp.x) || (mouse.wp.y != lastWp.y)) {
     blockModule.setBlockPosition(worker, mouse.wp.x, mouse.wp.y);
@@ -77,17 +79,17 @@ async function mouseMove(event) {
   toolManager.mouseMove(event);
 }
 
-function mouseDown(event) {
+function onMouseDown(event) {
   mouse.mouseDown(event);
   toolManager.mouseDown(event);
 }
 
-function mouseUp(event) {
+function onMouseUp(event) {
   mouse.mouseUp(event);
   toolManager.mouseUp(event);
 }
 
-function mouseWheel(event) {
+function onMouseWheel(event) {
   let zoomValue = event.deltaY / 100;
   let newPixelSize = viewport.pixelSize - zoomValue;
   let oldPixelSize = viewport.pixelSize;
@@ -112,7 +114,7 @@ function mouseWheel(event) {
   }
 }
 
-function resize() {
+function onResize() {
   layers.setCanvasToWindowSize();
   viewport.SetSize(innerWidth, innerHeight);
   layers.refreshAll();
@@ -126,7 +128,7 @@ function download(content, fileName, contentType) {
   a.click();
 }
 
-function keyDown(event) {
+function onKeyDown(event) {
   if (event.key == 'b') {
   }
   if (event.key == 'm') {
@@ -161,7 +163,7 @@ function keyDown(event) {
   toolManager.keyDown(event);
 }
 
-function keyUp(event) {
+function onKeyUp(event) {
   appStatus.spaceKeyDown = false;
   toolManager.keyUp(event);
 
@@ -173,6 +175,15 @@ function keyUp(event) {
 
   // console.log('Sections covered', viewport.GetSectionNames());
 
+}
+
+function onFocus(event) {
+  console.log("Got focus!")
+  toolManager.onFocus(event);
+}
+
+function onBlur(event) {
+  console.log("Lost focus!")
 }
 
 window.onkeydown = function (e) {
