@@ -4,7 +4,8 @@
   "description": "This is a block building game",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel-version": "babel --version"
   },
   "author": "Ulrik Karlsson",
   "license": "ISC",
@@ -12,5 +13,20 @@
     "express": "^4.17.1",
     "jquery": "^3.5.1",
     "nedb": "^1.8.0"
-  }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.2",
+    "@babel/node": "^7.16.8",
+    "@babel/plugin-proposal-decorators": "^7.17.2",
+    "babel-cli": "^6.26.0"
+  },
+  "plugins": [
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
+    "@babel/plugin-proposal-class-properties"
+  ]
 }

@@ -179,7 +179,7 @@ function onKeyUp(event) {
 
 function onFocus(event) {
   console.log("Got focus!")
-  toolManager.onFocus(event);
+  toolManager.onFocus(event)
 }
 
 function onBlur(event) {

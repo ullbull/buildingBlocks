@@ -18,26 +18,34 @@ function Builder() {
   // dataKeeper.addBlock(this.block);
   // dataKeeper.addBlock(this.blockToBuild);
   // linkKeeper.addLinkO(this.block, this.blockToBuild);
-  this.hideMe = false;
+  this.drawMe = true;
+  this.drawLastSelectedBlocks = false;
+  //TODO: Solve draw diffrent block goups
+  this.drawHoveredBlocks =
   this.hoveredBlock = null;
   this.hoveredBlocks = [null];
   this.clickedBlock = null;
   this.insideFrame = false;
-  this.drawIdleBlocks = false;
 
   this.draw = function (options = {}) {
     const alphaValue = this.clickedBlock && this.insideFrame ? 1 : 0.5;
 
-    if (this.drawIdleBlocks) {
+  
+    if (this.drawLastSelectedBlocks) {
+      this.drawMe = false;
+      this.drawHoveredBlocks = false;
       options.color = "rgba(100,30,60,0.5";
-      mouse.viewport.DrawBlocks(selector.getBlocksArray("idle"), options);
+      options.name = selector.keyLastSelected
+      const key = selector.keyLastSelected
+      mouse.viewport.DrawBlocks(selector.getBlocksArray(key), options);
     } 
-    else if (!this.hideMe) {
+    if (this.drawMe) {
       delete options.color;
       options.alphaValue = alphaValue;
+      options.name = "me";
       mouse.viewport.DrawBlocks(this.blocks, options);
     } 
-    else {
+    if (this.hoveredBlocks[0]) {
       options.color = "rgba(130,30,60,0.5";
       mouse.viewport.DrawBlocks(this.hoveredBlocks, options);
     }
@@ -61,8 +69,8 @@ function Builder() {
     }
 
     // select the blocks as idle blocks
-    selector.resetBlocks("idle");
-    selector.addBlocksArray(blocksCopy, "idle");
+    selector.resetBlocks(selector.keyLastSelected);
+    selector.addBlocksArray(blocksCopy, selector.keyLastSelected);
 
     // Send blocks to server
     if (method == "build") {
@@ -100,9 +108,9 @@ function Builder() {
       if (selector.selectedBlocks[this.hoveredBlock.id]) {
         // Hovering selected blocks
         this.hoveredBlocks = selector.getBlocksArray("selected");
-      } else if (selector.idleBlocks[this.hoveredBlock.id]) {
+      } else if (selector.lastSelectedBlocks[this.hoveredBlock.id]) {
         // Hovering idle blocks
-        this.hoveredBlocks = selector.getBlocksArray("idle");
+        this.hoveredBlocks = selector.getBlocksArray(selector.keyLastSelected);
       }
     }
   };
@@ -133,7 +141,7 @@ function Builder() {
           console.error(error);
         }
 
-        this.hideMe = false;
+        // this.drawMe = false;
       }
     }
   };
@@ -167,7 +175,7 @@ function Builder() {
         connection.deleteBlocks(blockHider.resetHiddenBlocks());
 
         // Reset idle blocks
-        selector.resetBlocks("idle");
+        selector.resetBlocks(selector.keyLastSelected);
 
         // Change blocks to initial block
         blockModule.setBlockPosition(this.initialBlock, mouse.wp.x, mouse.wp.y);
@@ -199,20 +207,21 @@ function Builder() {
       20
     );
 
-    this.hideMe =
+    const hideMe =
       this.hoveredBlock &&
       !blockHider.getHiddenBlockIDs().includes(this.hoveredBlock.id) &&
       !this.clickedBlock;
+    this.drawMe != hideMe
   };
 
   this.keyDown = function (event) {
     if (event.altKey) {
-      if (this.hoveredBlock) this.drawIdleBlocks = true;
+      if (this.hoveredBlock) this.drawLastSelectedBlocks = true;
     }
   };
 
   this.keyUp = function (event) {
-    this.drawIdleBlocks = false;
+    this.drawLastSelectedBlocks = false;
 
     if (event.key == "Delete") {
       // Delete hovered blocks if any blocks are hovered
@@ -384,7 +393,7 @@ function BoxSelection() {
   };
 
   this.mouseUp = function (event) {
-    // this.hideMe = true;
+    // this.drawMe = false;
     this.setWidth(0);
     this.setHeight(0);
   };
@@ -429,7 +438,7 @@ function BoxSelection() {
         selector.removeBlocksByGridpixels(
           this.gridpixels,
           mouse.viewport,
-          "idle"
+          selector.keyLastSelected
         );
       }
     }

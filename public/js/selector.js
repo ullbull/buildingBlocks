@@ -2,17 +2,19 @@ import * as helpers from './helpers.js';
 import * as dataKeeper from './dataKeeper.js';
 
 let selectedBlocks = {};
-let idleBlocks = {};
+let lastSelectedBlocks = {};
+const keySelected = "selected";
+const keyLastSelected = "last_selected";
 let blocksToModify = selectedBlocks;
 
 function setBlocksToModify(name) {
   switch (name) {
-    case 'selected':
+    case keySelected:
       blocksToModify = selectedBlocks;
       break;
 
-    case 'idle':
-      blocksToModify = idleBlocks;
+    case keyLastSelected:
+      blocksToModify = lastSelectedBlocks;
       break;
 
     default:
@@ -22,12 +24,12 @@ function setBlocksToModify(name) {
 
 }
 
-function getBlocks(blocksToGet = 'selected') {
+function getBlocks(blocksToGet = keySelected) {
   setBlocksToModify(blocksToGet);
   return blocksToModify;
 }
 
-function getBlocksArray(blocksToGet = 'selected') {
+function getBlocksArray(blocksToGet = keySelected) {
   setBlocksToModify(blocksToGet);
 
   const blocks = [];
@@ -40,7 +42,7 @@ function getBlocksArray(blocksToGet = 'selected') {
   return blocks;
 }
 
-// function getBlockIDsOBJ(blocksToGet = 'selected') {
+// function getBlockIDsOBJ(blocksToGet = keySelected) {
 //   setBlocksToModify(blocksToGet);
 
 //   const blockIDs = {};
@@ -53,7 +55,7 @@ function getBlocksArray(blocksToGet = 'selected') {
 //   return blockIDs;
 // }
 
-function getBlockIDs(blocksToGet = 'selected') {
+function getBlockIDs(blocksToGet = keySelected) {
   setBlocksToModify(blocksToGet);
 
   const blockIDs = [];
@@ -67,14 +69,14 @@ function getBlockIDs(blocksToGet = 'selected') {
 }
 
 // Reset blocks and return blockIDs
-function resetBlocks(blocksToReset = 'selected') {
+function resetBlocks(blocksToReset = keySelected) {
   setBlocksToModify(blocksToReset)
   const blockIDs = getBlockIDs(blocksToReset);
   for (const key in blocksToModify) delete blocksToModify[key];
   return blockIDs;
 }
 
-function addBlock(block, to = 'selected') {
+function addBlock(block, to = keySelected) {
   if (block) {
     if (block.hasOwnProperty('id')) {
       setBlocksToModify(to);
@@ -83,7 +85,7 @@ function addBlock(block, to = 'selected') {
   }
 }
 
-function addBlocks(blocks, to = 'selected') {
+function addBlocks(blocks, to = keySelected) {
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)) {
       const block = blocks[key];
@@ -92,13 +94,13 @@ function addBlocks(blocks, to = 'selected') {
   }
 }
 
-function addBlocksArray(blocksArray, to = 'selected') {
+function addBlocksArray(blocksArray, to = keySelected) {
   blocksArray.forEach(block => {
     addBlock(block, to);
   });
 }
 
-function removeBlock(block, from = 'selected') {
+function removeBlock(block, from = keySelected) {
   setBlocksToModify(from);
   if (typeof block != 'undefined') {
     if (block.hasOwnProperty('id')) {
@@ -107,7 +109,7 @@ function removeBlock(block, from = 'selected') {
   }
 }
 
-function removeBlocks(blocks, from = 'selected') {
+function removeBlocks(blocks, from = keySelected) {
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)) {
       const block = blocks[key];
@@ -116,7 +118,7 @@ function removeBlocks(blocks, from = 'selected') {
   }
 }
 
-function addBlocksByGridpixels(gridpixels, viewport, to = 'selected') {
+function addBlocksByGridpixels(gridpixels, viewport, to = keySelected) {
   const blocks = {};
   for (const key in gridpixels) {
     if (gridpixels.hasOwnProperty(key)) {
@@ -129,7 +131,7 @@ function addBlocksByGridpixels(gridpixels, viewport, to = 'selected') {
   addBlocks(blocks, to);
 }
 
-function removeBlocksByGridpixels(gridpixels, viewport, from = 'selected') {
+function removeBlocksByGridpixels(gridpixels, viewport, from = keySelected) {
   const blocks = {};
   for (const key in gridpixels) {
     if (gridpixels.hasOwnProperty(key)) {
@@ -143,7 +145,7 @@ function removeBlocksByGridpixels(gridpixels, viewport, from = 'selected') {
 }
 
 
-function isEmpty(blocksToCheck = 'selected') {
+function isEmpty(blocksToCheck = keySelected) {
   setBlocksToModify(blocksToCheck);
   for (const key in blocksToModify) {
     if (blocksToModify.hasOwnProperty(key)) {
@@ -167,7 +169,9 @@ function isEmpty(blocksToCheck = 'selected') {
 
 export {
   selectedBlocks,
-  idleBlocks,
+  lastSelectedBlocks,
+  keySelected,
+  keyLastSelected,
   getBlocks,
   getBlocksArray,
   getBlockIDs,
@@ -180,5 +184,4 @@ export {
   addBlocksByGridpixels,
   removeBlocksByGridpixels,
   isEmpty
-  // refresh
 }
