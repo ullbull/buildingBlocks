@@ -41,9 +41,9 @@
 
 
 
-@annotation
-class MyClass {}
+// @annotation
+// class MyClass {}
 
-function annotation(target) {
-  target.annotated = true;
-}
+// function annotation(target) {
+//   target.annotated = true;
+// }
