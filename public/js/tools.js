@@ -15,13 +15,11 @@ function Builder() {
   this.y = 0;
   this.initialBlock = blockModule.createBlock(0, 0, 4, 2);
   this.blocks = [this.initialBlock];
-  // dataKeeper.addBlock(this.block);
-  // dataKeeper.addBlock(this.blockToBuild);
-  // linkKeeper.addLinkO(this.block, this.blockToBuild);
+
   this.drawMe = true;
-  this.drawLastSelectedBlocks = false;
-  //TODO: Solve draw diffrent block goups
-  this.drawHoveredBlocks =
+  this.drawPreviousSelectedBlocks = false;
+  this.drawHoveredBlocks = false;
+
   this.hoveredBlock = null;
   this.hoveredBlocks = [null];
   this.clickedBlock = null;
@@ -30,25 +28,29 @@ function Builder() {
   this.draw = function (options = {}) {
     const alphaValue = this.clickedBlock && this.insideFrame ? 1 : 0.5;
 
+    this.drawHoveredBlocks = (
+      this.hoveredBlocks[0] &&
+      ! this.drawPreviousSelectedBlocks &&
+      ! this.clickedBlock
+      )
+    this.drawMe = (
+      ! this.drawHoveredBlocks
+    )
   
-    if (this.drawLastSelectedBlocks) {
-      this.drawMe = false;
-      this.drawHoveredBlocks = false;
+    if (this.drawPreviousSelectedBlocks) {
       options.color = "rgba(100,30,60,0.5";
-      options.name = selector.keyLastSelected
-      const key = selector.keyLastSelected
+      const key = selector.keyPreviousSelected
       mouse.viewport.DrawBlocks(selector.getBlocksArray(key), options);
-    } 
-    if (this.drawMe) {
-      delete options.color;
-      options.alphaValue = alphaValue;
-      options.name = "me";
-      mouse.viewport.DrawBlocks(this.blocks, options);
-    } 
-    if (this.hoveredBlocks[0]) {
+    }
+    if (this.drawHoveredBlocks) {
       options.color = "rgba(130,30,60,0.5";
       mouse.viewport.DrawBlocks(this.hoveredBlocks, options);
     }
+    if (this.drawMe) {
+      delete options.color;
+      options.alphaValue = alphaValue;
+      mouse.viewport.DrawBlocks(this.blocks, options);
+    } 
   };
 
   this.build = function (method = "build") {
@@ -69,8 +71,8 @@ function Builder() {
     }
 
     // select the blocks as idle blocks
-    selector.resetBlocks(selector.keyLastSelected);
-    selector.addBlocksArray(blocksCopy, selector.keyLastSelected);
+    selector.resetBlocks(selector.keyPreviousSelected);
+    selector.addBlocksArray(blocksCopy, selector.keyPreviousSelected);
 
     // Send blocks to server
     if (method == "build") {
@@ -110,7 +112,7 @@ function Builder() {
         this.hoveredBlocks = selector.getBlocksArray("selected");
       } else if (selector.lastSelectedBlocks[this.hoveredBlock.id]) {
         // Hovering idle blocks
-        this.hoveredBlocks = selector.getBlocksArray(selector.keyLastSelected);
+        this.hoveredBlocks = selector.getBlocksArray(selector.keyPreviousSelected);
       }
     }
   };
@@ -175,7 +177,7 @@ function Builder() {
         connection.deleteBlocks(blockHider.resetHiddenBlocks());
 
         // Reset idle blocks
-        selector.resetBlocks(selector.keyLastSelected);
+        selector.resetBlocks(selector.keyPreviousSelected);
 
         // Change blocks to initial block
         blockModule.setBlockPosition(this.initialBlock, mouse.wp.x, mouse.wp.y);
@@ -216,12 +218,12 @@ function Builder() {
 
   this.keyDown = function (event) {
     if (event.altKey) {
-      if (this.hoveredBlock) this.drawLastSelectedBlocks = true;
+      if (this.hoveredBlock) this.drawPreviousSelectedBlocks = true;
     }
   };
 
   this.keyUp = function (event) {
-    this.drawLastSelectedBlocks = false;
+    this.drawPreviousSelectedBlocks = false;
 
     if (event.key == "Delete") {
       // Delete hovered blocks if any blocks are hovered
@@ -438,7 +440,7 @@ function BoxSelection() {
         selector.removeBlocksByGridpixels(
           this.gridpixels,
           mouse.viewport,
-          selector.keyLastSelected
+          selector.keyPreviousSelected
         );
       }
     }

@@ -4,7 +4,7 @@ import * as dataKeeper from './dataKeeper.js';
 let selectedBlocks = {};
 let lastSelectedBlocks = {};
 const keySelected = "selected";
-const keyLastSelected = "last_selected";
+const keyPreviousSelected = "last_selected";
 let blocksToModify = selectedBlocks;
 
 function setBlocksToModify(name) {
@@ -13,7 +13,7 @@ function setBlocksToModify(name) {
       blocksToModify = selectedBlocks;
       break;
 
-    case keyLastSelected:
+    case keyPreviousSelected:
       blocksToModify = lastSelectedBlocks;
       break;
 
@@ -171,7 +171,7 @@ export {
   selectedBlocks,
   lastSelectedBlocks,
   keySelected,
-  keyLastSelected,
+  keyPreviousSelected,
   getBlocks,
   getBlocksArray,
   getBlockIDs,
