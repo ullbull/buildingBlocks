@@ -30,7 +30,7 @@ function subscribe(sectionNames, socket) {
   // Send sections to client
   socket.emit('sections', fileManager.getSections(sectionNames));
 
-  // Send to all users is the same section as this user.
+  // Send to all users in the same section as this user.
   // Do not send to itself.
   sectionNames.forEach(sectionName => {
     socket.broadcast.to(sectionName).emit('message',

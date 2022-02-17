@@ -143,6 +143,65 @@ function isObjectEmpty(object) {
   return true;
 }
 
+/**
+ * Comparing passed data and returns either lost or new data.
+ * @param {string[]} originalData 
+ * @param {string[]} modifiedData 
+ * @param {string} request "lost" or "new". Determine whether to return new data or lost data.
+ * @returns {string[]}
+ */
+function getDifferentData(originalData, modifiedData, request) {
+  let dataA;
+  let dataB;
+  if (request == "lost") {
+    dataA = originalData
+    dataB = modifiedData
+  } else if (request == "new") {
+    dataA = modifiedData
+    dataB = originalData
+  } else {
+    throw('request must be "lost" or "new".')
+  }
+
+  const differentData = [];
+  dataA.forEach((valueA) => {
+    const index = dataB.findIndex((valueB) => {
+      return valueA == valueB;
+    });
+    if (index == -1) {
+      differentData.push(valueA);
+    }
+  });
+  return differentData;
+}
+
+/**
+ * Test function for getDifferentData.
+ * @returns {boolean}
+ */
+function __testGetDifferentData() {
+  console.log("test");
+  const stored_names = [0,1,2,3];
+  const new_names = [2,3,4,5,6];
+  let lostData = getDifferentData(stored_names, new_names, "lost");
+  console.log("lostData", lostData);
+  let newData = getDifferentData(stored_names, new_names, "new");
+  console.log("newData", newData);
+
+  const successNewData = equals(newData, [4,5,6]);
+  const successLostData = equals(lostData, [0,1]);
+  const success = successNewData && successLostData
+  console.log("success:", success)
+  return success
+}
+
+const equals = (a, b) =>
+  a.length === b.length &&
+  a.every((v, i) => v === b[i]);
+
+// __testGetDifferentData()
+
+
 export {
   positionToKey,
   keyToPosition,
@@ -157,5 +216,6 @@ export {
   getYGrid,
   getGridPixel,
   insideFrame,
-  isObjectEmpty
+  isObjectEmpty,
+  getDifferentData
 };

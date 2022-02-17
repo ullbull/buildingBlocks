@@ -16,7 +16,10 @@ function getSectionName(x, y) {
   return helpers.positionToKey(getSectionValue(x), getSectionValue(y));
 }
 
-// Returns the section names of sections covered by passed area
+/**
+ * Returns the section names of sections covered by passed area
+ * @returns {string[]}
+ */
 function getSectionNames(x, y, width, height) {
   const sections = [];
   const sectionLeft = getSectionValue(x);

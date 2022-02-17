@@ -52,7 +52,7 @@ function deleteBadBlocks(blockData) {
     }
   }
 
-  const sectionNames = [];
+  let sectionNames = [];
   // Delete bad blocks
   if(blockIDsToDelete[0]) {
     console.log(`Deleting bad blocks: ${blockIDsToDelete}`);

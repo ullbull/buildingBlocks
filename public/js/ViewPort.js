@@ -15,29 +15,25 @@ export class Viewport {
     this.height = height;
     this.pixelSize = pixelSize;
     this.layers = { background: context };
-    this.storedSectionNames = [];
-    // this.anchorPoint = { x: 0, y: 0 };
-    // this.pixels = {};
+    this.storedSectionNames = this.GetSectionNames();
   }
 
-  // Returns new section names since last check or
-  // empty array if no new names.
-  GetNewSectionNames() {
-    const sectionNames = this.GetSectionNames();
-    const newSectionNames = [];
-    sectionNames.forEach((sectionName) => {
-      const index = this.storedSectionNames.findIndex((storedSectionName) => {
-        return storedSectionName == sectionName;
-      });
-      if (index == -1) {
-        newSectionNames.push(sectionName);
-      }
-    });
+  /**
+   * Returns new and lost section names since last check.
+   * @returns {{newSectionNames, lostSectionNames}}
+   */
+  GetSectionDiff() {
+    const sectionNames = this.GetSectionNames()
+    const newSectionNames = helpers.getDifferentData(this.storedSectionNames, sectionNames, "new");
+    const lostSectionNames = helpers.getDifferentData(this.storedSectionNames, sectionNames, "lost");
     this.storedSectionNames = sectionNames;
-    return newSectionNames;
+    return {newSectionNames, lostSectionNames};
   }
 
-  // Returns the section names of sections covered by this viewport
+  /**
+   * Returns the section names this viewport is covering
+   * @returns {string[]}
+   */
   GetSectionNames() {
     return sectionTools.getSectionNames(
       this.x,
@@ -49,9 +45,12 @@ export class Viewport {
 
   // Subscribes to sections only if viewport is covering new sections
   AutoSubscribe() {
-    const newSectionNames = this.GetNewSectionNames();
-    if (newSectionNames[0]) {
-      console.log("new sections!", newSectionNames[0]);
+    const names = this.GetSectionDiff();
+
+    if (names.newSectionNames[0]) {
+      connection.sendData("subscribe", this.storedSectionNames);
+    }
+    if (names.lostSectionNames[0]) {
       connection.sendData("subscribe", this.storedSectionNames);
     }
   }
