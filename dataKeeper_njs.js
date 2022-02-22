@@ -104,29 +104,59 @@ function _updateBlockData(newBlockData) {
 
 /**
  * Adds or overwrites a section in BlockData and updates SectionData.
- * @param {BlockData} section
+ * @param {BlockData} blockData
  * @param {string} sectionName
  */
-function setSection(section, sectionName) {
-  _updateBlockData(section);
-  _updateSectionData(section, sectionName);
-}
-
-function getBlockData() {
-  return BlockData;
+function addSection(blockData, sectionName) {
+  _updateBlockData(blockData);
+  _updateSectionData(blockData, sectionName);
 }
 
 /**
  * Adds or overwrites sections in BlockData and updates SectionData.
  * @param {{"0,0": BlockData}} sections
  */
-function setSections(sections) {
+function addSections(sections) {
   for (const sectionName in sections) {
     if (sections.hasOwnProperty(sectionName)) {
       const section = sections[sectionName];
-      setSection(section, sectionName);
+      addSection(section, sectionName);
     }
   }
+}
+
+/**
+ * Returns one section from stored data or empty section if the section doesn't exist.
+ * @param {string} sectionName
+ * @returns {BlockData}
+ * @private
+ */
+function getBlockData(sectionName = null) {
+  if (sectionName == null) {
+    return helpers.copyObject(BlockData);
+  }
+
+  const section = helpers.copyObject(EmptySection);
+  const blocks = getBlocks(sectionName);
+  
+  // Add blocks and gridpixels to section
+  addBlocksToData(blocks, section);
+  
+  return section;
+}
+
+/**
+ * Returns sections of stored data or empty section if the sections doesn't exist.
+ * @param {string[]} sectionNames 
+ * @returns {BlockData}
+ */
+function getBlockDataSections(sectionNames) {
+  const blockData = helpers.copyObject(EmptySection)
+  sectionNames.forEach(sectionName => {
+    const section = getBlockData(sectionName);
+    mergeBlockData(blockData, section);
+  });
+  return blockData;
 }
 
 /**
@@ -136,30 +166,6 @@ function setSections(sections) {
  */
 function getSectionName(blockID) {
   return SectionData[blockID];
-}
-
-/**
- * Returns the section or empty section if the section doesn't exist.
- * @param {string} sectionName
- * @returns {BlockData}
- */
-function getSection(sectionName) {
-  const section = helpers.copyObject(EmptySection);
-  blocks = getBlocks(sectionName);
-
-  // Add blocks and gridpixels to section
-  addBlocksToData(blocks, section)
-
-  return section;
-}
-
-function getSections(sectionNames) {
-  const blockData = helpers.copyObject(EmptySection)
-  sectionNames.forEach(sectionName => {
-    const section = getSection(sectionName)
-    mergeBlockData(blockData, section)
-  });
-  return blockData;
 }
 
 /**
@@ -480,7 +486,7 @@ function deleteBlock(blockID) {
  * Deletes the blocks from stored data
  * and returns an array of section names
  * where any block was deleted. 
- * @param {string} blockIDs
+ * @param {string[]} blockIDs
  * @returns {string[]} sectionName
  */
 function deleteBlocks(blockIDs) {
@@ -490,6 +496,19 @@ function deleteBlocks(blockIDs) {
     delete SectionData[blockID];
   });
   return sectionNames;
+}
+
+/**
+ * Deletes the blocks from stored data
+ * and returns an array of section names
+ * where any block was deleted.
+ * @param {string[]} sectionNames 
+ * @returns {string[]}
+ */
+ function flushData(sectionNames) {
+  const section = getBlockDataSections(sectionNames);
+  const blockIDs = Object.keys(section.blocks);
+  return deleteBlocks(blockIDs);
 }
 
 /**
@@ -542,15 +561,15 @@ function deleteGridpixels(gridpixelKeys){
 }
 
 module.exports = {
+  BlockData,
   EmptySection,
   mergeBlockData,
-  setSection,
+  addSection,
   getBlockData,
-  setSections,
+  getBlockDataSections,
+  addSections,
   getSectionName,
   getBlocks,
-  getSection,
-  getSections,
   getAllSectionNames,
   getGridpixels,
   getAllGridpixels,
@@ -567,6 +586,7 @@ module.exports = {
   deleteBlocksFromData,
   deleteBlock,
   deleteBlocks,
+  flushData,
   deleteGridpixelFromData,
   deleteGridpixel,
   deleteGridpixels

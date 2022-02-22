@@ -32,7 +32,11 @@ function handleIncomingData() {
 
   socket.on('sections', sections => {
     // Overwrites sections
-    dataKeeper.setSections(sections);
+    //TODO: remove console.log
+    console.log("Got sections", sections)
+    dataKeeper.addSections(sections);
+    console.log(`Added sections: ${Object.keys(sections)}. I have this in memory now:`);
+    console.log("bd", dataKeeper.getBlockData());
     layers.background.refresh();
   })
 

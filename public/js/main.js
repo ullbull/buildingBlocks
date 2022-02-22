@@ -27,9 +27,9 @@ setTimeout(function () {
 
 // const testBlock = blockModule.createBlock(5,5,2,2);
 
-// console.log('section 0,0:', dataKeeper.getSection('0,0'));
+// console.log('section 0,0:', dataKeeper.getBlockData('0,0'));
 // dataKeeper.addBlock(testBlock);
-// console.log('section 0,0:', dataKeeper.getSection('0,0'));
+// console.log('section 0,0:', dataKeeper.getBlockData('0,0'));
 
 
 connection.connect();

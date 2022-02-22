@@ -37,9 +37,13 @@ io.on('connection', socket => {
     ctc.subscribe(sectionNames, socket);
   });
 
-  socket.on('addSubscription', sectionNames => {
-    users.addSubscriptions(socket.id, sectionNames)
+  socket.on('unsubscribe', sectionNames => {
+    ctc.unsubscribe(sectionNames, socket)
   });
+
+  // socket.on('addSubscription', sectionNames => {
+  //   users.addSubscriptions(socket.id, sectionNames)
+  // });
 
   socket.on('message', message => {
     console.log(`Incoming message from ${socket.id}: ${message}`);

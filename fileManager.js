@@ -13,9 +13,13 @@ function getFilePath(path, filename, separator = '', suffix = '') {
   return path + filename + separator + suffix + fileExtension
 }
 
-// Loads the file content into corresponding section.
-// Loads and empty section if file doesn't exist.
-// Returns loaded section.
+/**
+ * Loads the file content and add it to stored data.
+ * Loads and empty section if file doesn't exist.
+ * Returns loaded data. 
+ * @param {[string]} filename ex.: "0,0"
+ * @returns {dataKeeper.BlockData}
+ */
 function loadFile(filename = '0,0') {
   const filePath = getFilePath(pathSectionData, filename);
   let rawData = null;
@@ -46,14 +50,14 @@ function loadFile(filename = '0,0') {
   }
 
   // Load data into section
-  dataKeeper.setSection(blockData, filename);
+  dataKeeper.addSection(blockData, filename);
 
   return blockData;
 }
 
 // Saves a file. Overwrites if file exist
 function saveFile(filename) {
-  const dataString = JSON.stringify(dataKeeper.getSection(filename));
+  const dataString = JSON.stringify(dataKeeper.getBlockData(filename));
   // const dataString = JSON.stringify(blockData, null, 2);
 
   fileVersion = (++fileVersion > 2) ? 1 : fileVersion;
@@ -90,28 +94,36 @@ function saveAllSectionsToFiles() {
   saveSectionsToFiles(dataKeeper.getAllSectionNames())
 }
 
-// Returns requested section.
-// Loads section if not loaded.
-// Returns empty section if section doesn't exist
-function getSection(sectionName) {
-  const section = dataKeeper.getSection(sectionName);
-  if (section.blocks[0]) {
+/**
+ * Returns requested section.
+ * Loads section if not loaded.
+ * Returns empty section if section doesn't exist
+ * @param {string} sectionName
+ * @returns {dataKeeper.BlockData}
+ */
+function getBlockData(sectionName) {
+  const blockData = dataKeeper.getBlockData(sectionName);
+  if (blockData.blocks[0]) {
     // Section is already loaded. Return the section
-    return section;
+    return blockData;
   } else {
     // Section is not loaded. Load the section and return it.
     return loadFile(sectionName);
   }
 }
 
-// Returns requested sections.
-// Loads section if not loaded.
-// Returns empty section if section doesn't exist
+/**
+ * Returns requested sections in separate keys.
+ * Loads section if not loaded.
+ * Returns empty section if section doesn't exist
+ * @param {string[]} sectionNames 
+ * @returns {{"0,0": dataKeeper.BlockData}}
+ */
 function getSections(sectionNames) {
   const sections = {};
 
   sectionNames.forEach(sectionName => {
-    sections[sectionName] = getSection(sectionName);
+    sections[sectionName] = getBlockData(sectionName);
   });
 
   return sections;
@@ -122,6 +134,6 @@ module.exports = {
   saveFile,
   saveSectionsToFiles,
   saveAllSectionsToFiles,
-  getSection,
+  getSection: getBlockData,
   getSections
 }
