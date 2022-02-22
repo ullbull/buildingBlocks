@@ -45,7 +45,6 @@ export class Viewport {
 
   // Subscribes to sections only if viewport is covering new sections
   AutoSubscribe() {
-    // TODO: flush data that is not covered by viewport
     const names = this.GetSectionDiff();
 
     if (names.newSectionNames[0]) {
@@ -54,8 +53,6 @@ export class Viewport {
     if (names.lostSectionNames[0]) {
       connection.sendData("unsubscribe", names.lostSectionNames);
       dataKeeper.flushData(names.lostSectionNames);
-      console.log(`Flushed sections: ${names.lostSectionNames}. I have this in memory now:`);
-      console.log("bd", dataKeeper.getBlockData());
     }
     if (
       names.newSectionNames[0] ||

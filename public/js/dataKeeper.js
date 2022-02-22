@@ -61,8 +61,16 @@ const EmptySection = {
   blocks: {},
   gridpixels: {},
 };
-const SectionData = {};
-const BlockData = { blocks: {}, gridpixels: {} };
+let SectionData = {};
+let BlockData = { blocks: {}, gridpixels: {} };
+
+/**
+ * Erase all stored data.
+ */
+function _init() {
+  SectionData = {};
+  BlockData = { blocks: {}, gridpixels: {} };
+}
 
 /**
  * Merges newBlockData into blockData
@@ -123,6 +131,18 @@ function addSections(sections) {
       addSection(section, sectionName);
     }
   }
+}
+
+/**
+ * Erase all stored data and set new data
+ * @param {BlockData} blockData 
+ */
+function setNewBlockData(blockData) {
+  // Erase all stored data
+  _init();
+
+  // Add new data
+  addSections(blockData);
 }
 
 /**
@@ -568,6 +588,7 @@ export {
   getBlockData,
   getBlockDataSections,
   addSections,
+  setNewBlockData,
   getSectionName,
   getBlocks,
   getAllSectionNames,

@@ -30,13 +30,18 @@ function handleIncomingData() {
     console.log(message);
   })
 
+  socket.on('setNewBlockData', sections => {
+    // Overwrites all stored data.
+    console.log("Got new block data", sections)
+    dataKeeper.setNewBlockData(sections);
+    console.log("I have this in memory now:", dataKeeper.getBlockData());
+    layers.background.refresh();
+  })
+
   socket.on('sections', sections => {
-    // Overwrites sections
-    //TODO: remove console.log
     console.log("Got sections", sections)
     dataKeeper.addSections(sections);
-    console.log(`Added sections: ${Object.keys(sections)}. I have this in memory now:`);
-    console.log("bd", dataKeeper.getBlockData());
+    console.log(`Added sections: ${Object.keys(sections)}. I have this in memory now:`, dataKeeper.getBlockData());
     layers.background.refresh();
   })
 

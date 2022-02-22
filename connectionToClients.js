@@ -56,13 +56,10 @@ function unsubscribe(sectionNames, socket) {
       .emit("message", `${user.id} has left room ${sectionName}`);
     });
 
-    //TODO: Let the client know which sections to erase from its memory.
-    // Maybe this is not needed since the client should already know this.
-
-    //TODO: im here
-    // // Send left sections to client
-    // socket.emit("left_sections", fileManager.getSections(sectionNames));
-
+    // Send the sections this client is currently subscribing to
+    // and let the client set this data as its current data
+    socket.emit("setNewBlockData", fileManager.getSections(user.subscriptions));
+    
     // // Send users and room info
     // io.to(user.room).emit('roomUsers', {
     //   room: user.room,
