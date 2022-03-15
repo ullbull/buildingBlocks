@@ -35,6 +35,13 @@ function canvasYToWorld(y, viewPort) {
   return Math.floor((y / viewPort.pixelSize) + viewPort.y);
 }
 
+/**
+ * World position is 0,0 at the center and expands to infinity.
+ * @param {int} x 
+ * @param {int} y 
+ * @param {ViewPort} viewPort 
+ * @returns World position.
+ */
 function canvasToWorldPosition(x, y, viewPort) {
   return {
     'x': canvasXToWorld(x, viewPort),

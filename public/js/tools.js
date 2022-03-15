@@ -13,6 +13,7 @@ function Builder() {
   this.id = helpers.generateID();
   this.x = 0;
   this.y = 0;
+  this.eventPosition = { x: 0, y: 0 }; // position from last event
   this.initialBlock = blockModule.createBlock(0, 0, 4, 2);
   this.blocks = [this.initialBlock];
 
@@ -23,35 +24,112 @@ function Builder() {
   this.hoveredBlock = null;
   this.hoveredBlocks = [null];
   this.clickedBlock = null;
-  this.insideFrame = false;
+
+  this.setEventPosition = function (event) {
+    this.eventPosition.x = event.x;
+    this.eventPosition.y = event.y;
+  };
+
+  this.isInsideFrame = function () {
+    return helpers.isInsideFrame(
+      this.eventPosition.x,
+      this.eventPosition.y,
+      window.innerWidth,
+      window.innerHeight,
+      20
+    );
+  };
+
+  this.isBlocksInsideFrame = function () {
+    const gridpixels = blockModule.getGridpixelsFromBlocks(this.blocks);
+    const viewport = mouse.getViewport();
+    const width = viewport.GetWorldWidth();
+    const height = viewport.GetWorldHeight();
+    
+    for (const key in gridpixels) {
+      if (Object.hasOwnProperty.call(gridpixels, key)) {
+        const gridpixel = gridpixels[key];
+        if (
+          // Note: Must add viewport position to the frame
+          // Must subtract 1 grid square from width and height
+          // because gridpixels position is in upper left corner.
+          helpers.isInsideFrame(
+            gridpixel.x - viewport.x,
+            gridpixel.y - viewport.y,
+            width - 1,
+            height - 1,
+          ) == false
+        ) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
 
   this.draw = function (options = {}) {
-    const alphaValue = this.clickedBlock && this.insideFrame ? 1 : 0.5;
+    //TODO: figure out how to draw the blocks at different states  
+    const orig_options = helpers.copyObject(options)
 
-    this.drawHoveredBlocks = (
+    if (this.drawMe) {      
+      if (this.clickedBlock) {
+        if (!this.isInsideFrame()) {
+          // Draw nothing
+          this.drawPreviousSelectedBlocks = false;
+        }
+        else if (!this.isBlocksInsideFrame()) {
+          // Draw blocks
+          options.alphaValue = 0.5;
+          this._drawMe(options);
+
+          // Draw previous blocks
+          options.alphaValue = 1;
+          this._drawPreviousSelectedBlocks(options);
+          
+          this.drawPreviousSelectedBlocks = false;
+        } else {
+          this._drawMe(options);
+        }
+      } else {
+        this._drawMe(options);
+      }
+    }
+
+    this.drawHoveredBlocks =
       this.hoveredBlocks[0] &&
-      ! this.drawPreviousSelectedBlocks &&
-      ! this.clickedBlock
-      )
-    this.drawMe = (
-      ! this.drawHoveredBlocks
-    )
-  
+      !this.drawPreviousSelectedBlocks &&
+      !this.clickedBlock;
+    this.drawMe = !this.drawHoveredBlocks;
+
     if (this.drawPreviousSelectedBlocks) {
-      options.color = "rgba(100,30,60,0.5";
-      const key = selector.keyPreviousSelected
-      mouse.viewport.DrawBlocks(selector.getBlocksArray(key), options);
+      this._drawPreviousSelectedBlocks(options);
     }
     if (this.drawHoveredBlocks) {
-      options.color = "rgba(130,30,60,0.5";
-      mouse.viewport.DrawBlocks(this.hoveredBlocks, options);
+      this._drawHoveredBlocks(options);
     }
-    if (this.drawMe) {
-      delete options.color;
-      options.alphaValue = alphaValue;
-      mouse.viewport.DrawBlocks(this.blocks, options);
-    } 
   };
+
+  this._drawMe = function (options) {
+    options.name = "me"
+    mouse.viewport.DrawBlocks(this.blocks, options);
+  }
+
+  this._drawHoveredBlocks = function (options) {
+    options.name = "hovered"
+    options.color = "rgba(130,30,60,0.5)";
+    mouse.viewport.DrawBlocks(this.hoveredBlocks, options);
+  }
+  
+  this._drawSelectedBlocks = function (options) {
+  }
+
+  this._drawPreviousSelectedBlocks = function (options) {
+    options.name = "prev.sel."
+    options.color = "rgba(100,30,60,0.5)";
+    mouse.viewport.DrawBlocks(selector.getBlocksArray(
+      selector.keyPreviousSelected), options);
+  }
+  
 
   this.build = function (method = "build") {
     // 'build' adds a block with new id
@@ -112,7 +190,9 @@ function Builder() {
         this.hoveredBlocks = selector.getBlocksArray("selected");
       } else if (selector.lastSelectedBlocks[this.hoveredBlock.id]) {
         // Hovering idle blocks
-        this.hoveredBlocks = selector.getBlocksArray(selector.keyPreviousSelected);
+        this.hoveredBlocks = selector.getBlocksArray(
+          selector.keyPreviousSelected
+        );
       }
     }
   };
@@ -149,19 +229,15 @@ function Builder() {
   };
 
   this.mouseUp = function (event) {
+    // Don't know if this is necessary
+    this.setEventPosition(event);
+    this.setPosition(mouse.wp.x, mouse.wp.y);
+
     if (event.button == 0) {
       // Left button up
       layers.background.refresh();
 
-      this.insideFrame = helpers.insideFrame(
-        event.x,
-        event.y,
-        window.innerWidth,
-        window.innerHeight,
-        20
-      );
-
-      if (this.insideFrame) {
+      if (this.isInsideFrame()) {
         // Determine build method
         let method = "build";
         if (this.clickedBlock) {
@@ -189,31 +265,21 @@ function Builder() {
   };
 
   this.mouseMove = function (event) {
-    // Should be able to use mouse.wp instead
-    const worldPosition = position.canvasToWorldPosition(
-      event.x,
-      event.y,
-      mouse.viewport
-    );
-
     // Set position
+    this.setEventPosition(event);
     this.setPosition(mouse.wp.x, mouse.wp.y);
 
-    this.refreshHoveredBlocks();
+    if (!this.isBlocksInsideFrame()) {
+      console.log("Outside");
+    }
 
-    this.insideFrame = helpers.insideFrame(
-      event.x,
-      event.y,
-      window.innerWidth,
-      window.innerHeight,
-      20
-    );
+    this.refreshHoveredBlocks();
 
     const hideMe =
       this.hoveredBlock &&
       !blockHider.getHiddenBlockIDs().includes(this.hoveredBlock.id) &&
       !this.clickedBlock;
-    this.drawMe != hideMe
+    this.drawMe != hideMe;
   };
 
   this.keyDown = function (event) {

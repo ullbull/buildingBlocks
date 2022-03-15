@@ -68,12 +68,9 @@ function mouseMove(event) {
 
   wp = position.canvasToWorldPosition(event.x, event.y, viewport);
 
-  // hoveredBlock = helpers.getBlockByPosition(
-  //   wp.x, wp.y, viewport
-  // );
   hoveredBlock = dataKeeper.getBlockAtPosition({ x: wp.x, y: wp.y });
 
-  insideFrame = helpers.insideFrame(
+  insideFrame = helpers.isInsideFrame(
     event.x,
     event.y,
     window.innerWidth,

@@ -177,8 +177,8 @@ function getGridPixelKeys(block) {
 }
 
 function blockPixelToGridKey(block, key) {
-  const pixel = getGridPixel(block, key);
-  return helpers.positionToKey(pixel.x, pixel.y);
+  const gridPixel = getGridPixel(block, key);
+  return helpers.positionToKey(gridPixel.x, gridPixel.y);
 }
 
 
@@ -188,6 +188,38 @@ function getPositionInBlock(block, x, y) {
     x: x - block.x + block.anchorPoint.x,
     y: y - block.y + block.anchorPoint.y
   };
+}
+
+/**
+ * Get all gridPixels from a block
+ * @param {object} block 
+ * @returns {[{x, y}]}
+ */
+function getGridpixelsFromBlock(block) {
+  const gridPixels = [];
+  for (const key in block.pixels) {
+    if (Object.hasOwnProperty.call(block.pixels, key)) {
+      const gridPixel = getGridPixel(block, key);
+      gridPixels.push(gridPixel)
+    }
+  }
+  return gridPixels;
+}
+
+/**
+ * Get all gridPixels from an array of blocks
+ * @param {object or array of blocks} blocks 
+ * @returns {[{x, y}]}
+ */
+function getGridpixelsFromBlocks(blocks) {
+  let gridPixels = []
+  for (const key in blocks) {
+    if (Object.hasOwnProperty.call(blocks, key)) {
+      const block = blocks[key];
+      gridPixels = gridPixels.concat(getGridpixelsFromBlock(block))
+    }
+  }
+  return gridPixels;
 }
 
 module.exports = {
@@ -201,5 +233,7 @@ module.exports = {
   getGridPixel,
   getGridPixelKeys,
   blockPixelToGridKey,
-  getPositionInBlock
+  getPositionInBlock,
+  getGridpixelsFromBlock,
+  getGridpixelsFromBlocks
 };

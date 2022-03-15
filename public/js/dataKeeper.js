@@ -288,7 +288,8 @@ function addGridPixelToData(key, blockID, blockData) {
     const id = blockData.gridpixels[key];
     const block = getBlockFromData(id, blockData);
     if (!block) {
-      console.log("Something is wrong!")
+      console.log("Something is wrong!");
+      return;
     }
     const position = blockModule.getPositionInBlock(block, x, y);
     const pixelKey = helpers.positionToKey(position.x, position.y);

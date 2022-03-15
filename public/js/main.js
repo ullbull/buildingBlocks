@@ -12,8 +12,6 @@ import * as workerManager from './workerManager.js';
 import * as dataKeeper from './dataKeeper.js';
 import * as blockHider from './blockHider.js';
 
-
-
 // const canvas = document.querySelector('canvas');
 
 const viewport = new Viewport(innerWidth, innerHeight, 20, layers.background.context);

@@ -120,6 +120,15 @@ export class Viewport {
     context.stroke();
   }
 
+  /**
+   * 
+   * @param {*} x 
+   * @param {*} y 
+   * @param {*} width 
+   * @param {*} height 
+   * @param {} color 
+   * @param {{context, alphaValue:float, stroke}} options 
+   */
   DrawRectangle(x, y, width, height, color, options = {}) {
     let context = this.layers.background;
     if (options.hasOwnProperty("context")) {
@@ -144,6 +153,11 @@ export class Viewport {
     }
   }
 
+  /**
+   * 
+   * @param {*} pixel 
+   * @param {{size, context, alphaValue:float, stroke}} options 
+   */
   DrawPixel(pixel, options = {}) {
     let context = this.layers.background;
     let size = 1;
@@ -245,6 +259,12 @@ export class Viewport {
     context.stroke();
   }
 
+  /**
+   * 
+   * @param {*} block 
+   * @param {{color:string, hiddenBlockIDs:string[], offsetPosition, name:string, size, context, alphaValue:float, stroke}} options 
+   * @returns 
+   */
   DrawBlock(block, options = {}) {
     if (!block) {
       console.error("block is not defined");
@@ -262,7 +282,8 @@ export class Viewport {
 
           if (options.hasOwnProperty("hiddenBlockIDs")) {
             if (options.hiddenBlockIDs.includes(block.id)) {
-              pixel.color = "rgba(100,90,100,0.2";
+              options.alphaValue = 0;
+              options.name = "hidden";
             }
           }
 
@@ -284,8 +305,8 @@ export class Viewport {
       if (options.hasOwnProperty("name")) {
         this.DrawText(
           options.name,
-          block.x,
-          block.y - 0.5,
+          block.x + 0.2,
+          block.y + 0.9,
           18,
           "black",
           "Arial",
@@ -303,25 +324,13 @@ export class Viewport {
 
   /**
    * @param {{}} blocks
+   * @param {{color:string, hiddenBlockIDs:string[], offsetPosition, name:string, size, context, alphaValue:float, stroke}} options 
    */
   DrawBlocks(blocks, options = {}) {
-    // let hiddenBlockIDs = [];
-    // if (options.hasOwnProperty('hiddenBlockIDs')) {
-    //   hiddenBlockIDs = options.hiddenBlockIDs;
-    // }
-
     for (const key in blocks) {
       if (blocks.hasOwnProperty(key)) {
         const block = blocks[key];
         this.DrawBlock(block, options);
-        // if (!hiddenBlockIDs.includes(key)) {
-        //   this.DrawBlock(block, options);
-        // } else {
-        //   this.DrawBlock(block, {
-        //     color: 'rgba(100,90,100,0.2',
-        //     context: options.context
-        //   });
-        // }
       }
     }
   }
@@ -348,16 +357,13 @@ export class Viewport {
   //   }
   // }
 
+  /**
+   * @param {{color:string, hiddenBlockIDs:string[], offsetPosition, name:string, size, context, alphaValue:float, stroke}} options 
+   */
   DrawAllBlocks(options) {
     const blockData = dataKeeper.getBlockData();
     const blocks = blockData.blocks;
     this.DrawBlocks(blocks, options);
-    // for (const key in blocks) {
-    //   if (blocks.hasOwnProperty(key)) {
-    //     const section = blockData[key];
-    //     this.DrawBlocks(section.blocks, options);
-    //   }
-    // }
   }
 
   DrawGridpixel(gridPoint, options = {}) {

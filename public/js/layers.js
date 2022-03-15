@@ -56,6 +56,7 @@ const foreground = {
 
       // Draw selected blocks
       viewport.DrawBlocks(selector.getBlocks(), {
+        name: "selected",
         color: highlightColor,
         context: this.context
       });

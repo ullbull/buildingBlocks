@@ -127,7 +127,16 @@ function getGridPixel(x, y, pixelSize) {
   return { x: this.GetXWorldPosition(x, pixelSize), y: this.getYGrid(y, pixelSize) };
 }
 
-function insideFrame(x, y, width, height, margin = 0) {
+/**
+ * Returns true if passed position is within passed square
+ * @param {int} x 
+ * @param {int} y 
+ * @param {int} width 
+ * @param {int} height
+ * @param {int} margin Positive value makes the square smaller.
+ * @returns {boolean}
+ */
+function isInsideFrame(x, y, width, height, margin = 0) {
   return (
     x <= width - margin && y <= height - margin &&
     x >= margin && y >= margin
@@ -215,7 +224,7 @@ module.exports = {
   getXGrid,
   getYGrid,
   getGridPixel,
-  insideFrame,
+  isInsideFrame,
   isObjectEmpty,
   getDifferentData
 };
