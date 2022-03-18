@@ -13,6 +13,14 @@ function Builder() {
   this.id = helpers.generateID();
   this.x = 0;
   this.y = 0;
+
+  this.lastX = this.x;
+  this.lastY = this.y;
+
+  // Last moved distance x, y
+  this.xd = 0;
+  this.yd = 0;
+
   this.eventPosition = { x: 0, y: 0 }; // position from last event
   this.initialBlock = blockModule.createBlock(0, 0, 4, 2);
   this.blocks = [this.initialBlock];
@@ -162,17 +170,38 @@ function Builder() {
     blockHider.resetHiddenBlocks();
   };
 
-  this.setPosition = function (x, y) {
+  this._setPosition = function (x, y) {
     // Get move distance
-    const xd = x - this.x;
-    const yd = y - this.y;
-
+    this.xd = x - this.x;
+    this.yd = y - this.y;
+   
     this.x = x;
     this.y = y;
-
+    
+    // Set blocks position
     this.blocks.forEach((block) => {
-      blockModule.setBlockPosition(block, block.x + xd, block.y + yd);
-    });
+      blockModule.setBlockPosition(block, block.x + this.xd, block.y + this.yd);
+    });  
+  };  
+  
+  this.setPosition = function (x, y) {
+    const lastX = this.x;
+    const lastY = this.y;
+    this._setPosition(x,y);
+
+    if(!this.isBlocksInsideFrame()) {
+      // Reset Position
+      this._setPosition(lastX, lastY);
+      // Try x position
+      this._setPosition(lastX, y);
+      
+      if(!this.isBlocksInsideFrame()) {
+        // Reset Position
+        this._setPosition(lastX, lastY);
+        // Try y position
+        this._setPosition(this.x, lastY);
+      }
+    }
   };
 
   this.refreshHoveredBlocks = function () {
@@ -268,11 +297,7 @@ function Builder() {
     // Set position
     this.setEventPosition(event);
     this.setPosition(mouse.wp.x, mouse.wp.y);
-
-    if (!this.isBlocksInsideFrame()) {
-      console.log("Outside");
-    }
-
+    
     this.refreshHoveredBlocks();
 
     const hideMe =
