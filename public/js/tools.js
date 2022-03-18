@@ -76,47 +76,37 @@ function Builder() {
   };
 
   this.draw = function (options = {}) {
-    //TODO: figure out how to draw the blocks at different states  
-    const orig_options = helpers.copyObject(options)
-
-    if (this.drawMe) {      
-      if (this.clickedBlock) {
-        if (!this.isInsideFrame()) {
-          // Draw nothing
-          this.drawPreviousSelectedBlocks = false;
-        }
-        else if (!this.isBlocksInsideFrame()) {
-          // Draw blocks
-          options.alphaValue = 0.5;
-          this._drawMe(options);
-
-          // Draw previous blocks
-          options.alphaValue = 1;
-          this._drawPreviousSelectedBlocks(options);
-          
-          this.drawPreviousSelectedBlocks = false;
-        } else {
-          this._drawMe(options);
-        }
-      } else {
-        this._drawMe(options);
-      }
-    }
+    const color = options.color;
+    const alphaValue = options.alphaValue;
 
     this.drawHoveredBlocks =
       this.hoveredBlocks[0] &&
       !this.drawPreviousSelectedBlocks &&
       !this.clickedBlock;
-    this.drawMe = !this.drawHoveredBlocks;
 
+    this.drawMe = !this.drawHoveredBlocks;
+    
     if (this.drawPreviousSelectedBlocks) {
       this._drawPreviousSelectedBlocks(options);
     }
+
     if (this.drawHoveredBlocks) {
       this._drawHoveredBlocks(options);
     }
-  };
 
+    if (this.drawMe) {    
+      delete options.color;
+      delete options.alphaValue;
+
+      if (this.clickedBlock) {
+        if (!this.isInsideFrame()) {
+          // Indicate that blocks will be deleted
+          options.alphaValue = 0.5;
+        }
+      }
+      this._drawMe(options);
+    }
+  };
   this._drawMe = function (options) {
     options.name = "me"
     mouse.viewport.DrawBlocks(this.blocks, options);
@@ -145,7 +135,7 @@ function Builder() {
     // 'move' deletes the block first,
     // then adds a block with same id
 
-    // Should restructure this function
+    // TODO: restructure this function
 
     const blocksCopy = helpers.copyObject(this.blocks);
 
@@ -285,7 +275,7 @@ function Builder() {
         selector.resetBlocks(selector.keyPreviousSelected);
 
         // Change blocks to initial block
-        blockModule.setBlockPosition(this.initialBlock, mouse.wp.x, mouse.wp.y);
+        blockModule.setBlockPosition(this.initialBlock, this.x, this.y);
         this.blocks = [this.initialBlock];
       }
 
