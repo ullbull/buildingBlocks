@@ -156,6 +156,8 @@ function Builder() {
     } else if (method == "move") {
       connection.sendData("moveBlocks", blocksCopy);
     }
+
+    //TODO: Fix reset hidden blocks
     // Reset hidden blocks
     blockHider.resetHiddenBlocks();
   };
@@ -455,7 +457,7 @@ function BoxSelection() {
     );
 
     if (appStatus.debug) {
-      mouse.viewport.Drawgridpixels(this.gridpixels, { color: "red" });
+      mouse.viewport.DrawGridpixels(this.gridpixels, { color: "red" });
     }
   };
 
