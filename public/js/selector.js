@@ -3,17 +3,17 @@ import * as dataKeeper from './dataKeeper.js';
 
 let selectedBlocks = {};
 let lastSelectedBlocks = {};
-const keySelected = "selected";
-const keyPreviousSelected = "last_selected";
+const SELECTED = "selected";
+const PREVIOUS_SELECTED = "last_selected";
 let blocksToModify = selectedBlocks;
 
 function setBlocksToModify(name) {
   switch (name) {
-    case keySelected:
+    case SELECTED:
       blocksToModify = selectedBlocks;
       break;
 
-    case keyPreviousSelected:
+    case PREVIOUS_SELECTED:
       blocksToModify = lastSelectedBlocks;
       break;
 
@@ -24,12 +24,12 @@ function setBlocksToModify(name) {
 
 }
 
-function getBlocks(blocksToGet = keySelected) {
+function getBlocks(blocksToGet = SELECTED) {
   setBlocksToModify(blocksToGet);
   return blocksToModify;
 }
 
-function getBlocksArray(blocksToGet = keySelected) {
+function getBlocksArray(blocksToGet = SELECTED) {
   setBlocksToModify(blocksToGet);
 
   const blocks = [];
@@ -42,7 +42,7 @@ function getBlocksArray(blocksToGet = keySelected) {
   return blocks;
 }
 
-// function getBlockIDsOBJ(blocksToGet = keySelected) {
+// function getBlockIDsOBJ(blocksToGet = SELECTED) {
 //   setBlocksToModify(blocksToGet);
 
 //   const blockIDs = {};
@@ -55,7 +55,7 @@ function getBlocksArray(blocksToGet = keySelected) {
 //   return blockIDs;
 // }
 
-function getBlockIDs(blocksToGet = keySelected) {
+function getBlockIDs(blocksToGet = SELECTED) {
   setBlocksToModify(blocksToGet);
 
   const blockIDs = [];
@@ -69,14 +69,14 @@ function getBlockIDs(blocksToGet = keySelected) {
 }
 
 // Reset blocks and return blockIDs
-function resetBlocks(blocksToReset = keySelected) {
+function resetBlocks(blocksToReset = SELECTED) {
   setBlocksToModify(blocksToReset)
   const blockIDs = getBlockIDs(blocksToReset);
   for (const key in blocksToModify) delete blocksToModify[key];
   return blockIDs;
 }
 
-function addBlock(block, to = keySelected) {
+function addBlock(block, to = SELECTED) {
   if (block) {
     if (block.hasOwnProperty('id')) {
       setBlocksToModify(to);
@@ -85,7 +85,7 @@ function addBlock(block, to = keySelected) {
   }
 }
 
-function addBlocks(blocks, to = keySelected) {
+function addBlocks(blocks, to = SELECTED) {
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)) {
       const block = blocks[key];
@@ -94,13 +94,13 @@ function addBlocks(blocks, to = keySelected) {
   }
 }
 
-function addBlocksArray(blocksArray, to = keySelected) {
+function addBlocksArray(blocksArray, to = SELECTED) {
   blocksArray.forEach(block => {
     addBlock(block, to);
   });
 }
 
-function removeBlock(block, from = keySelected) {
+function removeBlock(block, from = SELECTED) {
   setBlocksToModify(from);
   if (typeof block != 'undefined') {
     if (block.hasOwnProperty('id')) {
@@ -109,7 +109,7 @@ function removeBlock(block, from = keySelected) {
   }
 }
 
-function removeBlocks(blocks, from = keySelected) {
+function removeBlocks(blocks, from = SELECTED) {
   for (const key in blocks) {
     if (blocks.hasOwnProperty(key)) {
       const block = blocks[key];
@@ -118,7 +118,7 @@ function removeBlocks(blocks, from = keySelected) {
   }
 }
 
-function addBlocksByGridpixels(gridpixels, viewport, to = keySelected) {
+function addBlocksByGridpixels(gridpixels, viewport, to = SELECTED) {
   const blocks = {};
   for (const key in gridpixels) {
     if (gridpixels.hasOwnProperty(key)) {
@@ -131,7 +131,7 @@ function addBlocksByGridpixels(gridpixels, viewport, to = keySelected) {
   addBlocks(blocks, to);
 }
 
-function removeBlocksByGridpixels(gridpixels, viewport, from = keySelected) {
+function removeBlocksByGridpixels(gridpixels, viewport, from = SELECTED) {
   const blocks = {};
   for (const key in gridpixels) {
     if (gridpixels.hasOwnProperty(key)) {
@@ -145,7 +145,7 @@ function removeBlocksByGridpixels(gridpixels, viewport, from = keySelected) {
 }
 
 
-function isEmpty(blocksToCheck = keySelected) {
+function isEmpty(blocksToCheck = SELECTED) {
   setBlocksToModify(blocksToCheck);
   for (const key in blocksToModify) {
     if (blocksToModify.hasOwnProperty(key)) {
@@ -170,8 +170,8 @@ function isEmpty(blocksToCheck = keySelected) {
 export {
   selectedBlocks,
   lastSelectedBlocks,
-  keySelected,
-  keyPreviousSelected,
+  SELECTED,
+  PREVIOUS_SELECTED,
   getBlocks,
   getBlocksArray,
   getBlockIDs,

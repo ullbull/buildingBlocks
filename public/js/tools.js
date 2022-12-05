@@ -1,5 +1,6 @@
 import * as helpers from "./helpers.js";
 import * as selector from "./selector.js";
+import { SELECTED, PREVIOUS_SELECTED } from "./selector.js"
 import * as blockModule from "./block.js";
 import * as blockHider from "./blockHider.js";
 import * as position from "./positionTranslator.js";
@@ -60,7 +61,7 @@ function Builder() {
         if (
           // Note: Must add viewport position to the frame
           // Must subtract 1 grid square from width and height
-          // because gridpixels position is in upper left corner.
+          // because gridpixel's position is in upper left corner.
           helpers.isInsideFrame(
             gridpixel.x - viewport.x,
             gridpixel.y - viewport.y,
@@ -124,8 +125,9 @@ function Builder() {
   this._drawPreviousSelectedBlocks = function (options) {
     options.name = "prev.sel."
     options.color = "rgba(100,30,60,0.5)";
-    mouse.viewport.DrawBlocks(selector.getBlocksArray(
-      selector.keyPreviousSelected), options);
+    mouse.viewport.DrawBlocks(
+      selector.getBlocksArray(PREVIOUS_SELECTED),
+      options);
   }
   
 
@@ -147,8 +149,8 @@ function Builder() {
     }
 
     // select the blocks as idle blocks
-    selector.resetBlocks(selector.keyPreviousSelected);
-    selector.addBlocksArray(blocksCopy, selector.keyPreviousSelected);
+    selector.resetBlocks(PREVIOUS_SELECTED);
+    selector.addBlocksArray(blocksCopy, PREVIOUS_SELECTED);
 
     // Send blocks to server
     if (method == "build") {
@@ -181,6 +183,7 @@ function Builder() {
     const lastY = this.y;
     this._setPosition(x,y);
 
+    // Prevent blocks from going outside frame.
     if(!this.isBlocksInsideFrame()) {
       // Reset Position
       this._setPosition(lastX, lastY);
@@ -191,12 +194,13 @@ function Builder() {
         // Reset Position
         this._setPosition(lastX, lastY);
         // Try y position
-        this._setPosition(this.x, lastY);
+        this._setPosition(x, lastY);
       }
     }
   };
 
   this.refreshHoveredBlocks = function () {
+    let text = "";
     // this.hoveredBlock = helpers.getBlockByPosition(
     //   mouse.wp.x, mouse.wp.y, mouse.viewport);
     this.hoveredBlock = dataKeeper.getBlockAtPosition({
@@ -204,17 +208,21 @@ function Builder() {
       y: mouse.wp.y,
     });
 
+    //TODO: figure out this
     this.hoveredBlocks = [this.hoveredBlock];
     if (this.hoveredBlock) {
       if (selector.selectedBlocks[this.hoveredBlock.id]) {
         // Hovering selected blocks
-        this.hoveredBlocks = selector.getBlocksArray("selected");
+        this.hoveredBlocks = selector.getBlocksArray(SELECTED);
+        text = "Hovering selected blocks. "
       } else if (selector.lastSelectedBlocks[this.hoveredBlock.id]) {
-        // Hovering idle blocks
-        this.hoveredBlocks = selector.getBlocksArray(
-          selector.keyPreviousSelected
-        );
+        // Hovering previous selected blocks
+        this.hoveredBlocks = selector.getBlocksArray(PREVIOUS_SELECTED);
+        text += "Hovering previous selected blocks."
       }
+    }
+    if (text != "") {
+      console.log("refreshHoveredBlocks", text);
     }
   };
 
@@ -238,7 +246,6 @@ function Builder() {
         this.blocks = helpers.copyObject(this.hoveredBlocks);
 
         try {
-          // blockHider.addHiddenBlocks(this.blocks);
           blockHider.hideBlocks(this.blocks);
         } catch (error) {
           console.error(error);
@@ -274,7 +281,7 @@ function Builder() {
         connection.deleteBlocks(blockHider.resetHiddenBlocks());
 
         // Reset idle blocks
-        selector.resetBlocks(selector.keyPreviousSelected);
+        selector.resetBlocks(selector.PREVIOUS_SELECTED);
 
         // Change blocks to initial block
         blockModule.setBlockPosition(this.initialBlock, this.x, this.y);
@@ -523,7 +530,7 @@ function BoxSelection() {
         selector.removeBlocksByGridpixels(
           this.gridpixels,
           mouse.viewport,
-          selector.keyPreviousSelected
+          selector.PREVIOUS_SELECTED
         );
       }
     }

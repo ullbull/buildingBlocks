@@ -4,7 +4,8 @@ const appStatus = {
   addBlock: false,
   movedDistance: 0,
   hideSelectionBox: true,
-  debug: false,
+  // debug: false,
+  debug: true,
 
   updateMouseOverBlock: function (mouse) {
     // Check if mouse is over any pixel
